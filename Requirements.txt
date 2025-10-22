@@ -1,0 +1,18 @@
+Funktionale Anforderungen:
+- Eingabemasken für zwei Datentypen: Anfragen und Beratungsfälle
+- weitere Informationsfelder müssen hinzufügbar sein (nur Accounts mit bestimmten Rechten) -> neuen Felder gelten für alle Nutzerinnen
+- Suchen: Anfragen und Fälle können gesucht werden
+- Datenbearbeitung: Anfragen und Fälle bearbeitet werden 
+- Prüfung ob alle Pflichtfelder ausgefüllt sind (wenn nicht, Meldung)
+
+
+Nicht-Funktionale Anforderungen:
+- Client-Server-Architektur
+- DockerImage
+- Installationsschritte müssen in einer README erklärt werden
+- Dokumentation/Handbuch zur Bedienung
+- Passwortschutz
+- System muss Änderbar sein (anpassbar an zukünftige Gesetzesänderungen)
+- Benutzerfreundlichkeit --> konkreter?
+
+optional: CI/CD Pipelines für automatische Tests und Deployment
