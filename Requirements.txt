@@ -11,6 +11,7 @@ Funktionale Anforderungen:
 	- Statistik-Presets
 - Prüfung ob alle Pflichtfelder ausgefüllt sind (wenn nicht, Meldung)
 - Passwort-Recovery
+- Export in verschiedenen Formaten (PDF, xlsx und csv)
 
 Nicht-Funktionale Anforderungen:
 - Client-Server-Architektur
@@ -29,4 +30,5 @@ Nicht-Funktionale Anforderungen:
 
 
 optional: CI/CD Pipelines für automatische Tests und Deployment
+
 
