@@ -9,7 +9,7 @@ Funktionale Anforderungen:
 	- Modulare Auswahl der zu berechnenden Statistik
 	- Statistik-Presets
 - Prüfung ob alle Pflichtfelder ausgefüllt sind (wenn nicht, Meldung)
-
+- Passwort-Recovery
 
 Nicht-Funktionale Anforderungen:
 - Client-Server-Architektur
@@ -25,5 +25,6 @@ Nicht-Funktionale Anforderungen:
 		- 3. Click: Preset auswählen (evtl. mit 2.Click kombinierbar)
 		- 4. Click: bestätigen
 		-> Maske wird angezeigt
+
 
 optional: CI/CD Pipelines für automatische Tests und Deployment
