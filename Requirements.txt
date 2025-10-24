@@ -1,6 +1,7 @@
 Funktionale Anforderungen:
 - Eingabemasken für zwei Datentypen: Anfragen und Beratungsfälle
 - Anmeldesystem (Basiskonto, erweitertes Konto, Admin Konto)
+- 2 Adminkonten
 - weitere Informationsfelder müssen hinzufügbar sein (nur Accounts mit bestimmten Rechten) -> neuen Felder gelten für alle Nutzerinnen
 - Suchen: Anfragen und Fälle können gesucht werden
 - Datenbearbeitung: Anfragen und Fälle können bearbeitet werden
@@ -28,3 +29,4 @@ Nicht-Funktionale Anforderungen:
 
 
 optional: CI/CD Pipelines für automatische Tests und Deployment
+
