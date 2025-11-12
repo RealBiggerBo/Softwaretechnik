@@ -1,0 +1,34 @@
+Funktionale Anforderungen:
+- Eingabemasken für zwei Datentypen: Anfragen und Beratungsfälle
+- Anmeldesystem (Basiskonto, erweitertes Konto, Admin Konto)
+- 2 Adminkonten
+- weitere Informationsfelder müssen hinzufügbar sein (nur Accounts mit bestimmten Rechten) -> neuen Felder gelten für alle Nutzerinnen
+- Suchen: Anfragen und Fälle können gesucht werden
+- Datenbearbeitung: Anfragen und Fälle können bearbeitet werden
+- Statistik: 
+	- Berechnung+Anzeigen einfacher Statistiken über einen vorgegebenen Zeitraum
+	- Modulare Auswahl der zu berechnenden Statistik
+	- Statistik-Presets
+- Prüfung ob alle Pflichtfelder ausgefüllt sind (wenn nicht, Meldung)
+- Passwort-Recovery
+- Export in verschiedenen Formaten (PDF, xlsx und csv)
+
+Nicht-Funktionale Anforderungen:
+- Client-Server-Architektur
+- DockerImage
+- Installationsschritte müssen in einer README erklärt werden
+- Dokumentation/Handbuch zur Bedienung
+- Passwortschutz
+- System muss Änderbar sein (anpassbar an zukünftige Gesetzesänderungen)
+- Benutzerfreundlichkeit --> konkreter?
+	- Innerhalb von ?4? Clicks muss eine neue Anfrage-/Beratungsfallmaske geöffnet werden können
+		- 1. Click: Dashboard -> neue Maske
+		- 2. Click: Art der Maske auswählen
+		- 3. Click: Preset auswählen (evtl. mit 2.Click kombinierbar)
+		- 4. Click: bestätigen
+		-> Maske wird angezeigt
+
+
+optional: CI/CD Pipelines für automatische Tests und Deployment
+
+
