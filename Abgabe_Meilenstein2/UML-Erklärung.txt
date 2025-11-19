@@ -1,9 +1,12 @@
 UML_Class.png - eigentliches Klassendiagram
 Sequenz-Diagramm - Sequenzdiagramm beispielhaft für Login
 
+Die Navigation erfolgt innerhalb von Methoden der Views. Eine 'Zurück' Navigations Funktion wurde aus Platzgründen weggelassen.
+Sie könnte einfach über Vererbung einer abstrakten View Klasse mit einer abstracten Methode NavigateBack() für jede View seperat implementiert werden.
 
+Presets werden in Der Datenbank (je Nutzer wenn nötig) gespeichert.
 
-Der folgende Abschnitt wurde mittels ChatGPT 5.1 erstellt, jedoch von uns Korrekturgelesen
+Der folgende Abschnitt wurde mittels ChatGPT 5.1 erstellt, jedoch von uns Korrekturgelesen.
 
 ---
 
