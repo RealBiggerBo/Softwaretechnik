@@ -1,0 +1,408 @@
+UML_Class.png - eigentliches Klassendiagram
+Sequenz-Diagramm - Sequenzdiagramm beispielhaft für Login
+
+
+
+Der folgende Abschnitt wurde mittels ChatGPT 5.1 erstellt, jedoch von uns Korrekturgelesen
+
+---
+
+## 1. Architektur‑Überblick
+
+Dein System ist in drei Bereiche aufgeteilt:
+
+1. **Backend**  
+   Domänenlogik, Datenmodell (DataRecord, DataField…), Statistiken, Benutzerrechte und Sessions.
+
+2. **Backend_API**  
+   Ein dünner Layer (APIInterface), der HTTP‑Anfragen vom Frontend auf die passenden Backend‑Funktionen routet.
+
+3. **Frontend**  
+   Verschiedene Views (MainView, DataView, SearchView…), Hilfsklassen (ApiCaller, SessionStorage), UI‑Darstellungen von DataRecord/DataField, Exportformate (PDF/XLSX/CSV) und Diagrammtypen (Charts).
+
+Kommunikation:
+- **Frontend → Backend_API** über `ApiCaller` (HTTP GET/POST).
+- **Backend_API → Backend** über Funktionsaufrufe (APIInterface ruft z.B. SessionManager, DataRecordManager, StatisticCalculator auf).
+
+---
+
+## 2. Backend – Domänenlogik & Datenhaltung
+
+### 2.1 DataRecord & DataField (Datenmodell)
+
+**DataRecord (Backend)**  
+- Attribute:
+  - `-name: string`
+  - `-dataFileds: List<DataField>` (Liste von Feldern, Tippfehler im Namen)
+- Methoden:
+  - `+AddDataField(): void`
+  - `+RemoveDataField(int): void`
+
+Bedeutung:
+- Repräsentiert einen „Fall“/„Datensatz“ (z.B. Fall, Anfrage, Benutzer…).
+- Besteht aus mehreren **DataField**‑Objekten.
+
+**DataField {abstract} (Backend)**  
+- Attribute:
+  - `-id: int` – eindeutige ID des Feldes
+  - `-required: bool` – Pflichtfeld oder optional
+- Methoden:
+  - `+setRequired()`
+  - `+getRequired()`
+
+Spezialisierungen:
+- **TextField**
+  - `-textVal: string`
+  - `+setValue(string)`, `+getValue(): string`
+- **NumberField**
+  - `-numberVal: int`
+  - `+setValue(int)`, `+getValue(): int`
+- **DateField**
+  - `-dateVal: date`
+  - `+setValue(date)`, `+getValue(): string`
+
+Bedeutung:
+- Abstrakte Basisklasse für verschiedene Feldtypen.
+- Jede Subklasse kapselt ihren eigenen Werttyp (Text, Zahl, Datum).
+
+---
+
+### 2.2 DataRecordManager & DataBank (Persistenz)
+
+**DataRecordManager**
+- Attribute:
+  - `-dataRecords: List<DataRecord>`
+- Methoden (Auszug):
+  - `+Save(DataRecord): void`
+  - `+Load(): DataRecord`
+  - `+Search(DataRecord): DataRecord`
+  - `+GetDataRecords(): List<DataRecord>`
+  - `+AddDataField(): void`
+  - `+RemoveDataField(int): void`
+
+Rolle:
+- Zentrale Verwaltung der **DataRecords** im Backend.
+- Bietet CRUD/Leselogik:
+  - Speichern/Laden einzelner Records
+  - Suchen nach Records
+  - Verwalten der Felder pro Record (Layout).
+
+**DataBank**
+- Methoden:
+  - `+Save(string): void`
+  - `+LoadData(string): string`
+  - `+ChangeEntry(string): string`
+  - `+SearchEntry(string): string`
+
+Rolle:
+- Niedrigere Persistenzschicht (Datenbank, Datei, o.ä.).
+- Arbeitet mit Strings (z.B. serialisierte JSON/XML‑Darstellungen/Sql), nicht direkt mit DataRecord‑Objekten.
+- **DataRecordManager** benutzt **DataBank**, um DataRecords physisch zu speichern bzw. zu laden.
+
+---
+
+### 2.3 Benutzer & Rechte
+
+**User**
+- Methoden (alle `{virtual}`):
+  - `+CanManageUserProfiles(): bool`
+  - `+CanEditDataRecordLayout(): bool`
+  - `+CanManagePresets(): bool`
+
+Rolle:
+- Basisklasse für Benutzer.
+- Definiert Rechteabfragen, die von Unterklassen überschrieben werden können.
+
+**ExtendedUser**  
+- `Extends User`
+
+**Admin**
+- `Extends ExtendedUser`
+
+Rolle:
+- Rechtehierarchie:
+  - `Admin` → hat alle Rechte.
+  - `ExtendedUser` → mehr Rechte als `User`, weniger als Admin.
+- Polymorphie: Code kann mit `User` arbeiten, das konkrete Verhalten hängt von der tatsächlichen Klasse (User/ExtendedUser/Admin) ab.
+
+---
+
+### 2.4 SessionManager
+
+**SessionManager**
+- Attribute:
+  - `-currentUsers: Dictionary<string, int>`
+    - Map: `authToken → userId`
+- Methoden:
+  - `+TryLogin(string username, string password): string`
+    - Prüft Zugangsdaten, liefert auth Token.
+  - `+Verify(string token): User`
+    - Prüft, ob ein Token gültig (in currentUsers) ist und mit was für eine Art User diese Verbunden ist.
+  - `+Logout(string token): void`
+    - Entfernt den Benutzer/Token aus `currentUsers`.
+
+**Beziehungen:**
+- Die **APIInterface** im Backend_API ruft SessionManager‑Methoden für Login/Logout/Token‑Check auf.
+- Je nach Token kann darüber z.B. der User‑Typ (User/ExtendedUser/Admin) ermittelt und seine Rechte geprüft werden.
+
+---
+
+### 2.5 StatisticCalculator
+
+**StatisticCalculator**
+- Methode:
+  - `+Calculate(DateTime from, DateTime to)`
+
+Rolle:
+- Berechnet Statistiken über DataRecords in einem Zeitraum.
+- Verwendet den **DataRecordManager**, um relevante Daten zu holen.
+
+---
+
+## 3. Backend_API – APIInterface
+
+**Backend_API → APIInterface**
+- Attribute:
+  - `-routes: Dictionary<string, Func>`
+    - Mappt Routen/URLs (z.B. `/login`, `/search`, `/stats`) auf Handler‑Funktionen.
+- Methode:
+  - `+Match(string path): void`
+    - Ordnet eine eingehende HTTP‑Anfrage einer Route/Funktion zu.
+
+**Use‑Beziehungen (gestrichelte Pfeile „Use“):**
+- **APIInterface** benutzt:
+  - `SessionManager.Logout` (Logout‑Route)
+  - `SessionManager.TryLogin/Verify` (Login/Authentifizierung)
+  - `StatisticCalculator.Calculate` (Statistik‑Route)
+  - Methoden vom **DataRecordManager** (z.B. für Suchen, Speichern, Layout ändern)
+
+Rolle:
+- REST‑/HTTP‑Layer um die Backend‑Funktionen als Web‑API zur Verfügung zu stellen.
+
+---
+
+## 4. Frontend – Views, Hilfsklassen, UI‑Modelle
+
+### 4.1 Infrastruktur: ApiCaller & SessionStorage
+
+**ApiCaller {static}**
+- Methoden:
+  - `+PostRequest(string url) : HtmlResult`
+  - `+GetRequest(string url) : HtmlResult`
+
+Rolle:
+- Zentraler HTTP‑Client im Frontend.
+- Wird von allen Views genutzt, um Aufrufe an die Backend_API zu machen.
+
+**SessionStorage {static}**
+- Attribut:
+  - `+authToken: String`
+- Rolle:
+  - Hält den Auth‑Token (vom Login erhalten) clientseitig.
+  - `ApiCaller` kann diesen Token ggf. in HTTP‑Headern mitschicken.
+
+---
+
+### 4.2 Views (UI‑Bildschirme)
+
+**MainView**
+- Methoden:
+  - `+SearchRequest(), +SearchCase()`
+  - `+EditLastRequest(), +EditLastCase()`
+  - `+CreateRequest(), +CreateCase()`
+  - `+ShowOptions()`
+  - `+LogOut()`
+
+Rolle:
+- Zentrale Einstiegs‑/Übersichtsseite.
+- Delegiert typischerweise an andere Views:
+  - Suchvorgänge → **SearchView**
+  - Datensatz‑Erstellen/Bearbeiten → **DataView**
+  - Optionen/Einstellungen → **SettingsView**
+  - Logout → ruft über ApiCaller/SessionStorage das Backend an.
+
+---
+
+**LoginView**
+- Attribute:
+  - `-username: string`
+  - `-password: string`
+- Methode:
+  - `+Login(): void`
+
+Rolle:
+- UI zum Einloggen.
+- Ruft via **ApiCaller** eine Login‑Route im Backend_API auf (User/Pass senden).
+- Backend liefert bei Erfolg ein Token, das in `SessionStorage.authToken` gespeichert wird.
+
+---
+
+**DataView**
+- Attribute:
+  - `-dataRecord: DataRecord` (Frontend‑DataRecord)
+- Methoden:
+  - `+ShowData(): void`
+  - `+UpdateData(): void`
+  - `+AddDataField(DataField): void`
+  - `+RemoveDataField(DataField): void`
+  - `+GetPresets(): void`
+
+Rolle:
+- Oberfläche zum Anzeigen und Bearbeiten eines einzelnen **DataRecord**.
+- Nutzt:
+  - **ApiCaller**, um Daten zu laden/speichern.
+  - Frontend‑`DataRecord` + `DataField` um die Eingabefelder visuell darzustellen.
+  - Presets (vordefinierte Layouts/Werte) aus dem Backend.
+
+---
+
+**SearchView**
+- Attribute:
+  - `-filter: DataRecord` – Suchfilter (als Satz von Feldern)
+  - `-entries: List<DataRecord>` – Ergebnisliste
+- Methoden:
+  - `-GetFilterFields(): void` (intern)
+  - `+Search(): void`
+  - `+GetFilterPresets(): void`
+  - `+SaveAsPreset(): void`
+
+Rolle:
+- UI für die Suche/Filterung von DataRecords.
+- Nutzt:
+  - Frontend‑`DataRecord`/`DataField` zur Darstellung der Filterfelder.
+  - **ApiCaller**, um Suchanfragen an den Backend_API zu schicken.
+  - Presets für Filter (z.B. gespeicherte Suchprofile).
+
+---
+
+**SettingsView**
+- Methoden:
+  - `+CheckUserRights(): void`
+  - `+ShowUserEditPage(): void`
+  - `+ChangePassword(): void`
+  - `+ShowDataEditPage(): void`
+
+Rolle:
+- UI für Einstellungen:
+  - Prüft Rechte des aktuellen Users (z.B. über Backend: User/ExtendedUser/Admin).
+  - Benutzerverwaltung (UserProfile ändern)
+  - Passwortwechsel
+  - Anpassung des DataRecord‑Layouts (z.B. Felder hinzufügen/entfernen).
+
+SettingsView benutzt dazu:
+- **ApiCaller** (Use‑Beziehung) → ruft Backend‑Routen, z.B. für Rechteprüfung und Konfiguration.
+
+---
+
+**StatisticView**
+- Methoden:
+  - `+ShowStatistic(): void`
+  - `+Export(): void`
+  - `+GetPresets(): void`
+  - `+SaveAsPreset(): void`
+
+Rolle:
+- UI zur Anzeige von Statistiken über DataRecords:
+  - Holt Daten via **ApiCaller** von einer Statistik‑Route (hinten: StatisticCalculator).
+  - Nutzt **Chart**‑Unterklassen zur grafischen Darstellung (Linien‑, Balken‑, Torten‑Diagramme).
+  - Nutzt **FileFormat**‑Implementierungen (PDF, XLSX, CSV) zum Export.
+
+---
+
+### 4.3 Frontend‑DataRecord & DataField (UI‑Modelle)
+
+Im Frontend gibt es ein **zweites Paar** DataRecord/DataField‑Klassen – sie modellieren nicht die Speicherung, sondern die **Darstellung**:
+
+**DataField {abstract} (Frontend)**
+- Attribute:
+  - `-id: int`
+  - `-required: bool`
+- Methode:
+  - `+Display(bool visible) : void`
+    - Steuert die Anzeige des UI‑Feldes (änderbar/readonly).
+
+Subklassen:
+- **TextField, NumberField, DateField (Frontend)** – entsprechen jeweils UI‑Kontrollen (Text‑Input, Zahlenfeld, Datum‑Picker).
+
+**DataRecord (Frontend)**
+- Attribute:
+  - `-DataFielder : List<DataField>`
+- Methode:
+  - `+DisplayDataRecord(): void`
+
+Rolle:
+- Bündelt eine Liste von UI‑Feldern, die zusammen einen Record im Frontend darstellen.
+- Wird u.a. von **DataView** und **SearchView** verwendet.
+
+Beziehungen:
+- Aggregation `DataRecord (Frontend) 1 .. * DataField (Frontend)` ähnlich wie im Backend, aber für UI.
+
+---
+
+### 4.4 Charts (Diagrammtypen)
+
+**Chart {abstract}**
+- Methode:
+  - `+Draw(string) : void` (abstract / interface‑artig)
+
+Subklassen:
+- **LineChart**
+- **PieChart**
+- **BarChart**
+
+Rolle:
+- Gemeinsames Interface zum Zeichnen von Diagrammen.
+- **StatisticView** nutzt Chart‑Objekte (Use‑Pfeil), um Statistiken visuell darzustellen.
+
+---
+
+### 4.5 FileFormat (Exportformate)
+
+**«Interface» FileFormat**
+- Methode:
+  - `+Generate(string) : void`
+
+Implementierende Klassen:
+- **PDF**
+- **XLSX**
+- **CSV**
+
+Rolle:
+- Strategiemuster: Verschiedene Exportformate, die alle einheitlich über `Generate(...)` angesprochen werden.
+- **StatisticView.Export()** kann z.B. abhängig von einer Nutzerauswahl eines dieser Formate verwenden.
+
+---
+
+## 5. UML‑Notation im Diagramm
+
+Kurz zu den wichtigsten Symbolen in dem Diagramm:
+
+- **Klasse**: Rechteck mit Name oben, Attribute in der Mitte, Methoden unten.
+- **Sichtbarkeit**:
+  - `+` public
+  - `-` private
+- **{abstract}** hinter dem Klassennamen:
+  - Klasse ist abstrakt (kann nicht direkt instanziiert werden).
+- **Kursiver Text / «Interface»**:
+  - Schnittstelle (Interface).
+- **{static}**:
+  - Statische Klasse/Member (z.B. `ApiCaller`, `SessionStorage`).
+- **{virtual}**:
+  - Methode kann in Unterklassen überschrieben werden.
+
+**Beziehungen:**
+
+- **Voll‑Dreieck mit durchgezogener Linie („Extends“)**:
+  - Vererbung / Generalisierung (z.B. `Admin` extends `ExtendedUser`, `TextField` extends `DataField`).
+
+- **Gestrichelter Pfeil mit offener Spitze („Use“)**
+  - Abhängigkeit / Nutzung: Eine Klasse ruft Methoden einer anderen, kennt sie aber nur lose.
+  - Beispiel: `SearchView` → `ApiCaller`, `APIInterface` → `SessionManager`.
+
+- **Raute (offen) – Aggregation**:
+  - „Besteht aus“-Beziehung mit unabhängigen Lebenszyklen.
+  - Beispiel: `DataRecord` aggregiert `DataField` (1 Record, viele Fields).
+
+- **Multiplizitäten „1“, „*“ an den Linien**:
+  - `1` = genau ein Objekt
+  - `*` = beliebig viele Objekte
