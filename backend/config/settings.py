@@ -43,6 +43,12 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',         # Für alle neuen Passwörter ("pip install argon2-cffi")
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',   # Fallback ("pip install bcrypt")
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',         # Backup Fallback
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -131,3 +137,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:5173",
 ]
+
+# Automatisches Abmelden
+
+# Session läuft nach 10min ab
+SESSION_COOKIE_AGE = 600
+
+# Session endet sobald der Browser geschlossen wird
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Benutzer Aktivität setzt die Ablaufzeit zurück
+
+SESSION_SAVE_EVERY_REQUEST = True
