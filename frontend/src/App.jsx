@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
+import LoginPage from "./pages/LoginPage";
+import DataviewPage from "./pages/DataviewPage";
+import MainPage from "./pages/MainPage";
+import SearchPage from "./pages/SearchPage";
+import SettingsPage from "./pages/SettingsPage";
+import StatisticsPage from "./pages/StatisticsPage";
+
 
 function HomePage() {
   return (
@@ -61,13 +68,15 @@ function App() {
       <nav style={{ marginBottom: '1rem' }}>
         <Link to="/" style={{ marginRight: '1rem' }}>Home</Link>
         <Link to="/about" style={{ marginRight: '1rem' }}>About</Link>
-        <Link to="/api-test">API Test</Link>
+        <Link to="/api-test" style={{ marginRight: '1rem' }}>API Test</Link>
+        <Link to="/login">Login</Link>
       </nav>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/api-test" element={<ApiTestPage />} />
+        <Route path="/login" element={<LoginPage/>}/>
       </Routes>
     </div>
   )
