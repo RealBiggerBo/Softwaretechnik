@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import LoginPage from "./pages/LoginPage";
-import DataviewPage from "./pages/DataviewPage";
+/*import DataviewPage from "./pages/DataviewPage";
 import MainPage from "./pages/MainPage";
 import SearchPage from "./pages/SearchPage";
 import SettingsPage from "./pages/SettingsPage";
-import StatisticsPage from "./pages/StatisticsPage";
+import StatisticsPage from "./pages/StatisticsPage";*/
 
 
 function HomePage() {
@@ -16,6 +16,17 @@ function HomePage() {
     </div>
   )
 }
+
+/*function LoginPage(){
+  return(
+    <div>
+      <input placeholder='Benutzername'type='text' style={{marginBottom: '1rem'}}/>
+      <input placeholder='Passwort'type='password' style={{marginBottom: '1rem'}}/>
+      <br/>
+      <button>Login</button>
+    </div>
+  )
+}*/
 
 function AboutPage() {
   return (
