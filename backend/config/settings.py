@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'api',
+    'api.accounts',
     'corsheaders',
+    'rest_framework_authtoken',
 ]
 
 PASSWORD_HASHERS = [
@@ -137,6 +138,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:5173",
 ]
+
+# Tokenverwaltung 
+REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 # Automatisches Abmelden
 
