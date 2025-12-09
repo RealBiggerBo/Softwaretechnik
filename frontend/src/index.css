@@ -18,6 +18,13 @@
   border-radius: 1em;
 }*/
 
+.imgdiv {
+  width: 3em;
+}
+.fragezeichen {
+  width: 30px;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
