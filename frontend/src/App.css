@@ -1,7 +1,4 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
@@ -39,4 +36,25 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.mainContainer {
+ align-content: center;
+}
+
+.navbar {
+  height: auto;
+  width: 100vw;
+  padding: 1em;
+  align-content: center;
+  background: var(--color-white);
+}
+
+.pageContainer {
+  padding: 1em 0 1em 0;
+  background: var(--color-gray);
+}
+
+footer {
+  color: var(--color-gray);
 }

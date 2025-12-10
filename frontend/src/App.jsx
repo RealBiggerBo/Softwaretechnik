@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import LoginPage from "./pages/LoginPage";
 import MainPage from './pages/MainPage';
+import './App.css'
 /*import DataviewPage from "./pages/DataviewPage";*/
 /*import SearchPage from "./pages/SearchPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -64,24 +65,28 @@ function ApiTestPage() {
 
 function App() {
   return (
-    <div>
-      <nav style={{ marginBottom: '1rem' }}>
-        <Link to="/help" style={{ marginRight: '1rem' }}><img className='fragezeichen' src="src/bilder/fragezeichen.svg" ></img></Link>
+    <div className='mainContainer'>
+      <nav className='navbar'>
         <Link to="/" style={{ marginRight: '1rem' }}>Home</Link>
-        {/*<Link to="/about" style={{ marginRight: '1rem' }}>About</Link>
-        <Link to="/api-test" style={{ marginRight: '1rem' }}>API Test</Link>*/}
         <Link to="/login" style={{ marginRight: '1rem' }}>Login</Link>
         <Link to="/main" style={{ marginRight: '1rem' }}>Hauptansicht</Link>
-        <Link to="/settings"><button style={{"font-size":20, "padding":"0.2em 0.5em"}}>⚙</button></Link>
+        <Link to="/settings" style={{ marginRight: '1rem' }}>Einstellungen</Link>
+        <Link to="/help">Hilfe</Link>
       </nav>
 
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        {/*<Route path="/about" element={<AboutPage />} />
-        <Route path="/api-test" element={<ApiTestPage />} />*/}
-        <Route path="/login" element={<LoginPage/>}/>
-        <Route path="/main" element={<MainPage/>}/>
-      </Routes>
+      <div className='pageContainer'>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage/>}/>
+          <Route path="/main" element={<MainPage/>}/>
+        </Routes>
+      </div>
+
+      <footer>
+        <label>
+          Hier text für den footer?
+        </label>
+      </footer>
     </div>
   )
 }

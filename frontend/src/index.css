@@ -5,12 +5,20 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: var(--color-white);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --color-primary: #294D9D;
+  --color-white:#ffffff;
+  --color-secondary: #FD0;
+  --color-text: #000;
+  --color-accent: #BCBCBC;
+  --color-gray:#525252;
+  --color-error: #ff0000;
 }
 /*nav {
   background-color: white;
@@ -27,18 +35,17 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-gray);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--color-primary);
 }
 
 body {
-  margin: 0 auto;
-  width: 1000px;
-  display: flex;
-  place-items: center;
+  margin: 0px;
+  place-items: stretch;
+  align-items: stretch;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -49,9 +56,9 @@ h1 {
 }
 
 button {
-  color: #646cff;
-  background-color: #bfc2ffff;
-  border-radius: 8px;
+  color: var(--color-secondary);
+  background-color: var(--color-primary);
+  border-radius: 30px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -61,7 +68,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--color-secondary);
 }
 button:focus,
 button:focus-visible {
@@ -75,7 +82,7 @@ input {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: var(--color-primary);
     background-color: #ffffff;
   }
   a:hover {
