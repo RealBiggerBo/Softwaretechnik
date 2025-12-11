@@ -41,7 +41,7 @@ function ApiTestPage() {
         }
         const json = await response.json()
         setData(json)
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message)
       } finally {
         setLoading(false)
