@@ -12,12 +12,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --color-primary: #294D9D;
-  --color-white:#ffffff;
-  --color-secondary: #FD0;
+  --color-primary: #294d9d;
+  --color-white: #ffffff;
+  --color-secondary: #fd0;
   --color-text: #000;
-  --color-accent: #BCBCBC;
-  --color-gray:#525252;
+  --color-accent: #bcbcbc;
+  --color-gray: #525252;
   --color-error: #ff0000;
 }
 /*nav {
