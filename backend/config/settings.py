@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api.accounts',
     'corsheaders',
-    'rest_framework_authtoken',
+    'rest_framework.authtoken',
 ]
 
 PASSWORD_HASHERS = [
