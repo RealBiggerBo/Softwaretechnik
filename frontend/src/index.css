@@ -13,18 +13,15 @@
   -moz-osx-font-smoothing: grayscale;
 
   --color-primary: #294d9d;
-  --color-white: #ffffff;
   --color-secondary: #fd0;
+  --color-white: #ffffff;
+  --color-accent-light: #e5017c;
+  --color-accent-mid: #e5017c40;
+  --color-accent-dark: #bcbcbc;
   --color-text: #000;
-  --color-accent: #bcbcbc;
   --color-gray: #525252;
   --color-error: #ff0000;
 }
-/*nav {
-  background-color: white;
-  padding: 1em;
-  border-radius: 1em;
-}*/
 
 .imgdiv {
   width: 3em;
@@ -68,7 +65,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: var(--color-secondary);
+  opacity: 0.8;
 }
 button:focus,
 button:focus-visible {

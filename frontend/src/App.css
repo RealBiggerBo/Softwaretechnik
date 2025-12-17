@@ -53,7 +53,101 @@
 .pageContainer {
   padding: 1em 0 1em 0;
   background: var(--color-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+/*Styles for MainPage*/
+.bellisLogo {
+  width: 20%;
+}
+
+.container {
+  max-width: 50%;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.mainPageContainer {
+  margin: 22px;
+  padding: 5px;
+  border-radius: 0 30px 0 0;
+  border-style: solid;
+  border-width: 12px;
+  border-color: var(--color-primary);
+  background: transparent;
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.buttonContainer {
+  margin: 5px 5px 5px 0;
+  justify-self: start;
+}
+
+.mainPageContainer-heading {
+  margin: 0px 5px;
+  font-weight: bolder;
+}
+
+.mainPageContainer-body {
+  margin: 5px;
+  font-weight: 400;
+  text-align: start;
+}
+
+.mainPageContainer-search {
+  border-color: var(--color-primary);
+}
+
+.mainPageContainer-statistics {
+  border-color: var(--color-accent-light);
+}
+
+.mainPageContainer-lastUsed {
+  border-color: var(--color-accent-mid);
+}
+
+.mainPageContainer-createNew {
+  border-color: var(--color-secondary);
+}
+
+.mainPageContainerBtn {
+  margin: 5px 0px 0px 0px;
+  display: block;
+}
+
+.mainPageContainerBtn-search {
+  background: var(--color-primary);
+  color: var(--color-secondary);
+}
+
+.mainPageContainerBtn-statistics {
+  background: var(--color-accent-light);
+  color: var(--color-white);
+}
+
+.mainPageContainerBtn-lastUsed {
+  background: var(--color-accent-mid);
+  color: var(--color-text);
+}
+
+.mainPageContainerBtn-createNew {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+/*End - Styles for MainPage*/
 
 footer {
   color: var(--color-gray);
