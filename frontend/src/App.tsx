@@ -3,6 +3,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
 import "./App.css";
+import Navbar from "./components/Navbar";
 /*import DataviewPage from "./pages/DataviewPage";*/
 /*import SearchPage from "./pages/SearchPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -63,6 +64,8 @@ function ApiTestPage() {
 function App() {
   return (
     <div className="mainContainer">
+      <Navbar />
+
       <nav className="navbar">
         <Link to="/" style={{ marginRight: "1rem" }}>
           Home
