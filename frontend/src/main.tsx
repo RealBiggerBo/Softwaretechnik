@@ -3,11 +3,12 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./index.css";
+import { MockApiCaller } from "./classes/IApiCaller.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <App caller={new MockApiCaller()} />
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );

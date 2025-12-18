@@ -5,6 +5,7 @@ import MainPage from "./pages/MainPage";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import { useState } from "react";
+import type { IApiCaller } from "./classes/IApiCaller";
 /*import DataviewPage from "./pages/DataviewPage";*/
 /*import SearchPage from "./pages/SearchPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -62,7 +63,11 @@ function HomePage() {
 //   );
 // }
 
-function App() {
+interface Props {
+  caller: IApiCaller;
+}
+
+function App({ caller }: Props) {
   //hook nur um Hintergrund für MainPage auf White/Transparent zu setzen
   //kann entfernt werden, sobald 'mainContainer'-style keinen Grauen Hintergrund mehr hat
   let [backgroundIsGray, setBackgroundIsGray] = useState(false);
@@ -108,7 +113,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/main" element={<MainPage />} />
+          <Route path="/main" element={<MainPage caller={caller} />} />
         </Routes>
       </div>
 

@@ -1,6 +1,11 @@
 import MainPageContainer from "../components/MainPageContainer";
+import type { IApiCaller } from "../classes/IApiCaller";
 
-function MainPage() {
+interface Props {
+  caller: IApiCaller;
+}
+
+function MainPage({ caller }: Props) {
   return (
     <>
       <img
