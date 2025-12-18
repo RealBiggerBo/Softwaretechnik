@@ -12,6 +12,7 @@ function MainPageContainer({ heading, body, buttons, color }: Props) {
         <label className="mainPageContainer-heading">{heading}</label>
         <p className="mainPageContainer-body">{body}</p>
       </div>
+
       <div className="buttonContainer">
         {buttons.map((val, index) => (
           <button

@@ -2,6 +2,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
+import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import { useState } from "react";
@@ -114,6 +115,7 @@ function App({ caller }: Props) {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/main" element={<MainPage caller={caller} />} />
+          <Route path="/settings" element={<SettingsPage caller={caller} />} />
         </Routes>
       </div>
 
