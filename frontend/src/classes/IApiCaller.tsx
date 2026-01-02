@@ -17,6 +17,7 @@ export interface IApiCaller {
 
 export class MockApiCaller implements IApiCaller {
   private users: string[] = ["Alf", "Horst", "James"];
+  private storedPassword: string = "secret123";
 
   GetUsers(): string[] {
     //check current user rights -> done in backend
@@ -47,10 +48,8 @@ export class MockApiCaller implements IApiCaller {
     newPswd: string,
     newPswdCtrl: string
   ): { success: boolean; errorMsg: string } {
-    const storedPassword = "secret123"; // example
-
     // 1. Check current password
-    if (curPswd !== storedPassword) {
+    if (curPswd !== this.storedPassword) {
       return {
         success: false,
         errorMsg: "Current password is incorrect",
@@ -83,7 +82,7 @@ export class MockApiCaller implements IApiCaller {
 
     // ✅ If we reach here, the change is valid
     // (persist password here in real code)
-
+    this.storedPassword = newPswd;
     return {
       success: true,
       errorMsg: "",
