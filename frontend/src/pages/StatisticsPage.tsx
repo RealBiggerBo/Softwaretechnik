@@ -1,4 +1,3 @@
-import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -19,13 +18,21 @@ function StatisticsPage() {
                 <DatePicker label="Bis" />
               </Stack>
               <Stack spacing={2} direction="row">
-                <TextField select fullWidth>
-                  <MenuItem>Standard Vorlage</MenuItem>
-                  <MenuItem>Alles</MenuItem>
+                <TextField select fullWidth label="Vorlage">
+                  <MenuItem>
+                    Statische Angaben zu den Fachberatungstellen Sexulaisierte
+                    Gewalt
+                  </MenuItem>
+                  <MenuItem>Alle Statisische Angaben die Wir haben</MenuItem>
                 </TextField>
                 <Button variant="contained" size="large" sx={{ px: 3 }}>
                   Berechnen
                 </Button>
+              </Stack>
+              <Stack spacing={2} direction="row">
+                <TextField select fullWidth label="Format">
+                  <MenuItem>CSV</MenuItem>
+                </TextField>
                 <Button variant="outlined" size="large" sx={{ px: 3 }}>
                   Exportieren
                 </Button>
