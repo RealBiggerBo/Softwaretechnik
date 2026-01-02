@@ -16,7 +16,12 @@ function StatisticsPage({ caller }: { caller: IApiCaller }) {
   const [preset, setPreset] = useState<string>(presets[0] ?? "");
   const [fileFormat, setFileFormat] = useState<string>("CSV");
 
-  const exportDisabled = !timeStart || !timeEnd || !preset || !fileFormat;
+  const exportDisabled =
+    !timeStart ||
+    !timeEnd ||
+    timeStart.isAfter(timeEnd) ||
+    !preset ||
+    !fileFormat;
 
   function formatDateForApi(value: Dayjs | null): string {
     return value?.toISOString() ?? "";
@@ -46,8 +51,18 @@ function StatisticsPage({ caller }: { caller: IApiCaller }) {
           <form>
             <Stack direction="column" spacing={2}>
               <Stack spacing={2} direction="row">
-                <DatePicker label="Von" value={timeStart} onChange={setTimeStart} />
-                <DatePicker label="Bis" value={timeEnd} onChange={setTimeEnd} />
+                <DatePicker
+                  label="Von"
+                  value={timeStart}
+                  maxDate={timeEnd ?? undefined}
+                  onChange={setTimeStart}
+                />
+                <DatePicker
+                  label="Bis"
+                  value={timeEnd}
+                  minDate={timeStart ?? undefined}
+                  onChange={setTimeEnd}
+                />
               </Stack>
               <Stack spacing={2} direction="row">
                 <TextField
