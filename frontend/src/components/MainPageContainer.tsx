@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 
 interface Props {
   heading: string;
@@ -17,13 +18,13 @@ function MainPageContainer({ heading, body, buttons, links, color }: Props) {
 
       <div className="buttonContainer">
         {buttons.map((val, index) => (
-          <a
+          <Link
+            to={links[index]}
             key={index}
             className={"mainPageContainerBtn mainPageContainerBtn-" + color}
-            href={links[index]}
           >
             {val}
-          </a>
+          </Link>
         ))}
       </div>
     </div>

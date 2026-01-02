@@ -31,7 +31,7 @@ function MainPage({ caller }: Props) {
           body="Hier können Statistiken berechnet werden"
           color="statistics"
           buttons={["Berechnen"]}
-          links={["/statistic"]}
+          links={["/statistics"]}
         />
         <MainPageContainer
           heading="Zuletzt bearbeitet"
@@ -45,7 +45,7 @@ function MainPage({ caller }: Props) {
           body="Hier können neue Fälle und Anfragen erstellt werden."
           color="createNew"
           buttons={["Neuer Fall", "Neue Anfrage"]}
-          links={["/dataview?type=neuer-fall","/dataview?type=neue-anfrage"]}
+          links={["/dataview?type=neuer-fall", "/dataview?type=neue-anfrage"]}
         />
       </div>
     </div>
