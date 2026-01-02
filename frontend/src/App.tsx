@@ -9,6 +9,7 @@ import { useState } from "react";
 import type { IApiCaller } from "./classes/IApiCaller";
 import StatisticsPage from "./pages/StatisticsPage";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 /*import DataviewPage from "./pages/DataviewPage";*/
 /*import SearchPage from "./pages/SearchPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -108,15 +109,20 @@ function App({ caller }: Props) {
         <Link to="/help">Hilfe</Link>
       </nav>
 
-      <Box>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/main" element={<MainPage caller={caller} />} />
-          <Route path="/settings" element={<SettingsPage caller={caller} />} />
-          <Route path="/statistics" element={<StatisticsPage />} />
-        </Routes>
-      </Box>
+      <Container fixed>
+        <Box>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/main" element={<MainPage caller={caller} />} />
+            <Route
+              path="/settings"
+              element={<SettingsPage caller={caller} />}
+            />
+            <Route path="/statistics" element={<StatisticsPage />} />
+          </Routes>
+        </Box>
+      </Container>
 
       <footer>
         <label>Hier text für den footer?</label>
