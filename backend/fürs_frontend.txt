@@ -1,0 +1,14 @@
+ChatGpt meinte, nachdem ich den angepassten code nochmal reingehauen habe, das es fürs frontend so aussehen soll, damit es geht.
+Gerne noch mal prüfen.
+
+fetch("http://localhost:8000/api/auth/login/", {
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    username,
+    password
+  })
+})

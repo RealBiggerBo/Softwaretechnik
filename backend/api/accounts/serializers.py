@@ -1,8 +1,19 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.config.validators import RegexValidator
+
+alnum_validator = RegexValidator(
+    regex=r'[A-Za-z0-9]+$',
+    #message="Nur Buchstaben und Zahlen erlaubt." #kann man machen, muss man nicht
+)
 
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
+
+    username = serializers.CharField(
+        max_lenght=30, #kann man noch höher setzen
+        validators=[alnum_validator]
+    )
 
     class Meta:
         model = User
@@ -15,7 +26,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = User(username=validated_data['username'])
-        user.set_password(validated_data['password'])
-        user.save()
+        validated_data.pop('password2')
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
         return user
