@@ -9,7 +9,11 @@ import type { Dayjs } from "dayjs";
 import { useMemo, useState } from "react";
 import { type IApiCaller } from "../classes/IApiCaller";
 
-function StatisticsPage({ caller }: { caller: IApiCaller }) {
+interface Props {
+  caller: IApiCaller;
+}
+
+function StatisticsPage({ caller }: Props) {
   const presets = useMemo(() => caller.GetStatisticsPresets(), [caller]);
   const [timeStart, setTimeStart] = useState<Dayjs | null>(null);
   const [timeEnd, setTimeEnd] = useState<Dayjs | null>(null);
