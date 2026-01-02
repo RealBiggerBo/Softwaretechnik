@@ -7,6 +7,7 @@ import "dayjs/locale/de";
 import App from "./App.tsx";
 import "./index.css";
 import { MockApiCaller } from "./classes/IApiCaller";
+import { ApiCaller } from "./classes/ApiCaller.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

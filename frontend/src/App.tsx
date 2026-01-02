@@ -50,7 +50,7 @@ function App({ caller }: Props) {
         <Box>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage caller={caller} />} />
             <Route path="/main" element={<MainPage caller={caller} />} />
             <Route
               path="/settings"

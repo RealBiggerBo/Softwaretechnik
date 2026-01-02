@@ -1,4 +1,5 @@
 import type { IApiCaller } from "./IApiCaller";
+const baseurl = "http://127.0.0.1:8000";
 
 export class ApiCaller implements IApiCaller {
   async TryLogin(
@@ -6,7 +7,7 @@ export class ApiCaller implements IApiCaller {
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch(`${baseurl}/api/auth/login/`, {
         method: "POST",
         credentials: "include",
         headers: {

@@ -24,9 +24,11 @@ export class MockApiCaller implements IApiCaller {
     user: string,
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    void user;
-    void pswd;
-    return { success: true, errorMsg: "" };
+    if (user == "test" && pswd == "test") {
+      return { success: true, errorMsg: "" };
+    } else {
+      return { success: false, errorMsg: "Login failed" };
+    }
   }
   private users: string[] = ["Alf", "Horst", "James"];
   private storedPassword: string = "secret123";
