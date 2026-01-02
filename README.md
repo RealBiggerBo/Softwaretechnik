@@ -1,8 +1,10 @@
 # Anleitung zum Bauen
 
-adminuser
+## adminuser
+```
 Username: superuser
 Passwort: 0UsQzBB1
+```
 
 ## Backend (Django)
 
