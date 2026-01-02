@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from django.config.validators import RegexValidator
+from django.core.validators import RegexValidator
 
 alnum_validator = RegexValidator(
     regex=r'[A-Za-z0-9]+$',
@@ -11,7 +11,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
 
     username = serializers.CharField(
-        max_lenght=30, #kann man noch höher setzen
+        max_length=30, #kann man noch höher setzen
         validators=[alnum_validator]
     )
 
