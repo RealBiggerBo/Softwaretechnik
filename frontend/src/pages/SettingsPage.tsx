@@ -1,4 +1,5 @@
 import type { IApiCaller } from "../classes/IApiCaller";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 interface Props {
   caller: IApiCaller;
@@ -11,6 +12,7 @@ function SettingsPage({ caller }: Props) {
       {caller.GetUsers().map((user) => (
         <label>{user}</label>
       ))}
+      <VisibilityIcon />
     </>
   );
 }
