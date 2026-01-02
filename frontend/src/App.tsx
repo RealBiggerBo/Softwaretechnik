@@ -78,32 +78,16 @@ function App({ caller }: Props) {
     <div className="mainContainer">
       <Navbar />
       <nav className="navbar">
-        <Link
-          to="/"
-          style={{ marginRight: "1rem" }}
-          onClick={() => setBackgroundIsGray(true)}
-        >
+        <Link to="/" style={{ marginRight: "1rem" }}>
           Home
         </Link>
-        <Link
-          to="/login"
-          style={{ marginRight: "1rem" }}
-          onClick={() => setBackgroundIsGray(true)}
-        >
+        <Link to="/login" style={{ marginRight: "1rem" }}>
           Login
         </Link>
-        <Link
-          to="/main"
-          style={{ marginRight: "1rem" }}
-          onClick={() => setBackgroundIsGray(false)}
-        >
+        <Link to="/main" style={{ marginRight: "1rem" }}>
           Hauptansicht
         </Link>
-        <Link
-          to="/settings"
-          style={{ marginRight: "1rem" }}
-          onClick={() => setBackgroundIsGray(true)}
-        >
+        <Link to="/settings" style={{ marginRight: "1rem" }}>
           Einstellungen
         </Link>
         <Link to="/help">Hilfe</Link>

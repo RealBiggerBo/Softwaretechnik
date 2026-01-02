@@ -1,5 +1,5 @@
 import type { IApiCaller } from "../classes/IApiCaller";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import ChangePasswordSettings from "../components/ChangePasswordSettings";
 
 interface Props {
   caller: IApiCaller;
@@ -8,11 +8,7 @@ interface Props {
 function SettingsPage({ caller }: Props) {
   return (
     <>
-      <label>{caller.GetUsers().length}</label>
-      {caller.GetUsers().map((user) => (
-        <label>{user}</label>
-      ))}
-      <VisibilityIcon />
+      <ChangePasswordSettings caller={caller} />
     </>
   );
 }
