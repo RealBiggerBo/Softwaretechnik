@@ -10,10 +10,10 @@ import type { IApiCaller } from "./classes/IApiCaller";
 import StatisticsPage from "./pages/StatisticsPage";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-/*import DataviewPage from "./pages/DataviewPage";*/
-/*import SearchPage from "./pages/SearchPage";
-import SettingsPage from "./pages/SettingsPage";
-import StatisticsPage from "./pages/StatisticsPage";*/
+import DataviewPage from "./pages/DataviewPage";
+import SearchPage from "./pages/SearchPage";
+
+
 
 function HomePage() {
   return (
@@ -120,6 +120,8 @@ function App({ caller }: Props) {
               element={<SettingsPage caller={caller} />}
             />
             <Route path="/statistics" element={<StatisticsPage />} />
+            <Route path="/search" element={<SearchPage/>}/>
+            <Route path="/dataview" element={<DataviewPage/>}/>
           </Routes>
         </Box>
       </Container>
