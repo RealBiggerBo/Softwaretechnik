@@ -1,4 +1,5 @@
 import type { IApiCaller } from "../classes/IApiCaller";
+import ChangePasswordSettings from "../components/ChangePasswordSettings";
 
 interface Props {
   caller: IApiCaller;
@@ -7,10 +8,7 @@ interface Props {
 function SettingsPage({ caller }: Props) {
   return (
     <>
-      <label>{caller.GetUsers().length}</label>
-      {caller.GetUsers().map((user) => (
-        <label>{user}</label>
-      ))}
+      <ChangePasswordSettings caller={caller} />
     </>
   );
 }
