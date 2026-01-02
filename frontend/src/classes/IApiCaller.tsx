@@ -5,17 +5,21 @@ export interface IApiCaller {
     timeEnd: string,
     preset: string,
     presetOverrides: string,
-    fileformat: string
+    fileformat: string,
   ): string;
   GetStatisticsPresets(): string[];
   TryChangePassword(
     curPswd: string,
     newPswd: string,
-    newPswdCtrl: string
+    newPswdCtrl: string,
   ): { success: boolean; errorMsg: string };
+  TryLogin(user: string, pswd: string): { success: boolean; errorMsg: string };
 }
 
 export class MockApiCaller implements IApiCaller {
+  TryLogin(user: string, pswd: string): { success: boolean; errorMsg: string } {
+    throw new Error("Method not implemented.");
+  }
   private users: string[] = ["Alf", "Horst", "James"];
 
   GetUsers(): string[] {
@@ -36,7 +40,7 @@ export class MockApiCaller implements IApiCaller {
     timeEnd: string,
     preset: string,
     presetOverrides: string,
-    fileformat: string
+    fileformat: string,
   ): string {
     console.log(timeStart, timeEnd, preset, presetOverrides, fileformat);
     return "/test.csv";
@@ -45,7 +49,7 @@ export class MockApiCaller implements IApiCaller {
   TryChangePassword(
     curPswd: string,
     newPswd: string,
-    newPswdCtrl: string
+    newPswdCtrl: string,
   ): { success: boolean; errorMsg: string } {
     const storedPassword = "secret123"; // example
 
