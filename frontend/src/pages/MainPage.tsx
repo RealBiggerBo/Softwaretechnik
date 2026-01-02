@@ -7,12 +7,8 @@ interface Props {
 }
 
 function MainPage({ caller }: Props) {
-  let [backgroundIsGray, setBackgroundIsGray] = useState(false);
   return (
-    <div
-      className="pageContainer"
-      style={backgroundIsGray ? {} : { backgroundColor: "transparent" }}
-    >
+    <div className="pageContainer">
       <img
         src="src/bilder/bellis-logo.svg"
         className="bellisLogo"
