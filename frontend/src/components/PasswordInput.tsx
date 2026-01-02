@@ -11,7 +11,7 @@ interface Props {
 }
 
 function PasswordInput({ label, id }: Props) {
-  const [values, setValues] = useState({ password: "", showPassword: false });
+  const [value, setValue] = useState({ password: "", showPassword: false });
 
   return (
     <>
@@ -19,18 +19,18 @@ function PasswordInput({ label, id }: Props) {
       <Input
         id={id}
         className="passwordInput"
-        type={values.showPassword ? "text" : "password"}
-        value={values.password}
-        onChange={(e) => setValues({ ...values, password: e.target.value })}
+        type={value.showPassword ? "text" : "password"}
+        value={value.password}
+        onChange={(e) => setValue({ ...value, password: e.target.value })}
         placeholder={label}
         endAdornment={
           <InputAdornment position="end">
             <IconButton
               onClick={() =>
-                setValues({ ...values, showPassword: !values.showPassword })
+                setValue({ ...value, showPassword: !value.showPassword })
               }
             >
-              {values.showPassword ? <VisibilityOff /> : <Visibility />}
+              {value.showPassword ? <VisibilityOff /> : <Visibility />}
             </IconButton>
           </InputAdornment>
         }
