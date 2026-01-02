@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from django.config.validators import RegexValidator
+from django.core.validators import RegexValidator
 
 alnum_validator = RegexValidator(
     regex=r'[A-Za-z0-9]+$',
