@@ -119,7 +119,10 @@ function App({ caller }: Props) {
               path="/settings"
               element={<SettingsPage caller={caller} />}
             />
-            <Route path="/statistics" element={<StatisticsPage />} />
+            <Route
+              path="/statistics"
+              element={<StatisticsPage caller={caller} />}
+            />
           </Routes>
         </Box>
       </Container>

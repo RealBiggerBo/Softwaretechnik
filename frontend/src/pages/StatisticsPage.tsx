@@ -5,10 +5,10 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
-import { MockApiCaller } from "../classes/IApiCaller";
+import { type IApiCaller } from "../classes/IApiCaller";
 
-function StatisticsPage() {
-  const presets = new MockApiCaller().GetStatisticsPresets();
+function StatisticsPage({ caller }: { caller: IApiCaller }) {
+  const presets = caller.GetStatisticsPresets();
 
   return (
     <Box>
