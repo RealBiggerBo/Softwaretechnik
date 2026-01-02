@@ -1,11 +1,13 @@
+
 interface Props {
   heading: string;
   body: string;
   buttons: string[];
+  links: string[];
   color: "search" | "statistics" | "lastUsed" | "createNew";
 }
 //Generiert einen großen Bereich auf der MainPage
-function MainPageContainer({ heading, body, buttons, color }: Props) {
+function MainPageContainer({ heading, body, buttons, links, color }: Props) {
   return (
     <div className={"mainPageContainer " + "mainPageContainer-" + color}>
       <div className="textContainer">
@@ -15,12 +17,13 @@ function MainPageContainer({ heading, body, buttons, color }: Props) {
 
       <div className="buttonContainer">
         {buttons.map((val, index) => (
-          <button
+          <a
             key={index}
             className={"mainPageContainerBtn mainPageContainerBtn-" + color}
+            href={links[index]}
           >
             {val}
-          </button>
+          </a>
         ))}
       </div>
     </div>

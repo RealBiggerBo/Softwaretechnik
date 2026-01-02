@@ -7,10 +7,9 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import { useState } from "react";
 import type { IApiCaller } from "./classes/IApiCaller";
-/*import DataviewPage from "./pages/DataviewPage";*/
-/*import SearchPage from "./pages/SearchPage";
-import SettingsPage from "./pages/SettingsPage";
-import StatisticsPage from "./pages/StatisticsPage";*/
+import DataviewPage from "./pages/DataviewPage";
+import SearchPage from "./pages/SearchPage";
+import StatisticsPage from "./pages/StatisticsPage";
 
 function HomePage() {
   return (
@@ -116,6 +115,9 @@ function App({ caller }: Props) {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/main" element={<MainPage caller={caller} />} />
           <Route path="/settings" element={<SettingsPage caller={caller} />} />
+          <Route path="/dataview" element={<DataviewPage/>}/>
+          <Route path="/search" element={<SearchPage/>}/>
+          <Route path="/statistics" element={<StatisticsPage/>}/>
         </Routes>
       </div>
 
