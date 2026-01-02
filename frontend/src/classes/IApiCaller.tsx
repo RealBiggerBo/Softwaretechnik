@@ -33,6 +33,7 @@ export class MockApiCaller implements IApiCaller {
     presetOverrides: string,
     fileformat: string,
   ): string {
+    console.log(timeStart, timeEnd, preset, presetOverrides, fileformat);
     return "/test.csv";
   }
 }
