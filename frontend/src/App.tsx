@@ -107,6 +107,8 @@ function App({ caller }: Props) {
               path="/statistics"
               element={<StatisticsPage caller={caller} />}
             />
+            <Route path="/search" element={<SearchPage/>}/>
+            <Route path="/dataview" element={<DataviewPage/>}/>
           </Routes>
         </Box>
       </Container>
