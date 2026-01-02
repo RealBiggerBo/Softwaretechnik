@@ -13,8 +13,6 @@ import Container from "@mui/material/Container";
 import DataviewPage from "./pages/DataviewPage";
 import SearchPage from "./pages/SearchPage";
 
-
-
 function HomePage() {
   return (
     <div>
@@ -24,56 +22,11 @@ function HomePage() {
   );
 }
 
-// function AboutPage() {
-//   return (
-//     <div>
-//       <h1>About</h1>
-//       <p>Dies ist eine Beispielseite.</p>
-//     </div>
-//   );
-// }
-
-// function ApiTestPage() {
-//   const [data, setData] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     async function fetchData() {
-//       try {
-//         const response = await fetch("http://127.0.0.1:8000/api/hello/");
-//         if (!response.ok) {
-//           throw new Error(`HTTP-Error: ${response.status}`);
-//         }
-//         const json = await response.json();
-//         setData(json);
-//       } catch (err: any) {
-//         setError(err.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-
-//     fetchData();
-//   }, []);
-
-//   return (
-//     <div>
-//       <h1>API Test</h1>
-//       {loading && <p>Lade...</p>}
-//       {error && <p style={{ color: "red" }}>Fehler: {error}</p>}
-//       {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-//     </div>
-//   );
-// }
-
 interface Props {
   caller: IApiCaller;
 }
 
 function App({ caller }: Props) {
-  //hook nur um Hintergrund für MainPage auf White/Transparent zu setzen
-  //kann entfernt werden, sobald 'mainContainer'-style keinen Grauen Hintergrund mehr hat
   return (
     <div className="mainContainer">
       <Navbar />
@@ -107,8 +60,8 @@ function App({ caller }: Props) {
               path="/statistics"
               element={<StatisticsPage caller={caller} />}
             />
-            <Route path="/search" element={<SearchPage/>}/>
-            <Route path="/dataview" element={<DataviewPage/>}/>
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/dataview" element={<DataviewPage />} />
           </Routes>
         </Box>
       </Container>
