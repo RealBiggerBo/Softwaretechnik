@@ -1,5 +1,9 @@
 # Anleitung zum Bauen
 
+adminuser
+Username: superuser
+Passwort: 0UsQzBB1
+
 ## Backend (Django)
 
 1. `cd backend`
