@@ -52,7 +52,6 @@
 
 .pageContainer {
   padding: 1em 0 1em 0;
-  background: var(--color-gray);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -98,6 +97,7 @@
 .mainPageContainer-heading {
   margin: 0px 5px;
   font-weight: bolder;
+  color: var(--color-text);
 }
 
 .mainPageContainer-body {
@@ -147,6 +147,26 @@
   color: var(--color-text);
 }
 /*End - Styles for MainPage*/
+
+/*Styles for SettingsPage*/
+.passwordInput {
+  margin-left: 10px;
+}
+
+.passwordChangeForm {
+  padding: 5px 20px;
+  border: solid var(--color-accent-dark);
+  border-width: 5px 0 5px 0;
+  display: grid;
+  row-gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.passwordChangeSubmitBtn {
+  grid-column: 2;
+  justify-self: end;
+}
+/*End - Styles for SettingsPage*/
 
 footer {
   color: var(--color-gray);
