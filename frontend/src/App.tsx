@@ -7,6 +7,8 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import { useState } from "react";
 import type { IApiCaller } from "./classes/IApiCaller";
+import StatisticsPage from "./pages/StatisticsPage";
+import Box from "@mui/material/Box";
 /*import DataviewPage from "./pages/DataviewPage";*/
 /*import SearchPage from "./pages/SearchPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -71,7 +73,6 @@ interface Props {
 function App({ caller }: Props) {
   //hook nur um Hintergrund für MainPage auf White/Transparent zu setzen
   //kann entfernt werden, sobald 'mainContainer'-style keinen Grauen Hintergrund mehr hat
-  let [backgroundIsGray, setBackgroundIsGray] = useState(false);
   return (
     <div className="mainContainer">
       <Navbar />
@@ -107,17 +108,15 @@ function App({ caller }: Props) {
         <Link to="/help">Hilfe</Link>
       </nav>
 
-      <div
-        className="pageContainer"
-        style={backgroundIsGray ? {} : { backgroundColor: "transparent" }}
-      >
+      <Box>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/main" element={<MainPage caller={caller} />} />
           <Route path="/settings" element={<SettingsPage caller={caller} />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
         </Routes>
-      </div>
+      </Box>
 
       <footer>
         <label>Hier text für den footer?</label>

@@ -1,13 +1,18 @@
 import MainPageContainer from "../components/MainPageContainer";
 import type { IApiCaller } from "../classes/IApiCaller";
+import { useState } from "react";
 
 interface Props {
   caller: IApiCaller;
 }
 
 function MainPage({ caller }: Props) {
+  let [backgroundIsGray, setBackgroundIsGray] = useState(false);
   return (
-    <>
+    <div
+      className="pageContainer"
+      style={backgroundIsGray ? {} : { backgroundColor: "transparent" }}
+    >
       <img
         src="src/bilder/bellis-logo.svg"
         className="bellisLogo"
@@ -39,7 +44,7 @@ function MainPage({ caller }: Props) {
           buttons={["Neuer Fall", "Neue Anfrage"]}
         />
       </div>
-    </>
+    </div>
   );
 }
 export default MainPage;
