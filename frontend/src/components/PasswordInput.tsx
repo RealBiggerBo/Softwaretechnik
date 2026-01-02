@@ -8,10 +8,13 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 interface Props {
   label: string;
   id: string;
+  value: string;
+  onValueChange: (value: string) => void;
 }
 
-function PasswordInput({ label, id }: Props) {
-  const [value, setValue] = useState({ password: "", showPassword: false });
+function PasswordInput({ label, id, value, onValueChange }: Props) {
+  const [showPswd, setShowPswd] = useState(false);
+  // const [value, setValue] = useState({ password: "", showPassword: false });
 
   return (
     <>
@@ -19,18 +22,15 @@ function PasswordInput({ label, id }: Props) {
       <Input
         id={id}
         className="passwordInput"
-        type={value.showPassword ? "text" : "password"}
-        value={value.password}
-        onChange={(e) => setValue({ ...value, password: e.target.value })}
+        type={showPswd ? "text" : "password"}
+        value={value}
+        onChange={(e) => onValueChange(e.target.value)}
+        //  onChange={(e) => setValue({ ...value, password: e.target.value })}
         placeholder={label}
         endAdornment={
           <InputAdornment position="end">
-            <IconButton
-              onClick={() =>
-                setValue({ ...value, showPassword: !value.showPassword })
-              }
-            >
-              {value.showPassword ? <VisibilityOff /> : <Visibility />}
+            <IconButton onClick={() => setShowPswd(!showPswd)}>
+              {showPswd ? <VisibilityOff /> : <Visibility />}
             </IconButton>
           </InputAdornment>
         }
