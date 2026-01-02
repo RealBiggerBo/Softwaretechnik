@@ -52,6 +52,7 @@ function StatisticsPage({ caller }: Props) {
     <Box>
       <Grid container spacing={2}>
         <Grid size={6}>
+          <h1>Auswahlmenü</h1>
           <form>
             <Stack direction="column" spacing={2}>
               <Stack spacing={2} direction="row">
@@ -84,7 +85,7 @@ function StatisticsPage({ caller }: Props) {
                   ))}
                 </TextField>
                 <Button variant="contained" size="large" sx={{ px: 3 }}>
-                  Berechnen
+                  Anzeigen
                 </Button>
               </Stack>
               <Stack spacing={2} direction="row">
