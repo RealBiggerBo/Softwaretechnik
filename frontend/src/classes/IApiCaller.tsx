@@ -13,12 +13,20 @@ export interface IApiCaller {
     newPswd: string,
     newPswdCtrl: string,
   ): { success: boolean; errorMsg: string };
-  TryLogin(user: string, pswd: string): { success: boolean; errorMsg: string };
+  TryLogin(
+    user: string,
+    pswd: string,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 }
 
 export class MockApiCaller implements IApiCaller {
-  TryLogin(user: string, pswd: string): { success: boolean; errorMsg: string } {
-    throw new Error("Method not implemented.");
+  async TryLogin(
+    user: string,
+    pswd: string,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    void user;
+    void pswd;
+    return { success: true, errorMsg: "" };
   }
   private users: string[] = ["Alf", "Horst", "James"];
   private storedPassword: string = "secret123";
