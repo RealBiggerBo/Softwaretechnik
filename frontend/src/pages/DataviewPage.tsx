@@ -54,8 +54,8 @@ function DataviewPage(){
                     <option>Sonstiges</option>
                 </select>
                 <br/>
-                <label htmlFor="checkbox" style={{color:"black"}}>Wurde bereits ein Termin vergeben? </label>
-                <Switch name="checkbox" id="termin"/></div>}
+                <label htmlFor="checkbox1" style={{color:"black"}}>Wurde bereits ein Termin vergeben? </label>
+                <Switch name="checkbox1" id="termin"/></div>}
 
             {selected === "Fall" && <div>
                 <h3 style={{color:"black"}}>Personenbezogene Daten</h3>
@@ -107,11 +107,11 @@ function DataviewPage(){
                 </select>
                 <label htmlFor="dropdown9" style={{color:"black"}}>Staatsangehörigkeit: </label>
                 <select name="dropdown9">
-<option>Bitte auswählen</option>
-<option>deutsch</option>
-<option>andere</option>
-</select>
-<br/>
+                    <option>Bitte auswählen</option>
+                    <option>deutsch</option>
+                    <option>andere</option>
+                </select>
+                <br/>
 <label htmlFor="dropdown10" style={{color:"black"}}>berufliche Situation: </label>
 <select name="dropdown10">
 <option>Bitte auswählen</option>
@@ -145,6 +145,7 @@ function DataviewPage(){
 <label htmlFor="anzahl">Anzahl der Beratungen insgesamt</label>
 <input type="number" name="anzahl" min="1" step="1" placeholder="Anzahl"/>
 <br/>
+<h5>1. Termin</h5>
 <input type="date"/>
 <br/>
 <label htmlFor="dropdown13" style={{color:"black"}}>Durchführungsart: </label>
@@ -176,8 +177,120 @@ function DataviewPage(){
 <br/>
 <label htmlFor="dropdown15" style={{color:"black"}}>Anzahl der Vorfälle: </label>
 <select name="dropdown15">
-<option></option>
+<option>Bitte auswählen</option>
+<option>einmalig</option>
+<option>mehrere</option>
+<option>genaue Ahnzahl</option>
+<option>keine Angabe</option>
 </select>
+<br/>
+<h5>Täter 1</h5>
+<br/>
+<label htmlFor="dropdown16" style={{color:"black"}}>Geschlecht: </label>
+<select name="dropdown16">
+<option>Bitte auswählen</option>
+<option>cis weiblich</option>
+<option>cis männlich</option>
+<option>trans weinlich</option>
+<option>trans männlich</option>
+<option>trans nicht binär</option>
+<option>inter</option>
+<option>agender</option>
+<option>divers</option>
+<option>keine Angabe</option>
+</select>
+<br>
+<label htmlFor="dropdown17" style={{color:"black"}}>Verhältnis zur ratsuchenden Person: </label>
+<select name="dropdown17">
+<option>Bitte auswählen</option>
+<option>Unbekannte:r</option>
+<option>Bekannte:r</option>
+<option>Partner:in</option>
+<option>Partner:in ehemalig</option>
+<option>Ehepartner:in oder eingetragene:r Lebenspartner:in</option>
+<option>andere Familienangehörige</option>
+<option>sonstige Personen</option>
+<option>keine Angaben</option>
+</select>
+<p>Art der Gewalt (merfachauswahl möglich)</p>
+<input type="checkbpx"/>
+<label>sexuelle Belästigung im öffentlichen Raum</label>
+<input type="checkbpx"/>
+<label>sexuelle Belästigung am Arbeitsplatz</label>
+<input type="checkbpx"/>
+<label>sexuelle Belästigung im privatem</label>
+<br/>
+<input type="checkbpx"/>
+<label>Vergewaltigung</label>
+<input type="checkbpx"/>
+<label>versuchte Vergewaltigung</label>
+<input type="checkbpx"/>
+<label>sexueller Missbrauch</label>
+<br/>
+<input type="checkbpx"/>
+<label>sexueller Missbrauch in der Kindheit</label>
+<input type="checkbpx"/>
+<label>sexuelle Nötigung</label>
+<input type="checkbpx"/>
+<label>rituelle Gewalt</label>
+<br/>
+<input type="checkbpx"/>
+<label>Upskirting</label>
+<input type="checkbpx"/>
+<label>Catcalling</label>
+<input type="checkbpx"/>
+<label>digitale sexuelle Gewalt</label>
+<br/>
+<input type="checkbpx"/>
+<label>Spiking</label>
+<input type="checkbpx"/>
+<label>Andere</label>
+<input type="checkbpx"/>
+<label>keine Angabe</label>
+<br/>
+<label htmlFor="dropdown18" style={{color:"black"}}>Tatort: </label>
+<select>
+<option>Bitte auswählen</option>
+<option>Leipzig</option>
+<option>Leipzig Land</option>
+<option>Nordsachsen</option>
+<option>Sachsen</option>
+<option>Deutschland</option>
+<option>auf der Flucht</option>
+<option>im Herkunftsland</option>
+<option>keine Abgabe</option>
+</select>
+<label htmlFor="dropdown19" style={{color:"black"}}>Anzeige gemacht: </label>
+<select name="dropdown19">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>noch nicht</option>
+<option>keine Angabe</option>
+</select>
+<label htmlFor="dropdown20" style={{color:"black"}}>medizinische Versorgung: </label>
+<select name="dropdown20">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<label htmlFor="dropdown21" style={{color:"black"}}>vertrauliche Spuchensicherung: </label>
+<select name="dropdown21">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<label>mitbetroffene Kinder: </label>
+<input type="number" placeholder="Anzahl"/>
+<label>davon direkt betroffen: </label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="text" placeholder="Notitzen"/>
+<br/>
                 
                 </div>}
         </div>
