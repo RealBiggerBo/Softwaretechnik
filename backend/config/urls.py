@@ -20,7 +20,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('api.accounts.api_urls')),
+    path("api/database/", include("api.database.urls")),
 
-    # Zum teststen, für das Helloworld und ob das CI funtkioniert.
+    # Zum testen, für das Helloworld und ob das CI funktioniert.
     path('api/', include('api.urls')),
 ]
