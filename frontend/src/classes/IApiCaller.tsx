@@ -1,25 +1,41 @@
 export interface IApiCaller {
-  GetUsers(): string[];
+  GetUsers(): Promise<string[]>;
   GetExportUrl(
     timeStart: string,
     timeEnd: string,
     preset: string,
     presetOverrides: string,
     fileformat: string,
-  ): string;
-  GetStatisticsPresets(): string[];
+  ): Promise<string>;
+  GetStatisticsPresets(): Promise<string[]>;
   TryChangePassword(
     curPswd: string,
     newPswd: string,
     newPswdCtrl: string,
-  ): { success: boolean; errorMsg: string };
+  ): Promise<{ success: boolean; errorMsg: string }>;
   TryLogin(
     user: string,
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
+  TryRegister(
+    user: string,
+    pswd1: string,
+    pswd2: string,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 }
 
 export class MockApiCaller implements IApiCaller {
+  async TryRegister(
+    user: string,
+    pswd1: string,
+    pswd2: string,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    void user;
+    if (pswd1 == pswd2) {
+      return { success: true, errorMsg: "" };
+    }
+    return { success: false, errorMsg: "Registration Faild" };
+  }
   async TryLogin(
     user: string,
     pswd: string,
@@ -33,12 +49,12 @@ export class MockApiCaller implements IApiCaller {
   private users: string[] = ["Alf", "Horst", "James"];
   private storedPassword: string = "secret123";
 
-  GetUsers(): string[] {
+  async GetUsers(): Promise<string[]> {
     //check current user rights -> done in backend
     return this.users;
   }
 
-  GetStatisticsPresets(): string[] {
+  async GetStatisticsPresets(): Promise<string[]> {
     return [
       "Statische Angaben zu den Fachberatungstellen Sexulaisierte Gewalt",
       "Alle Statisische Angaben die Wir haben",
@@ -46,22 +62,22 @@ export class MockApiCaller implements IApiCaller {
     ];
   }
 
-  GetExportUrl(
+  async GetExportUrl(
     timeStart: string,
     timeEnd: string,
     preset: string,
     presetOverrides: string,
     fileformat: string,
-  ): string {
+  ): Promise<string> {
     console.log(timeStart, timeEnd, preset, presetOverrides, fileformat);
     return "/test.csv";
   }
 
-  TryChangePassword(
+  async TryChangePassword(
     curPswd: string,
     newPswd: string,
     newPswdCtrl: string,
-  ): { success: boolean; errorMsg: string } {
+  ): Promise<{ success: boolean; errorMsg: string }> {
     // 1. Check current password
     if (curPswd !== this.storedPassword) {
       return {

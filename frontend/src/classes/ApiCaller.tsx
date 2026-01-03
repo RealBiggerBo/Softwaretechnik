@@ -2,6 +2,33 @@ import type { IApiCaller } from "./IApiCaller";
 const baseurl = "http://127.0.0.1:8000";
 
 export class ApiCaller implements IApiCaller {
+  async TryRegister(
+    user: string,
+    pswd1: string,
+    pswd2: string,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    try {
+      const response = await fetch(`${baseurl}/api/auth/register/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: user,
+          password: pswd1,
+          password2: pswd2,
+        }),
+      });
+
+      if (response.ok) {
+        return { success: true, errorMsg: "Regstraition sucsess" };
+      }
+
+      return { success: false, errorMsg: "Regstraition failed" };
+    } catch {
+      return { success: false, errorMsg: "Network error" };
+    }
+  }
   async TryLogin(
     user: string,
     pswd: string,
@@ -25,29 +52,29 @@ export class ApiCaller implements IApiCaller {
       return { success: false, errorMsg: "Network error" };
     }
   }
-  GetUsers(): string[] {
+  async GetUsers(): Promise<string[]> {
     // TODO: Implement actual API call
     throw new Error("Method not implemented.");
   }
-  GetExportUrl(
+  async GetExportUrl(
     timeStart: string,
     timeEnd: string,
     preset: string,
     presetOverrides: string,
     fileformat: string,
-  ): string {
+  ): Promise<string> {
     // TODO: Implement actual API call
     throw new Error("Method not implemented.");
   }
-  GetStatisticsPresets(): string[] {
+  async GetStatisticsPresets(): Promise<string[]> {
     // TODO: Implement actual API call
     throw new Error("Method not implemented.");
   }
-  TryChangePassword(
+  async TryChangePassword(
     curPswd: string,
     newPswd: string,
     newPswdCtrl: string,
-  ): { success: boolean; errorMsg: string } {
+  ): Promise<{ success: boolean; errorMsg: string }> {
     // TODO: Implement actual API call
     throw new Error("Method not implemented.");
   }
