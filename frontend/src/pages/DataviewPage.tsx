@@ -110,6 +110,7 @@ function DataviewPage(){
 <option>Bitte auswählen</option>
 <option>deutsch</option>
 <option>andere</option>
+</select>
 <br/>
 <label htmlFor="dropdown10" style={{color:"black"}}>berufliche Situation: </label>
 <select name="dropdown10">
