@@ -105,6 +105,79 @@ function DataviewPage(){
                     <option>andere</option>
                     <option>keine Angaben</option>
                 </select>
+                <label htmlFor="dropdown9" style={{color:"black"}}>Staatsangehörigkeit: </label>
+                <select name="dropdown9">
+<option>Bitte auswählen</option>
+<option>deutsch</option>
+<option>andere</option>
+<br/>
+<label htmlFor="dropdown10" style={{color:"black"}}>berufliche Situation: </label>
+<select name="dropdown10">
+<option>Bitte auswählen</option>
+<option>arbeitslos</option>
+<option>studierend</option>
+<option>berufstätig</option>
+<option>berentet</option>
+<option>Azubi</option>
+<option>berufsunfähig</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<label htmlFor="dropdown11" style={{color:"black"}}>Schwerbehinderung</label>
+<select name="dropdown11">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+</select>
+<br/>
+<input type="text" placeholder="Notitzen"/>
+<br/>
+<h3>Daten zur durchgeführten Beratung</h3>
+<label htmlFor="dropdown12" style={{color:"black"}}>zuständige Beratungsstelle: </label>
+<select name="dropdown12">
+<option>Bitte auswählen</option>
+<option>Fachberatungsstelle für queere Betroffene von sexualisierter Gewalt in der Stadt Leipzig</option>
+<option>Fachberatung gegen sexualisierte Gewalt im Landkreis Nordsachsen</option>
+<option>Fachberatung gegen sexualusierte Gewalt Landkreis Leipzig</option>
+</select>
+<br/>
+<label htmlFor="anzahl">Anzahl der Beratungen insgesamt</label>
+<input type="number" name="anzahl" min="1" step="1" placeholder="Anzahl"/>
+<br/>
+<input type="date"/>
+<br/>
+<label htmlFor="dropdown13" style={{color:"black"}}>Durchführungsart: </label>
+<select name="dropdown13">
+<option>Bitte auswählen</option>
+<option>persönlich</option>
+<option>Video</option>
+<option>Telefon</option>
+<option>aufsuchend</option>
+<option>schriftlich</option>
+</select>
+<label htmlFor="dropdown14" style={{color:"black"}}>Durchführungsort: </label>
+<select name="dropdown14">
+<option>Bitte auswählen</option>
+<option>Leipzig Stadt</option>
+<option>Leipzig Land</option>
+<option>Nordsachsen</option>
+</select>
+<br/>
+<input type="text" placeholder="Notitzen"/>
+<br/>
+<h3>Daten zur Gewalt</h3>
+<br/>
+<input type="number" step="1" placeholder="Alter"/>
+<select>
+<option>Zeitraum</option>
+<option>keine Abgabe</option>
+</select>
+<br/>
+<label htmlFor="dropdown15" style={{color:"black"}}>Anzahl der Vorfälle: </label>
+<select name="dropdown15">
+<option></option>
+</select>
+                
                 </div>}
         </div>
     );
