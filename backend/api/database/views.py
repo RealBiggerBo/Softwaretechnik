@@ -49,7 +49,6 @@ def anfrage_detail(request, pk):
         anfrage.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 @api_view(["GET", "POST"])
 def fall_liste(request):
     """

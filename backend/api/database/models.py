@@ -13,7 +13,6 @@ class Ort(models.TextChoices):
     N = "N", "Landkreis Nordsachsen"
     B = "B", "Sachsen"
     X = "X", "Sonstiges"
-    #Es fehlt noch eine weitere Auswahl
 
 class Rolle(models.TextChoices):
     B = "B", "Betroffene:r"
@@ -28,7 +27,7 @@ class AnfrageArt(models.TextChoices):
     R = "R", "Beratungsbedarf zu Rechtlichem"
     X = "X", "Sonstiges"
 
-class Geschlecht(models.TextChoices):
+class GeschlechtsIdentität(models.TextChoices):
     C = "C", "cis weiblich"
     T = "T", "trans weiblich"
     M = "M", "trans männlich"
@@ -87,6 +86,20 @@ class JaNeinUnentschieden(models.TextChoices):
     N = "N", "Nein"
     U = "U", "noch nicht entschieden"
 
+class Quelle(models.TextChoices):
+    S = "S", "Selbstmeldung über Polizei"
+    P = "P", "Private Kontakte"
+    B = "B", "Beratungsstellen"
+    I = "I", "Internet"
+    A = "A", "Ämter"
+    G = "G", "Gesundheitswesen (Arzt/Ärztin)"
+    R = "R", "Rechtsanwälte/-anwältinnen"
+
+class Geschlecht(models.TextChoices):
+    M = "M", "männlich"
+    W = "W", "weiblich"
+    D = "D", "divers"
+
 # Create your models here.
 class Anfrage(models.Model):
     """Anfrage Data-Record"""
@@ -106,74 +119,28 @@ class Anfrage(models.Model):
 
 class Fall(models.Model):
     """Fall Data-Record"""
+
+    #Personendaten
     alias = models.CharField(max_length=50)
     rolle = models.CharField(max_length=1, choices=Rolle)
     alter = models.IntegerField(blank=True)
-    geschlecht = models.CharField(max_length=1, choices=Geschlecht, blank=True)
+    geschlecht = models.CharField(max_length=1, choices=GeschlechtsIdentität, blank=True)
     sexualitaet = models.CharField(max_length=1, choices=Sexualitaet, blank=True)
     wohnort = models.CharField(max_length=1, choices=Ort, blank=True)
-    staatsangehoerigkeit = models.CharField(max_length=1, choices=Ort)
+    staatsangehoerigkeit = models.CharField(max_length=50, default="Deutschland")
     berufssituation = models.CharField(max_length=1, choices=BeruflicheSituation, blank=True)
     schwerbehinderung = models.BooleanField()
     schwerbehinderung_form = models.CharField(max_length=1, choices=BehinderungsForm)
     schwerbehinderung_grad = models.CharField(max_length=50)
-    quelle = models.CharField(max_length=50)
-    dolmetsch_zeit = models.IntegerField(default=0)
-    dolmetsch_sprache = models.CharField(max_length=50, blank=True)
     notizen = models.CharField(max_length=50)
 
-    def __str__(self):
-        return self.alias
-
-class Beratungen(models.Model):
-    fall = models.OneToOneField(Fall, on_delete=models.CASCADE)
+    #Beratungsdaten
     beratungsstelle = models.CharField(max_length=1, choices=Beratungsstelle)
     anzahl_beratungen = models.IntegerField(default=0)
 
-class Beratung(models.Model):
-    fall = models.OneToOneField(Beratungen, on_delete=models.CASCADE)
-    datum = models.DateField(default=date.today)
-    art = models.CharField(max_length=1, choices=BeratungsArt)
-    ort = models.CharField(max_length=1, choices=Beratungsstelle)
-    notizen = models.CharField(max_length=50)
+    #Daten zur Gewalt
 
-class Gewalttat(models.Model):
-    alter = models.IntegerField(blank=True)
-    zeitraum = models.IntegerField(blank=True)
-    anzahl_vorfaelle = models.IntegerField(blank=True)
-    anzahl_taeter = models.IntegerField(blank=True)
-    tatort = models.CharField(max_length=1, choices=TatOrt)
-    anzeige = models.CharField(max_length=1, choices=JaNeinUnentschieden)
-    med_versorgung = models.BooleanField(blank=True)
-    betroffene_kinder = models.IntegerField(blank=True)
-    betroffene_kinder_direkt = models.IntegerField(blank=True)
-    notizen = models.CharField(max_length=50)
-
-class Taeter(models.Model):
-    tat = models.ForeignKey(Gewalttat, on_delete=models.CASCADE)
-    geschlecht = models.CharField(max_length=50)
-    beziehung = models.CharField(max_length=1, choices=Beziehung)
-
-class GewaltArt(models.Model):
-    tat = models.ForeignKey(Gewalttat, on_delete=models.CASCADE)
-    sexueller_belaestigung_oeffentlich = models.BooleanField(default=False)
-    sexueller_belaestigung_arbeit = models.BooleanField(default=False)
-    sexueller_belaestigung_privat = models.BooleanField(default=False)
-    vergewaltigung = models.BooleanField(default=False)
-    versuchte_vergewaltigung = models.BooleanField(default=False)
-    sexueller_missbrauch = models.BooleanField(default=False)
-    sexueller_missbrauch_kindheit = models.BooleanField(default=False)
-    sexuelle_noetigung = models.BooleanField(default=False)
-    rituelle_gewalt = models.BooleanField(default=False)
-    zwangsprostitution = models.BooleanField(default=False)
-    sexuelle_ausbeutung = models.BooleanField(default=False)
-    upskirting = models.BooleanField(default=False)
-    catcalling = models.BooleanField(default=False)
-    digitale_sexuelle_gewalt = models.BooleanField(default=False)
-    spiking = models.BooleanField(default=False)
-    weitere = models.CharField(max_length=200)
-
-class GewaltFolgen(models.Model):
+    #Daten zu den Gewaltfolgen
     depression = models.BooleanField(default=False)
     angststoerung = models.BooleanField(default=False)
     ptbs = models.BooleanField(default=False)
@@ -192,13 +159,96 @@ class GewaltFolgen(models.Model):
     verlust_arbeit = models.BooleanField(default=False)
     soziale_isolation = models.BooleanField(default=False)
     suizidalität = models.BooleanField(default=False)
-    sonstiges = models.BooleanField(default=False)
-    notizen = models.CharField(max_length=50)
+    weiteres = models.CharField(max_length=200)
+    notizen_folgen = models.CharField(max_length=200)
 
-class Begleitungen(models.Model):
-    anzahl = models.IntegerField()
-    # wo
+    #Daten zu Begleitungen
+    begleitungen_gesamt = models.IntegerField(default=0)
+    begleitungen_gerichte = models.IntegerField(default=0)
+    begleitungen_polizei = models.IntegerField(default=0)
+    begleitungen_rechtsanwaelte = models.IntegerField(default=0)
+    begleitungen_aerzte = models.IntegerField(default=0)
+    begleitungen_rechtsmedizin = models.IntegerField(default=0)
+    begleitungen_jugendamt = models.IntegerField(default=0)
+    begleitungen_sozialamt = models.IntegerField(default=0)
+    begleitungen_jobcenter = models.IntegerField(default=0)
+    begleitungen_beratungstellen = models.IntegerField(default=0)
+    begleitungen_schutzeinrichtungen = models.IntegerField(default=0)
+    begleitungen_schutzeinrichtungen_spezialisiert = models.IntegerField(default=0)
+    begleitungen_interventionsstellen = models.IntegerField(default=0)
+    begleitungen_sonstige = models.CharField(max_length=200)
 
-class Verweise(models.Model):
-    anzahl = models.IntegerField()
-    # wo
+    #Daten zu Verweisen
+    verweise_gesamt = models.IntegerField(default=0)
+    verweise_gerichte = models.IntegerField(default=0)
+    verweise_polizei = models.IntegerField(default=0)
+    verweise_rechtsanwaelte = models.IntegerField(default=0)
+    verweise_aerzte = models.IntegerField(default=0)
+    verweise_rechtsmedizin = models.IntegerField(default=0)
+    verweise_jugendamt = models.IntegerField(default=0)
+    verweise_sozialamt = models.IntegerField(default=0)
+    verweise_jobcenter = models.IntegerField(default=0)
+    verweise_beratungstellen = models.IntegerField(default=0)
+    verweise_schutzeinrichtungen = models.IntegerField(default=0)
+    verweise_schutzeinrichtungen_spezialisiert = models.IntegerField(default=0)
+    verweise_interventionsstellen = models.IntegerField(default=0)
+    verweise_sonstige = models.CharField(max_length=200)
+
+    #Weitere Daten
+    quelle = models.CharField(max_length=1, choices=Quelle, blank=True)
+    andere_quelle = models.CharField(max_length=50, blank=True)
+    dolmetsch_zeit = models.IntegerField(default=0)
+    dolmetsch_sprache = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.alias
+
+class Beratung(models.Model):
+    fall = models.OneToOneField(Fall, on_delete=models.CASCADE)
+    datum = models.DateField(default=date.today)
+    art = models.CharField(max_length=1, choices=BeratungsArt)
+    ort = models.CharField(max_length=1, choices=Beratungsstelle)
+    notizen = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.datum
+
+class Gewalttat(models.Model):
+    fall = models.OneToOneField(Fall, on_delete=models.CASCADE)
+    alter = models.IntegerField(blank=True)
+    zeitraum = models.IntegerField(blank=True)
+    anzahl_vorfaelle = models.IntegerField(blank=True)
+    anzahl_taeter = models.IntegerField(blank=True)
+    sexuelle_belaestigung_oeffentlich = models.BooleanField(default=False)
+    sexuelle_belaestigung_arbeit = models.BooleanField(default=False)
+    sexuelle_belaestigung_privat = models.BooleanField(default=False)
+    vergewaltigung = models.BooleanField(default=False)
+    versuchte_vergewaltigung = models.BooleanField(default=False)
+    sexueller_missbrauch = models.BooleanField(default=False)
+    sexueller_missbrauch_kindheit = models.BooleanField(default=False)
+    sexuelle_noetigung = models.BooleanField(default=False)
+    rituelle_gewalt = models.BooleanField(default=False)
+    zwangsprostitution = models.BooleanField(default=False)
+    sexuelle_ausbeutung = models.BooleanField(default=False)
+    upskirting = models.BooleanField(default=False)
+    catcalling = models.BooleanField(default=False)
+    digitale_sexuelle_gewalt = models.BooleanField(default=False)
+    spiking = models.BooleanField(default=False)
+    weitere = models.CharField(max_length=200)
+    tatort = models.CharField(max_length=1, choices=TatOrt)
+    anzeige = models.CharField(max_length=1, choices=JaNeinUnentschieden)
+    med_versorgung = models.BooleanField(blank=True)
+    betroffene_kinder = models.IntegerField(blank=True)
+    betroffene_kinder_direkt = models.IntegerField(blank=True)
+    notizen = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.alter
+
+class Taeter(models.Model):
+    tat = models.ForeignKey(Gewalttat, on_delete=models.CASCADE)
+    geschlecht = models.CharField(max_length=1, choices=Geschlecht)
+    beziehung = models.CharField(max_length=1, choices=Beziehung)
+
+    def __str__(self):
+        return self.geschlecht
