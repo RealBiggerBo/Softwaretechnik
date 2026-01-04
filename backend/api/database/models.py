@@ -100,7 +100,56 @@ class Geschlecht(models.TextChoices):
     W = "W", "weiblich"
     D = "D", "divers"
 
-# Create your models here.
+#Submodelle
+class Beratung(models.Model):
+    datum = models.DateField(default=date.today)
+    art = models.CharField(max_length=1, choices=BeratungsArt)
+    ort = models.CharField(max_length=1, choices=Beratungsstelle)
+    notizen = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.datum
+
+class Taeter(models.Model):
+    geschlecht = models.CharField(max_length=1, choices=Geschlecht)
+    beziehung = models.CharField(max_length=1, choices=Beziehung)
+
+    def __str__(self):
+        return self.geschlecht
+
+class Gewalttat(models.Model):
+    alter = models.IntegerField(blank=True)
+    zeitraum = models.IntegerField(blank=True)
+    anzahl_vorfaelle = models.IntegerField(blank=True)
+    anzahl_taeter = models.IntegerField(blank=True)
+    taeter = models.ManyToManyField(Taeter)
+    sexuelle_belaestigung_oeffentlich = models.BooleanField(default=False)
+    sexuelle_belaestigung_arbeit = models.BooleanField(default=False)
+    sexuelle_belaestigung_privat = models.BooleanField(default=False)
+    vergewaltigung = models.BooleanField(default=False)
+    versuchte_vergewaltigung = models.BooleanField(default=False)
+    sexueller_missbrauch = models.BooleanField(default=False)
+    sexueller_missbrauch_kindheit = models.BooleanField(default=False)
+    sexuelle_noetigung = models.BooleanField(default=False)
+    rituelle_gewalt = models.BooleanField(default=False)
+    zwangsprostitution = models.BooleanField(default=False)
+    sexuelle_ausbeutung = models.BooleanField(default=False)
+    upskirting = models.BooleanField(default=False)
+    catcalling = models.BooleanField(default=False)
+    digitale_sexuelle_gewalt = models.BooleanField(default=False)
+    spiking = models.BooleanField(default=False)
+    weitere = models.CharField(max_length=200)
+    tatort = models.CharField(max_length=1, choices=TatOrt)
+    anzeige = models.CharField(max_length=1, choices=JaNeinUnentschieden)
+    med_versorgung = models.BooleanField(blank=True)
+    betroffene_kinder = models.IntegerField(blank=True)
+    betroffene_kinder_direkt = models.IntegerField(blank=True)
+    notizen = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.alter
+
+#Modelle
 class Anfrage(models.Model):
     """Anfrage Data-Record"""
     sende_art = models.CharField(max_length=200)
@@ -137,8 +186,10 @@ class Fall(models.Model):
     #Beratungsdaten
     beratungsstelle = models.CharField(max_length=1, choices=Beratungsstelle)
     anzahl_beratungen = models.IntegerField(default=0)
+    beratungen = models.ManyToManyField(Beratung)
 
     #Daten zur Gewalt
+    gewalttaten = models.ManyToManyField(Gewalttat)
 
     #Daten zu den Gewaltfolgen
     depression = models.BooleanField(default=False)
@@ -202,53 +253,3 @@ class Fall(models.Model):
 
     def __str__(self):
         return self.alias
-
-class Beratung(models.Model):
-    fall = models.OneToOneField(Fall, on_delete=models.CASCADE)
-    datum = models.DateField(default=date.today)
-    art = models.CharField(max_length=1, choices=BeratungsArt)
-    ort = models.CharField(max_length=1, choices=Beratungsstelle)
-    notizen = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.datum
-
-class Gewalttat(models.Model):
-    fall = models.OneToOneField(Fall, on_delete=models.CASCADE)
-    alter = models.IntegerField(blank=True)
-    zeitraum = models.IntegerField(blank=True)
-    anzahl_vorfaelle = models.IntegerField(blank=True)
-    anzahl_taeter = models.IntegerField(blank=True)
-    sexuelle_belaestigung_oeffentlich = models.BooleanField(default=False)
-    sexuelle_belaestigung_arbeit = models.BooleanField(default=False)
-    sexuelle_belaestigung_privat = models.BooleanField(default=False)
-    vergewaltigung = models.BooleanField(default=False)
-    versuchte_vergewaltigung = models.BooleanField(default=False)
-    sexueller_missbrauch = models.BooleanField(default=False)
-    sexueller_missbrauch_kindheit = models.BooleanField(default=False)
-    sexuelle_noetigung = models.BooleanField(default=False)
-    rituelle_gewalt = models.BooleanField(default=False)
-    zwangsprostitution = models.BooleanField(default=False)
-    sexuelle_ausbeutung = models.BooleanField(default=False)
-    upskirting = models.BooleanField(default=False)
-    catcalling = models.BooleanField(default=False)
-    digitale_sexuelle_gewalt = models.BooleanField(default=False)
-    spiking = models.BooleanField(default=False)
-    weitere = models.CharField(max_length=200)
-    tatort = models.CharField(max_length=1, choices=TatOrt)
-    anzeige = models.CharField(max_length=1, choices=JaNeinUnentschieden)
-    med_versorgung = models.BooleanField(blank=True)
-    betroffene_kinder = models.IntegerField(blank=True)
-    betroffene_kinder_direkt = models.IntegerField(blank=True)
-    notizen = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.alter
-
-class Taeter(models.Model):
-    tat = models.ForeignKey(Gewalttat, on_delete=models.CASCADE)
-    geschlecht = models.CharField(max_length=1, choices=Geschlecht)
-    beziehung = models.CharField(max_length=1, choices=Beziehung)
-
-    def __str__(self):
-        return self.geschlecht
