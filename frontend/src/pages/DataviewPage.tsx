@@ -291,6 +291,232 @@ function DataviewPage(){
 <br/>
 <input type="text" placeholder="Notitzen"/>
 <br/>
+<h3>Daten zu den Folgen der Gewalt</h3>
+<br/>
+<p>psychische Folgen: </p>
+<br/>
+<input type="checkbpx"/>
+<label>Depressionen</label>
+<input type="checkbpx"/>
+<label>Angststörung</label>
+<input type="checkbpx"/>
+<label>PTBS</label>
+<br/>
+<input type="checkbpx"/>
+<label>Burn-Out</label>
+<input type="checkbpx"/>
+<label>Schlafstörungen</label>
+<input type="checkbpx"/>
+<label>Sucht/Abhängigkeit</label>
+<br/>
+<input type="checkbpx"/>
+<label>Kommunikationsschwierigkeiten</label>
+<input type="checkbpx"/>
+<label>Vernachlässigung alltäglicher Dinge</label>
+<input type="checkbpx"/>
+<label>andere Diagnose</label>
+<br/>
+<input type="checkbpx"/>
+<label>keine Folgen</label>
+<input type="checkbpx"/>
+<label>keine Abgabe</label>
+<br/>
+<p>körperliche Folgen: </p>
+<br/>
+<input type="checkbpx"/>
+<label>Schmerzen</label>
+<input type="checkbpx"/>
+<label>Lähmung</label>
+<input type="checkbpx"/>
+<label>Krankheit</label>
+<br/>
+<input type="checkbpx"/>
+<label>Andere</label>
+<input type="checkbpx"/>
+<label>keine Folgen</label>
+<input type="checkbpx"/>
+<label>keine Angabe</label>
+<br/>
+<label>Dauerhafte kötperliche Beeinträchtigungen: </label>
+<input type="text" placeholder="Beeinträchtigungen"/>
+<br/>
+<label htmlFor="dropdown22" style={{color:"black"}}>Finanzielle Folgen: </label>
+<select name="dropdown22">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<label htmlFor="dropdown23" style={{color:"black"}}>Arbeitseinschränkungen/Arbeitsunfähigkeit: </label>
+<select name="dropdown23">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<label htmlFor="dropdown24" style={{color:"black"}}>Verlust der Arbeitsstelle: </label>
+<select name="dropdown24">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<label htmlFor="dropdown25" style={{color:"black"}}>Soziale Isolation: </label>
+<select name="dropdown25">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<label htmlFor="dropdown26" style={{color:"black"}}>Suizidalität: </label>
+<select name="dropdown26">
+<option>Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+<option>keine Angabe</option>
+</select>
+<br/>
+<input type="text" placeholder="weitere Informationen/Notitzen"/>
+<h3>Daten zu Begleitungen/Verweisen</h3>
+<br/>
+<label>Anzahl zu Begleitungen insgesamt: </label>
+<input type="number" placeholder="Anzahl"/>
+<p>Begleitung bei: </p>
+<br/>
+<input type="checkbpx"/>
+<label>Gericht</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Polizei</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Rechtsanwält(-innen)</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Ärtze</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Rechtsmedizin</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Jugendamt</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Sozialamt</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Jobcenter(Arbeitsagentur)</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Beratungsstellen für Gewaltausübende</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Frauen- und Kinderschutzeinrichtungen</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>spezialisierte Schutzeinrichtungen</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Interventions- oder Koordinationsstellen</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Sonstige Einrichtungen oder Institutionen</label>
+<input type="number" placeholder="Anzahl"/>
+<input type="text"/>
+<br/>
+<label>Anzahl zu Verweisen insgesamt: </label>
+<input type="number" placeholder="Anzahl"/>
+<p>Verweise an: </p>
+<br/>
+<input type="checkbpx"/>
+<label>Gericht</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Polizei</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Rechtsanwält(-innen)</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Ärtze</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Rechtsmedizin</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Jugendamt</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Sozialamt</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Jobcenter(Arbeitsagentur)</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Beratungsstellen für Gewaltausübende</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Frauen- und Kinderschutzeinrichtungen</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>spezialisierte Schutzeinrichtungen</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Interventions- oder Koordinationsstellen</label>
+<input type="number" placeholder="Anzahl"/>
+<br/>
+<input type="checkbpx"/>
+<label>Sonstige Einrichtungen oder Institutionen</label>
+<input type="number" placeholder="Anzahl"/>
+<input type="text"/>
+<br/>
+<h3>Weitere Daten</h3>
+<label htmlFor="dropdown27" style={{color:"black"}}>Woher hat die ratsuchende Person von der Beratungsstelle erfahren: </label>
+<select name="dropdown27">
+<option>Bitte auswählen</option>
+<option>Selbstmeldungen über die Polizei</option>
+<option>private Kontakte</option>
+<option>Beratungsstellen</option>
+<option>Internet</option>
+<option>Ämter</option>
+<option>Gesundheitswesen(Arzt/Ärztin)</option>
+<option>Rechtsanwälte/-innen</option>
+<option>andere Quellen</option>
+<option>keine Angaben</option>
+</select>
+<br/>
+<label htmlFor="dropdown28" style={{color:"black"}}>Wurden Dolmetscherstunden in Anspruch genommen: </label>
+<select name="dropdown28">
+<option>Nein</option>
+<option>Ja</option>
+</select>
                 
                 </div>}
         </div>
