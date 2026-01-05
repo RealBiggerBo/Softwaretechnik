@@ -7,7 +7,7 @@ from .serializers import AnfrageSerializer, FallSerializer
 
 @api_view(["GET"])
 def get_list(request, type):
-    if type == "Anfrage":
+    if type == "anfrage":
         """
         Listet alle Anfragen auf.
         """
@@ -23,7 +23,7 @@ def get_list(request, type):
 
 @api_view(["POST"])
 def save(request, type):
-    if type == "Anfrage":
+    if type == "anfrage":
         """
         Erstellt eine neue Anfrage.
         """
@@ -44,7 +44,7 @@ def save(request, type):
 
 @api_view(["GET"])
 def get(request, type, pk):
-    if type == "Anfrage":
+    if type == "anfrage":
         """
         Gibt eine Anfrage zurück.
         """
@@ -69,7 +69,7 @@ def get(request, type, pk):
 
 @api_view(["PUT"])
 def update(request, type, pk):
-    if type == "Anfrage":
+    if type == "anfrage":
         """
         Überschreibt eine Anfrage.
         """
@@ -100,7 +100,7 @@ def update(request, type, pk):
 
 @api_view(["DELETE"])
 def delete(request, type, pk):
-    if type == "Anfrage":
+    if type == "anfrage":
         """
         Löscht eine Anfrage.
         """

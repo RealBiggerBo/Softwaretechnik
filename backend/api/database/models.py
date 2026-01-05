@@ -108,7 +108,7 @@ class Beratung(models.Model):
     notizen = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.datum
+        return str(self.datum)
 
 class Taeter(models.Model):
     geschlecht = models.CharField(max_length=1, choices=Geschlecht)
@@ -122,7 +122,7 @@ class Gewalttat(models.Model):
     zeitraum = models.IntegerField(blank=True)
     anzahl_vorfaelle = models.IntegerField(blank=True)
     anzahl_taeter = models.IntegerField(blank=True)
-    taeter = models.ManyToManyField(Taeter)
+    taeter = models.ManyToManyField(Taeter, blank=True)
     sexuelle_belaestigung_oeffentlich = models.BooleanField(default=False)
     sexuelle_belaestigung_arbeit = models.BooleanField(default=False)
     sexuelle_belaestigung_privat = models.BooleanField(default=False)
@@ -147,7 +147,7 @@ class Gewalttat(models.Model):
     notizen = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.alter
+        return str(self.alter)
 
 #Modelle
 class Anfrage(models.Model):
@@ -179,17 +179,17 @@ class Fall(models.Model):
     staatsangehoerigkeit = models.CharField(max_length=50, default="Deutschland")
     berufssituation = models.CharField(max_length=1, choices=BeruflicheSituation, blank=True)
     schwerbehinderung = models.BooleanField()
-    schwerbehinderung_form = models.CharField(max_length=1, choices=BehinderungsForm)
-    schwerbehinderung_grad = models.CharField(max_length=50)
-    notizen = models.CharField(max_length=50)
+    schwerbehinderung_form = models.CharField(max_length=1, choices=BehinderungsForm, blank=True)
+    schwerbehinderung_grad = models.CharField(max_length=50, blank=True)
+    notizen = models.CharField(max_length=200, blank=True)
 
     #Beratungsdaten
     beratungsstelle = models.CharField(max_length=1, choices=Beratungsstelle)
     anzahl_beratungen = models.IntegerField(default=0)
-    beratungen = models.ManyToManyField(Beratung)
+    beratungen = models.ManyToManyField(Beratung, blank=True)
 
     #Daten zur Gewalt
-    gewalttaten = models.ManyToManyField(Gewalttat)
+    gewalttaten = models.ManyToManyField(Gewalttat, blank=True)
 
     #Daten zu den Gewaltfolgen
     depression = models.BooleanField(default=False)
@@ -210,8 +210,8 @@ class Fall(models.Model):
     verlust_arbeit = models.BooleanField(default=False)
     soziale_isolation = models.BooleanField(default=False)
     suizidalität = models.BooleanField(default=False)
-    weiteres = models.CharField(max_length=200)
-    notizen_folgen = models.CharField(max_length=200)
+    weiteres = models.CharField(max_length=200, blank=True)
+    notizen_folgen = models.CharField(max_length=200, blank=True)
 
     #Daten zu Begleitungen
     begleitungen_gesamt = models.IntegerField(default=0)
@@ -227,7 +227,7 @@ class Fall(models.Model):
     begleitungen_schutzeinrichtungen = models.IntegerField(default=0)
     begleitungen_schutzeinrichtungen_spezialisiert = models.IntegerField(default=0)
     begleitungen_interventionsstellen = models.IntegerField(default=0)
-    begleitungen_sonstige = models.CharField(max_length=200)
+    begleitungen_sonstige = models.CharField(max_length=200, blank=True)
 
     #Daten zu Verweisen
     verweise_gesamt = models.IntegerField(default=0)
@@ -243,7 +243,7 @@ class Fall(models.Model):
     verweise_schutzeinrichtungen = models.IntegerField(default=0)
     verweise_schutzeinrichtungen_spezialisiert = models.IntegerField(default=0)
     verweise_interventionsstellen = models.IntegerField(default=0)
-    verweise_sonstige = models.CharField(max_length=200)
+    verweise_sonstige = models.CharField(max_length=200, blank=True)
 
     #Weitere Daten
     quelle = models.CharField(max_length=1, choices=Quelle, blank=True)
