@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework.authtoken',
     'api.apps.ApiConfig',
+    'api.database',
 ]
 
 PASSWORD_HASHERS = [
