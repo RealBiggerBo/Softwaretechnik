@@ -74,7 +74,7 @@ class ChangePasswordAPI(APIView):
         # Benutzer ist aktuell eingeloggt.
         user = request.user
 
-        # überprüft ob das alte PW korrekt ist. Wenn nicht gibt es eine Fehlermeldung
+        # Überprüft ob das alte PW korrekt ist. Wenn nicht gibt es eine Fehlermeldung
         if not user.check_password(serializer.validated_data['old_password']):
             return Response({"error": "Aktuelles Passwort ist falsch"}, status=status.HTTP_400_BAD_REQUEST)
 
