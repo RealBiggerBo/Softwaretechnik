@@ -7,20 +7,20 @@ from .serializers import RegisterSerializer
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ChangePasswordSerializer
 
-# API f├╝r die Registrierung.
+# API für die Registrierung.
 class RegisterAPIView(APIView):
     def post(self, request):
-        # Die Angefragten Daten werden an den Serializer ├╝bergeben.
+        # Die Angefragten Daten werden an den Serializer übergeben.
         serializer = RegisterSerializer(data=request.data)
         
-        # Pr├╝fen ob die Daten stimmen, falls nicht gibt es eine Fehlermeldung.
+        # Prüfen ob die Daten stimmen, falls nicht gibt es eine Fehlermeldung.
         if serializer.is_valid():
             # Der Benutzer wird erstellt und es gibt eine Erfolgsmeldung.
             serializer.save()
             return Response({"message": "Benutzer erfolgreich angelegt"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# API f├╝r den Login.
+# API für den Login.
 class LoginAPIView(APIView):
     def post(self, request):
         # Die Login-Daten werden ausgelesen.
@@ -30,20 +30,20 @@ class LoginAPIView(APIView):
         # Der Benutzer wird Authentifiziert.
         user = authenticate(username=username, password=password)
         if user:
-            # Es wird ein Token f├╝r den Benutzer erstellt/geholt.
+            # Es wird ein Token für den Benutzer erstellt/geholt.
             token, created = Token.objects.get_or_create(user=user)
             
-            # Das Token wird an den Client zur├╝ckgegeben.
+            # Das Token wird an den Client zurückgegeben.
             return Response({"token": token.key})
         
-        # Schl├ñgt der Login fehl gibt es eine Fehlermeldung.
+        # Schlägt der Login fehl gibt es eine Fehlermeldung.
         return Response({"error": "Login fehlgeschlagen"}, status=status.HTTP_401_UNAUTHORIZED)
     
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # Die aktuelle Session wird beendet und es gibt eine Best├ñtigung.
+        # Die aktuelle Session wird beendet und es gibt eine Bestätigung.
         request.user.auth_token.delete()
         return Response({"message": "Logout erfolgreich"})
     
@@ -52,7 +52,7 @@ class MeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Die Basisinformationen des Nutzers werden zur├╝ckgegeben.
+        # Die Basisinformationen des Nutzers werden zurückgegeben.
         return Response({
             "id": request.user.id, 
             "username": request.user.username, 
@@ -60,21 +60,21 @@ class MeAPIView(APIView):
             })
 
 class ChangePasswordAPI(APIView):
-    # Nur angemeldete Benutzer d├╝rfen ihr Passwort ├ñndern.
+    # Nur angemeldete Benutzer dürfen ihr Passwort ändern.
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        # Holt die Daten aus der Anfrage und ├╝bergibt sie an den Serializer
+        # Holt die Daten aus der Anfrage und übergibt sie an den Serializer
         serializer = ChangePasswordSerializer(data=request.data)
 
-        # Wenn die Daten nicht stimmen, Fehlermeldung zur├╝ckgeben.
+        # Wenn die Daten nicht stimmen, Fehlermeldung zurückgeben.
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         # Benutzer ist aktuell eingeloggt.
         user = request.user
 
-        # ├£berpr├╝ft ob das alte PW korrekt ist. Wenn nicht gibt es eine Fehlermeldung
+        # überprüft ob das alte PW korrekt ist. Wenn nicht gibt es eine Fehlermeldung
         if not user.check_password(serializer.validated_data['old_password']):
             return Response({"error": "Aktuelles Passwort ist falsch"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -82,5 +82,5 @@ class ChangePasswordAPI(APIView):
         user.set_password(serializer.validated_data['new_password'])
         user.save()
 
-        # Gibt eine Erfolgsmeldung zur├╝ck.
-        return Response({"message": "Passwort erfolgreich ge├ñndert"}, status=status.HTTP_200_OK)
+        # Gibt eine Erfolgsmeldung zurück.
+        return Response({"message": "Passwort erfolgreich geändert"}, status=status.HTTP_200_OK)
