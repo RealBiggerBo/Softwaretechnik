@@ -122,3 +122,7 @@ def delete(request, type, pk):
 
         fall.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def search(request):
+    return Response({"message": "Hello from Django API"})
