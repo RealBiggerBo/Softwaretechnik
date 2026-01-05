@@ -17,6 +17,7 @@ function SearchPage(){
                         <input type="date"/>
                         <input placeholder="ID"/>
                         <br/>
+                        {/*
                         <label htmlFor="dropdown2">Wie wurde Kontakt aufgenommen: </label>
                         <select name="dropdown2">
                             <option>Bitte auswählen</option>
@@ -26,6 +27,8 @@ function SearchPage(){
                             <option>Sonstiges</option>
                         </select>
                         <br/>
+                        */}
+                        {/*
                         <label htmlFor="dropdown3">Wer hat angefragt: </label>
                         <select name="dropdown3">
                             <option>Bitte auswählen</option>
@@ -43,6 +46,7 @@ function SearchPage(){
                             <option>Angehörige:r für queere Betroffene</option>
                             <option>Sonstige</option>
                         </select>
+                        */}
                         <label htmlFor="dropdown4">Art der Anfrage: </label>
                         <select name="dropdown4">
                             <option>Bitte auswählen</option>
@@ -53,8 +57,13 @@ function SearchPage(){
                             <option>Sonstiges</option>
                         </select>
                         <br/>
+                        {/*
                         <label htmlFor="checkbox1">Wurde bereits ein Termin vergeben? </label>
-                        <Switch name="checkbox1" id="termin"/></div>}
+                        <Switch name="checkbox1" id="termin"/>
+                        */}
+                        </div>}
+                        
+                        
         
                     {selected === "Fall" && <div>
                         <fieldset style={{width: "450px"}}> <legend>Personenbezogene Daten</legend>
@@ -73,10 +82,13 @@ function SearchPage(){
                             <option>Fachkraft</option>
                         </select></td>
                         </tr>
+
+                        {/*}
                         <tr>
                             <td><label>Alter: </label></td>
                         <td>
                         <input placeholder="Alter" type="number" min={0}/></td></tr>
+
                         <tr><td>
                         <label htmlFor="dropdown6">Geschlächtsidentität: </label></td>
                         <td><select>
@@ -100,6 +112,8 @@ function SearchPage(){
                             <option>asexuell</option>
                             <option>heterosexuell</option>
                         </select></td></tr>
+                        */}
+
                         <tr><td>
                         <label htmlFor="dropdown8">Wohnort: </label></td>
                         <td>
@@ -113,6 +127,8 @@ function SearchPage(){
                             <option>andere</option>
                         </select>
                         </td></tr>
+                        
+                        {/*
                         <tr><td>
                         <label htmlFor="dropdown9">Staatsangehörigkeit: </label></td>
                         <td>
@@ -142,6 +158,8 @@ function SearchPage(){
                             <option>Ja</option>
                         </select>
                         </td></tr>
+                        */}
+
                         </table>
                         </fieldset>
         
@@ -158,17 +176,18 @@ function SearchPage(){
                             <option>Fachberatung gegen sexualusierte Gewalt Landkreis Leipzig</option>
                         </select>
                         </td></tr>
+                        {/*
                         <tr><td>
                         <label htmlFor="anzahl">Anzahl der Beratungen insgesamt: </label></td>
                         <td>
                         <input type="number" name="anzahl" min="1" step="1" placeholder="Anzahl"/>
                         </td></tr>
+                        */}                
                         </table>
-                        <br/>
-        
-                        {/* noch suche nach anzhal der termine hinzufügen */}
-                        </fieldset>
-        
+                        <br/>    
+                        
+                        
+                        </fieldset>        
                         <fieldset style={{width: "450px"}}>
                         <legend>Daten zur Gewalt</legend>
                         <table style={{textAlign:"right"}}>
@@ -196,14 +215,17 @@ function SearchPage(){
                             <option>mehrere</option>
                             <option>genaue Ahnzahl</option>
                         </select>
+
+                        
                         </td></tr>
-                        </table>
-        
-                        {/* noch suche nach anzhal der täter hinzufügen */}
-        
+
+                        
+                        </table>    
                         <fieldset>
+                        
                         <legend>Art der Gewalt (merfachauswahl möglich)</legend>
                         <div style={{textAlign:"left"}}>
+                        
                         <input type="checkbox"/>
                         <label>sexuelle Belästigung im öffentlichen Raum</label>
                         <br/>
@@ -248,6 +270,7 @@ function SearchPage(){
                         <br/>
                         <input type="checkbox"/>
                         <label>keine Angabe</label>
+                        
                         </div>
                         <br/>
                         <table style={{textAlign:"right"}}>
@@ -308,11 +331,12 @@ function SearchPage(){
                         </td>
                         <td>
                         <input type="number" placeholder="Anzahl" min="0"/>
-                        </td></tr>
-                        </table>
+                        </td> </tr>
+                        </table>                        
                         </fieldset>
+                        
+                        {/*
                         </fieldset>
-        
                         <fieldset style={{width: "450px"}}>
                         <legend>Daten zu den Folgen der Gewalt</legend>
                         <p style={{textAlign:"left"}}>psychische Folgen: </p>
@@ -433,8 +457,10 @@ function SearchPage(){
                         <input type="text" placeholder="weitere Informationen/Notitzen"/>
                         </td></tr>
                         </table>
+                        */}
+
+                        {/*
                         </fieldset>
-        
                         <fieldset style={{width: "450px"}}>
                         <legend>Daten zu Begleitungen/Verweisen</legend>
                         <br/>
@@ -553,6 +579,9 @@ function SearchPage(){
                         <input type="number" placeholder="Anzahl" min="0"/>
                         <input type="text"/>
                         </div>
+                        */}
+
+                        {/*
                         </fieldset>
                         <fieldset style={{width: "450px"}}>
                         <h3>Weitere Daten</h3>
@@ -574,7 +603,9 @@ function SearchPage(){
                             <option>Nein</option>
                             <option>Ja</option>
                         </select>
-                        </fieldset>
+                        */}
+
+                        </fieldset> 
                         </div>}
                 </div>
             );
