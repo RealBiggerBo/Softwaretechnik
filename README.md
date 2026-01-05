@@ -30,18 +30,27 @@ Passwort: 0UsQzBB1
 
 ### Data
 
-- GetDataRecords
-   - URL: /api/data/get_list
-- Save
-   - URL: /api/data/save
-- Load
-   - URL: /api/data/get/N (N: Index des DataRecords)
-- Search
-   - noch nicht vorhanden (URL: /api/data/search)
-- Update
-   - URL: /api/data/update/N (N: Index des DataRecords)
-- Delete
-   - URL: /api/data/get/N (N: Index des DataRecords)
+#### GetDataRecords
+   - URL: /api/data/get_list/T
+
+#### Save
+   - URL: /api/data/save/T
+
+#### Load
+   - URL: /api/data/get/T/N
+
+#### Search
+   - noch nicht vorhanden (URL: /api/data/T/search)
+
+#### Update
+   - URL: /api/data/update/T/N
+
+#### Delete
+   - URL: /api/data/get/T/N
+
+T: Typ des DataRecords (anfrage, fall)
+
+N: Index des DataRecords
 
 ### DataRecords
 
