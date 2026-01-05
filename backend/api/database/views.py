@@ -6,7 +6,7 @@ from .models import Anfrage, Fall
 from .serializers import AnfrageSerializer, FallSerializer
 
 @api_view(["GET"])
-def get_liste(request, type):
+def get_list(request, type):
     if type == "Anfrage":
         """
         Listet alle Anfragen auf.
@@ -122,3 +122,7 @@ def delete(request, type, pk):
 
         fall.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def search(request):
+    return Response({"message": "Hello from Django API"})

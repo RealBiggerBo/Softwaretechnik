@@ -5,16 +5,19 @@ from django.contrib.auth import authenticate, login, logout
 from .serializers import RegisterSerializer
 
 class RegisterAPI(APIView):
+
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
             return Response(
                 {"message": "Registrierung erfolgreich"},
                 status=status.HTTP_201_CREATED
             )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -26,6 +29,7 @@ class LoginAPI(APIView):
         password = request.data.get('password')
 
         user = authenticate(request, username=username, password=password)
+
         if user is None:
             return Response(
                 {"error": "Login fehlgeschlagen"},

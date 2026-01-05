@@ -1,11 +1,20 @@
 //import Checkbox from "@mui/material/Checkbox";
 //import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
+//import Switch from "@mui/material/Switch";
 import { useState } from "react";
+
+
 
 function DataviewPage(){
     const [selected, setSelected] = useState("");
-    const [selected29, setSelected29] = useState("");
+    const [selectedtermin, setSelectedtermin] = useState("");
+    const [anzahlTermin, setAnzahlTermin] = useState(1);
+    const [anzahlTäter, setAnzahlTäter] = useState(1);
+    const [selectedStaatsangehörigkeit, setSelectedStaatsangehörigkeit] = useState("");
+    const [selectedwohnort, setSelectedwohnort] = useState("");
+    const [selectedSchwerbehinderung, setSelectedSchwerbehinderung] = useState("");
+    const [selectedDolmetscher, setSelectedDolmetscher] = useState("");
+
     return (
         <div>
             <label htmlFor="dropdown">Fall oder Anfrage: </label>
@@ -18,15 +27,16 @@ function DataviewPage(){
 
             {/* noch anfrage aus ... hinzufügen */}
             {selected === "Anfrage" && <div>
+                <form action={"anfrage.html"} method={"get"}>
                 <h3>Anfrage</h3>
                 <label>Anfrage ID: </label>
-                <input placeholder="ID"/>
+                <input placeholder="ID" name="anfrage_id"/>
                 <br/>
                 <label>Datum der Anfrage: </label>
                 <input type="date"/>
                 <br/>
-                <label htmlFor="dropdown3">Wer hat angefragt: </label>
-                <select name="dropdown3">
+                <label htmlFor="anfrage_wer">Wer hat angefragt: </label>
+                <select name="anfrage_wer">
                     <option>Bitte auswählen</option>
                     <option>Fachkraft</option>
                     <option>Angehörige:r</option>
@@ -43,8 +53,18 @@ function DataviewPage(){
                     <option>Sonstige</option>
                 </select>
                 <br/>
-                <label htmlFor="dropdown4">Art der Anfrage: </label>
-                <select name="dropdown4">
+                <label>Anfrage aus: </label>
+                <select name="anfrage_aus">
+                    <option>Bitte auswählen</option>
+                    <option>Leipzig Stadt</option>
+                    <option>Leipzig Land</option>
+                    <option>Nordsachen</option>
+                    <option>Sachsen</option>
+                    <option>Andere</option>
+                </select>
+                <br/>
+                <label htmlFor="anfrage_art">Art der Anfrage: </label>
+                <select name="anfrage_art">
                     <option>Bitte auswählen</option>
                     <option>medizinische Soforthilfe</option>
                     <option>vertrauliche Spurensicherung</option>
@@ -53,8 +73,8 @@ function DataviewPage(){
                     <option>Sonstiges</option>
                 </select>
                 <br/>
-                <label htmlFor="dropdown2">Wie wurde Kontakt aufgenommen: </label>
-                <select name="dropdown2">
+                <label htmlFor="anfrage_kontakt">Wie wurde Kontakt aufgenommen: </label>
+                <select name="anfrage_kontakt">
                     <option>Bitte auswählen</option>
                     <option>E-Mail</option>
                     <option>Telefon</option>
@@ -62,22 +82,31 @@ function DataviewPage(){
                     <option>Sonstiges</option>
                 </select>
                 <br/>
-                <label htmlFor="dropdown29">Wurde bereits ein Termin vergeben? </label>
-                <select name="dropdown29" value={selected29} onChange={(e) => setSelected29(e.target.value)}>
+                <label htmlFor="anfrage_termin">Wurde bereits ein Termin vergeben? </label>
+                <select name="anfrage_termin" value={selectedtermin} onChange={(e) => setSelectedtermin(e.target.value)}>
                     <option>Nein</option>
                     <option>Ja</option>
                 </select>
 
-                {selected29 === "Ja" && <div>
+                {selectedtermin === "Ja" && <div>
                 <label>Datum des Termins: </label>
-                <input type="date"/>    
+                <input type="date"/> 
+                <br/>
+                <label>Ort des Termins: </label>
+                <select>
+                    <option>Bitte auswählen</option>
+                    <option>Leipzig Stadt</option>
+                    <option>Leipzig Land</option>
+                    <option>Nordsachsen</option>
+                </select>
                 </div>}
 
                 <br/>
-                <button>Speichern</button>
+                <input type="submit" value="Speichern"/></form>
                 </div>}
 
             {selected === "Fall" && <div>
+                <form action={"fall.html"} method={"get"}>
                 <h3>Fall</h3>
                 <fieldset style={{width: "450px"}}> <legend>Personenbezogene Daten</legend>
                 
@@ -88,8 +117,8 @@ function DataviewPage(){
                     </tr>
                 <tr>
                     <td>
-                <label htmlFor="dropdown5">Rolle der ratsuchenden Person: </label></td>
-                <td><select name="dropdown5">
+                <label htmlFor="fall_rolle">Rolle der ratsuchenden Person: </label></td>
+                <td><select name="fall_rolle">
                     <option>Betroffene:r</option>
                     <option>Angehörige:r</option>
                     <option>Fachkraft</option>
@@ -98,10 +127,10 @@ function DataviewPage(){
                 <tr>
                     <td><label>Alter: </label></td>
                 <td>
-                <input placeholder="Alter" type="number" min={0}/></td></tr>
+                <input placeholder="Alter" type="number" min={0} name="alter"/></td></tr>
                 <tr><td>
-                <label htmlFor="dropdown6">Geschlächtsidentität: </label></td>
-                <td><select>
+                <label htmlFor="fall_geschlecht">Geschlächtsidentität: </label></td>
+                <td><select name="fall_geschlecht">
                     <option>keine Angabe</option>
                     <option>cis weiblich</option>
                     <option>cis männlich</option>
@@ -112,9 +141,9 @@ function DataviewPage(){
                     <option>divers</option>
                 </select></td></tr>
                 <tr><td>
-                <label htmlFor="dropdown7">Sexualität: </label></td>
+                <label htmlFor="fall_sexualitaet">Sexualität: </label></td>
                 <td>
-                <select name="dropdown7">
+                <select name="fall_sexualitaet">
                     <option>keine Angabe</option>
                     <option>lesbisch</option>
                     <option>schwul</option>
@@ -123,9 +152,10 @@ function DataviewPage(){
                     <option>heterosexuell</option>
                 </select></td></tr>
                 <tr><td>
-                <label htmlFor="dropdown8">Wohnort: </label></td>
+                <label htmlFor="fall_wohnort">Wohnort: </label>
+                </td>
                 <td>
-                <select name="dropdown8">
+                <select name="fall_wohnort" onChange={(e) => setSelectedwohnort(e.target.value)}>
                     <option>keine Angabe</option>
                     <option>Leipzig Stadt</option>
                     <option>Leipzig Land</option>
@@ -135,18 +165,45 @@ function DataviewPage(){
                     <option>andere</option>
                 </select>
                 </td></tr>
+
+                {selectedwohnort === "andere" &&
                 <tr><td>
-                <label htmlFor="dropdown9">Staatsangehörigkeit: </label></td>
+                <label>Wohnort: </label>
+                </td>
                 <td>
-                <select name="dropdown9">
+                <input type="text" placeholder="Wohnort"/>
+                </td></tr>
+                }
+                {selectedwohnort === "Deutschland" &&
+                <tr><td></td>
+                <td>
+                <input type="text" placeholder="Wohnort"/>
+                </td></tr>
+                }
+
+                <tr><td>
+                <label htmlFor="fall_staatsangehoerigkeit">Staatsangehörigkeit: </label>
+                </td>
+                <td>
+                <select name="fall_staatsangehoerigkeit" onChange={(e) => setSelectedStaatsangehörigkeit(e.target.value)}>
                     <option>deutsch</option>
                     <option>andere</option>
                 </select>
                 </td></tr>
+
+                {selectedStaatsangehörigkeit === "andere" &&
                 <tr><td>
-                <label htmlFor="dropdown10">berufliche Situation: </label></td>
+                <label>Staatsangehörigkeit: </label>
+                </td>
                 <td>
-                <select name="dropdown10">
+                <input type="text" placeholder="Staatsangehörigkeit"/>
+                </td></tr>
+                }
+
+                <tr><td>
+                <label htmlFor="fall_beruflich">berufliche Situation: </label></td>
+                <td>
+                <select name="fall_beruflich">
                     <option>keine Angabe</option>
                     <option>arbeitslos</option>
                     <option>studierend</option>
@@ -157,15 +214,34 @@ function DataviewPage(){
                 </select>
                 </td></tr>
                 <tr><td>
-                <label htmlFor="dropdown11">Schwerbehinderung: </label></td>
+                <label htmlFor="fall_schwerbehinderung">Schwerbehinderung: </label></td>
                 <td>
-                <select name="dropdown11">
+                <select name="fall_schwerbehinderung" onChange={(e) => setSelectedSchwerbehinderung(e.target.value)}>
                     <option>Nein</option>
                     <option>Ja</option>
                 </select>
                 </td></tr>
+
+                {selectedSchwerbehinderung === "Ja" &&<>
                 <tr><td>
-                <input type="text" placeholder="Notitzen"/>
+                <label>Form der Behinderung: </label>
+                </td>
+                <td>
+                <select>
+                    <option>körperlich</option>
+                    <option>kognitiv</option>
+                </select>
+                </td></tr>
+                <tr><td>
+                <label>Grad der Behinderung: </label>
+                </td>
+                <td>
+                <input type="number" placeholder="Grad" min="20" max="100"/>
+                </td></tr></>
+                }
+
+                <tr><td>
+                <input type="text" placeholder="Notizen" name="fall_notizen_person"/>
                 </td></tr>
                 </table>
                 </fieldset>
@@ -174,9 +250,9 @@ function DataviewPage(){
                 <legend>Daten zur durchgeführten Beratung</legend>
                 <table style={{textAlign:"right"}}>
                 <tr><td>
-                <label htmlFor="dropdown12">zuständige Beratungsstelle: </label></td>
+                <label htmlFor="fall_beratungsstelle">zuständige Beratungsstelle: </label></td>
                 <td>
-                <select name="dropdown12" style={{width: "200px"}}>
+                <select name="fall_beratungsstelle" style={{width: "200px"}}>
                     <option>Bitte auswählen</option>
                     <option>Fachberatungsstelle für queere Betroffene von sexualisierter Gewalt in der Stadt Leipzig</option>
                     <option>Fachberatung gegen sexualisierte Gewalt im Landkreis Nordsachsen</option>
@@ -184,39 +260,40 @@ function DataviewPage(){
                 </select>
                 </td></tr>
                 <tr><td>
-                <label htmlFor="anzahl">Anzahl der Beratungen insgesamt: </label></td>
+                <label htmlFor="fall_anzahl_beratung">Anzahl der Beratungen insgesamt: </label></td>
                 <td>
-                <input type="number" name="anzahl" min="1" step="1" placeholder="Anzahl"/>
+                <input type="number" name="fall_anzahl_beratung" min="1" step="1" placeholder="Anzahl" value={anzahlTermin} onChange={(e) => {const value = Number(e.target.value);if (value >= 1) {setAnzahlTermin(value);}}}/>
                 </td></tr>
                 </table>
                 <br/>
 
+                {Array.from({ length: anzahlTermin }).map((_, i) => (<div key={i}>
                 <fieldset>
-                <legend>1. Termin</legend>
+                <legend>Termin {i + 1}</legend>
                 <table style={{textAlign:"right"}}>
                 <tr><td>
-                <label>Datum: </label></td>
-                <td>
-                <input type="date"/>
-                </td></tr>
-                <tr><td>    
-                <label htmlFor="dropdown13">Durchführungsart: </label>
+                <label>Datum des Termins: </label>
                 </td>
                 <td>
-                <select name="dropdown13">
-                    <option>Bitte auswählen</option>
+                <input type="date" />
+                </td></tr>
+                <tr><td>
+                <label>Art der Beratung: </label>
+                </td>
+                <td>
+                <select>
                     <option>persönlich</option>
-                    <option>Video</option>
-                    <option>Telefon</option>
+                    <option>video</option>
+                    <option>telefon</option>
                     <option>aufsuchend</option>
                     <option>schriftlich</option>
                 </select>
                 </td></tr>
                 <tr><td>
-                <label htmlFor="dropdown14">Durchführungsort: </label>
+                <label>Durchführungsort: </label>
                 </td>
                 <td>
-                <select name="dropdown14">
+                <select>
                     <option>Bitte auswählen</option>
                     <option>Leipzig Stadt</option>
                     <option>Leipzig Land</option>
@@ -224,10 +301,12 @@ function DataviewPage(){
                 </select>
                 </td></tr>
                 <tr><td>
-                <input type="text" placeholder="Notitzen"/>
+                <input type="text" placeholder="Notizen"/>
                 </td></tr>
                 </table>
                 </fieldset>
+                </div>))}
+
                 </fieldset>
 
                 <fieldset style={{width: "450px"}}>
@@ -258,10 +337,17 @@ function DataviewPage(){
                     <option>genaue Ahnzahl</option>
                 </select>
                 </td></tr>
+                <tr><td>
+                <label>Anzahl der Täter: </label>
+                </td>
+                <td>
+                <input type="number" placeholder="Anzahl" min="1" value={anzahlTäter} onChange={(e) => {const value = Number(e.target.value);if (value >= 1) {setAnzahlTäter(value);}}}/>
+                </td></tr>
                 </table>
-
-                <fieldset>
-                <legend>Täter 1</legend>
+                
+                {Array.from({ length: anzahlTäter }).map((_, i) => (<div key={i}>
+               <fieldset>
+                <legend>Täter {i + 1}</legend>
                 <table style={{textAlign:"right"}}>
                 <tr><td>
                 <label htmlFor="dropdown16">Geschlecht: </label>
@@ -296,6 +382,7 @@ function DataviewPage(){
                 </td></tr>
                 </table>
                 </fieldset>
+                </div>))}
 
                 <fieldset>
                 <legend>Art der Gewalt (merfachauswahl möglich)</legend>
@@ -406,7 +493,7 @@ function DataviewPage(){
                 <input type="number" placeholder="Anzahl" min="0"/>
                 </td></tr>
                 <tr><td>
-                <input type="text" placeholder="Notitzen"/>
+                <input type="text" placeholder="Notizen"/>
                 </td></tr>
                 </table>
                 </fieldset>
@@ -529,7 +616,7 @@ function DataviewPage(){
                 </select>
                 </td></tr>
                 <tr><td>
-                <input type="text" placeholder="weitere Informationen/Notitzen"/>
+                <input type="text" placeholder="weitere Informationen/Notizen"/>
                 </td></tr>
                 </table>
                 </fieldset>
@@ -669,12 +756,29 @@ function DataviewPage(){
                 </select>
                 <br/>
                 <label htmlFor="dropdown28">Wurden Dolmetscherstunden in Anspruch genommen: </label>
-                <select name="dropdown28">
+                <select name="dropdown28" onChange={(e) => setSelectedDolmetscher(e.target.value)}>
                     <option>Nein</option>
                     <option>Ja</option>
                 </select>
+
+                {selectedDolmetscher === "Ja" && <>
+                <tr><td>
+                <label>Anzahl der Dolmetscherstunden: </label>
+                </td>
+                <td>
+                <input type="number" placeholder="Anzahl" min="1"/>
+                </td></tr>
+                <tr><td>
+                <label>Sprache: </label>
+                </td>
+                <td>
+                <input type="text" placeholder="Sprache"/>
+                </td></tr>
+                </>
+                }
+
                 </fieldset>
-                <button>Speichern</button>
+                <input type="submit" value="Speichern"/></form>
                 </div>}
         </div>
     );
