@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Anfrage, Fall, Beratung, Gewalttat, Taeter
+from .models import *
 
 admin.site.register(Anfrage)
 admin.site.register(Fall)

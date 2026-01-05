@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Anfrage, Fall, Beratung, Gewalttat, Taeter
+from .models import *
 
 class AnfrageSerializer(serializers.ModelSerializer):
     class Meta:

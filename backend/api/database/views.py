@@ -2,126 +2,96 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Anfrage, Fall
-from .serializers import AnfrageSerializer, FallSerializer
+from .models import *
+from .serializers import *
 
 @api_view(["GET"])
 def get_list(request, type):
+    """
+    Listet DataRecords auf.
+    """
     if type == "anfrage":
-        """
-        Listet alle Anfragen auf.
-        """
-        anfragen = Anfrage.objects.all()
-        serializer = AnfrageSerializer(anfragen, many=True)
+        data_record_list = Anfrage.objects.all()
+        serializer = AnfrageSerializer(data_record_list, many=True)
     else:
-        """
-        Listet alle Fälle auf.
-        """
-        fall_liste = Fall.objects.all()
-        serializer = FallSerializer(fall_liste, many=True)
+        data_record_list = Fall.objects.all()
+        serializer = FallSerializer(data_record_list, many=True)
     return Response(serializer.data)
 
 @api_view(["POST"])
 def save(request, type):
+    """
+    Erstellt ein neues DataRecord.
+    """
     if type == "anfrage":
-        """
-        Erstellt eine neue Anfrage.
-        """
         serializer = AnfrageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
-        """
-        Erstellt einen neuen Fall.
-        """
         serializer = FallSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
 def get(request, type, pk):
+    """
+    Gibt ein DataRecord zurück.
+    """
     if type == "anfrage":
-        """
-        Gibt eine Anfrage zurück.
-        """
         try:
-            anfrage = Anfrage.objects.get(pk=pk)
+            data_record = Anfrage.objects.get(pk=pk)
         except Anfrage.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        serializer = AnfrageSerializer(anfrage)
-        return Response(serializer.data)
     else:
-        """
-        Gibt einen Fall zurück.
-        """
         try:
-            fall = Fall.objects.get(pk=pk)
+            data_record = Fall.objects.get(pk=pk)
         except Fall.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = FallSerializer(fall)
-        return Response(serializer.data)
+    serializer = FallSerializer(data_record)
+    return Response(serializer.data)
 
 @api_view(["PUT"])
 def update(request, type, pk):
+    """
+    Überschreibt ein DataRecord.
+    """
     if type == "anfrage":
-        """
-        Überschreibt eine Anfrage.
-        """
         try:
-            anfrage = Anfrage.objects.get(pk=pk)
+            data_record = Anfrage.objects.get(pk=pk)
         except Anfrage.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        serializer = AnfrageSerializer(anfrage, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
-        """
-        Überschreibt einen Fall.
-        """
         try:
-            fall = Fall.objects.get(pk=pk)
+            data_record = Fall.objects.get(pk=pk)
         except Fall.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = FallSerializer(fall, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer = FallSerializer(data_record, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["DELETE"])
 def delete(request, type, pk):
+    """
+    Löscht ein DataRecord.
+    """
     if type == "anfrage":
-        """
-        Löscht eine Anfrage.
-        """
         try:
-            anfrage = Anfrage.objects.get(pk=pk)
+            data_record = Anfrage.objects.get(pk=pk)
         except Anfrage.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        anfrage.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
     else:
-        """
-        Löscht einen Fall.
-        """
         try:
-            fall = Fall.objects.get(pk=pk)
+            data_record = Fall.objects.get(pk=pk)
         except Fall.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        fall.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    data_record.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET'])
 def search(request):
