@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 # Liste aller Benutzer
 class AdminUserListAPI(APIView):
@@ -56,3 +56,37 @@ class AdminResetPasswordAPI(APIView):
         except User.DoesNotExist:
             # Sollte der Benutzer nicht existieren, gibt es einen Error.
             return Response({"error": "Benutzer nicht gefunden"}, status=404)
+        
+class AdminChangeRoleAPI(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, user_id):
+        role = request.data.get("role")
+
+        if role not in ["base_user", "extended_user", "admin_user"]:
+            return Response({"error": "Ungültige Rolle"}, status=400)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"error": "Benutzer nicht gefunden"}, status=404)
+
+        # Admin darf sich selbst nicht die rechte nehmen.
+        if user == request.user and role != "admin_user":
+            return Response({"error": "Du kannst dir selbst keine Adminrechte entziehen"}, status=403)
+
+        # Es muss min einen Admin geben.
+        if (
+            user.groups.filter(name="admin_user").exists()
+            and role != "admin_user"
+            and User.objects.filter(groups__name="admin_user").count() <= 1
+        ):
+            return Response({"error": "Mindestens ein Admin muss existieren"}, status=403)
+
+        user.groups.clear()
+        user.groups.add(Group.objects.get(name=role))
+
+        user.is_staff = (role == "admin_user")
+        user.save()
+
+        return Response({"message": f"Rolle geändert zu {role}"})

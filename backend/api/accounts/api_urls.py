@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import RegisterAPIView, LoginAPIView, LogoutAPIView, MeAPIView, ChangePasswordAPI
-from .admin_api import AdminUserListAPI, AdminUserDeleteAPI, AdminResetPasswordAPI 
+from .admin_api import AdminUserListAPI, AdminUserDeleteAPI, AdminResetPasswordAPI, AdminChangeRoleAPI
 
 urlpatterns = [
     # Authentication
@@ -14,4 +14,5 @@ urlpatterns = [
     path('admin/users/', AdminUserListAPI.as_view()),
     path('admin/users/<int:user_id>/', AdminUserDeleteAPI.as_view()),
     path('admin/users/<int:user_id>/reset-password/', AdminResetPasswordAPI.as_view()),
+    path("admin/users/<int:user_id>/role/", AdminChangeRoleAPI.as_view()),
 ]

@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.contrib.auth import authenticate, login, logout
 from .serializers import RegisterSerializer
+from rest_framework.permissions import IsAuthenticated
 
 class RegisterAPI(APIView):
     # Es darf sich jeder Registrieren.
@@ -58,14 +59,20 @@ class LogoutAPI(APIView):
 
 class MeAPI(APIView):
     # Der Endpoint darf nur von eingeloggten Benutzern verwendet werden.
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         # Dies ist der aktuell eingeloggte Nutzer.
         user = request.user
         
+        # Rolle aus Django Groups lesen
+        group = user.groups.first()
+        role = group.name if group else "base_user"
+
         # Die Basisinformationen des Nutzers werden zurückgegeben.
         return Response({
             "id": user.id,
             "username": user.username,
+            "role": role,
+            "is_admin": user.is_staff,
         })
