@@ -1,33 +1,31 @@
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
+//import Checkbox from "@mui/material/Checkbox";
+//import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { useState } from "react";
 
 function DataviewPage(){
     const [selected, setSelected] = useState("");
+    const [selected29, setSelected29] = useState("");
     return (
         <div>
-            <label htmlFor="dropdown" style={{color:"black"}}>Fall oder Anfrage: </label>
+            <label htmlFor="dropdown">Fall oder Anfrage: </label>
             <select value={selected} name="dropdown" onChange={(e) => setSelected(e.target.value)}>
                 <option value="">Bitte auswählen</option>
                 <option value="Anfrage">Anfrage</option>
                 <option value="Fall">Fall</option>
             </select>
 
+
+            {/* noch anfrage aus ... hinzufügen */}
             {selected === "Anfrage" && <div>
-                <input type="date"/>
+                <h3>Anfrage</h3>
+                <label>Anfrage ID: </label>
                 <input placeholder="ID"/>
                 <br/>
-                <label htmlFor="dropdown2" style={{color:"black"}}>Wie wurde Kontakt aufgenommen: </label>
-                <select name="dropdown2">
-                    <option>Bitte auswählen</option>
-                    <option>E-Mail</option>
-                    <option>Telefon</option>
-                    <option>vor Ort</option>
-                    <option>Sonstiges</option>
-                </select>
+                <label>Datum der Anfrage: </label>
+                <input type="date"/>
                 <br/>
-                <label htmlFor="dropdown3" style={{color:"black"}}>Wer hat angefragt: </label>
+                <label htmlFor="dropdown3">Wer hat angefragt: </label>
                 <select name="dropdown3">
                     <option>Bitte auswählen</option>
                     <option>Fachkraft</option>
@@ -44,7 +42,8 @@ function DataviewPage(){
                     <option>Angehörige:r für queere Betroffene</option>
                     <option>Sonstige</option>
                 </select>
-                <label htmlFor="dropdown4" style={{color:"black"}}>Art der Anfrage: </label>
+                <br/>
+                <label htmlFor="dropdown4">Art der Anfrage: </label>
                 <select name="dropdown4">
                     <option>Bitte auswählen</option>
                     <option>medizinische Soforthilfe</option>
@@ -54,26 +53,56 @@ function DataviewPage(){
                     <option>Sonstiges</option>
                 </select>
                 <br/>
-                <label htmlFor="checkbox1" style={{color:"black"}}>Wurde bereits ein Termin vergeben? </label>
-                <Switch name="checkbox1" id="termin"/></div>}
+                <label htmlFor="dropdown2">Wie wurde Kontakt aufgenommen: </label>
+                <select name="dropdown2">
+                    <option>Bitte auswählen</option>
+                    <option>E-Mail</option>
+                    <option>Telefon</option>
+                    <option>vor Ort</option>
+                    <option>Sonstiges</option>
+                </select>
+                <br/>
+                <label htmlFor="dropdown29">Wurde bereits ein Termin vergeben? </label>
+                <select name="dropdown29" value={selected29} onChange={(e) => setSelected29(e.target.value)}>
+                    <option>Nein</option>
+                    <option>Ja</option>
+                </select>
+
+                {selected29 === "Ja" && <div>
+                <label>Datum des Termins: </label>
+                <input type="date"/>    
+                </div>}
+
+                <br/>
+                <button>Speichern</button>
+                </div>}
 
             {selected === "Fall" && <div>
-                <h3 style={{color:"black"}}>Personenbezogene Daten</h3>
-                <input type="text" placeholder="ID"/>
-                <br/>
-                <label htmlFor="dropdown5" style={{color:"black"}}>Rolle der ratsuchenden Person: </label>
-                <select name="dropdown5">
-                    <option>Bitte auswählen</option>
+                <h3>Fall</h3>
+                <fieldset style={{width: "450px"}}> <legend>Personenbezogene Daten</legend>
+                
+                <table style={{textAlign:"right"}}>
+                    <tr>
+                        <td><label>Name/ID: </label></td>
+                        <td><input type="text" placeholder="ID"/></td>
+                    </tr>
+                <tr>
+                    <td>
+                <label htmlFor="dropdown5">Rolle der ratsuchenden Person: </label></td>
+                <td><select name="dropdown5">
                     <option>Betroffene:r</option>
                     <option>Angehörige:r</option>
                     <option>Fachkraft</option>
-                </select>
-                <br/>
-                <input placeholder="Alter" type="number"/>
-                <br/>
-                <label htmlFor="dropdown6" style={{color:"black"}}>Geschlächtsidentität: </label>
-                <select>
-                    <option>Bitte auswählen</option>
+                </select></td>
+                </tr>
+                <tr>
+                    <td><label>Alter: </label></td>
+                <td>
+                <input placeholder="Alter" type="number" min={0}/></td></tr>
+                <tr><td>
+                <label htmlFor="dropdown6">Geschlächtsidentität: </label></td>
+                <td><select>
+                    <option>keine Angabe</option>
                     <option>cis weiblich</option>
                     <option>cis männlich</option>
                     <option>trans weiblich</option>
@@ -81,74 +110,99 @@ function DataviewPage(){
                     <option>inter</option>
                     <option>agender</option>
                     <option>divers</option>
-                    <option>keine Angaben</option>
-                </select>
-                <label htmlFor="dropdown7" style={{color:"black"}}>Sexualität: </label>
+                </select></td></tr>
+                <tr><td>
+                <label htmlFor="dropdown7">Sexualität: </label></td>
+                <td>
                 <select name="dropdown7">
-                    <option>Bitte wählen</option>
+                    <option>keine Angabe</option>
                     <option>lesbisch</option>
                     <option>schwul</option>
                     <option>bisexuell</option>
                     <option>asexuell</option>
                     <option>heterosexuell</option>
-                    <option>keine Angaben</option>
-                </select>
-                <br/>
-                <label htmlFor="dropdown8" style={{color:"black"}}>Wohnort: </label>
+                </select></td></tr>
+                <tr><td>
+                <label htmlFor="dropdown8">Wohnort: </label></td>
+                <td>
                 <select name="dropdown8">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Leipzig Stadt</option>
                     <option>Leipzig Land</option>
                     <option>Nordsachsen</option>
                     <option>Sachsen</option>
                     <option>Deutschland</option>
                     <option>andere</option>
-                    <option>keine Angaben</option>
                 </select>
-                <label htmlFor="dropdown9" style={{color:"black"}}>Staatsangehörigkeit: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown9">Staatsangehörigkeit: </label></td>
+                <td>
                 <select name="dropdown9">
-                    <option>Bitte auswählen</option>
                     <option>deutsch</option>
                     <option>andere</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown10" style={{color:"black"}}>berufliche Situation: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown10">berufliche Situation: </label></td>
+                <td>
                 <select name="dropdown10">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>arbeitslos</option>
                     <option>studierend</option>
                     <option>berufstätig</option>
                     <option>berentet</option>
                     <option>Azubi</option>
                     <option>berufsunfähig</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown11" style={{color:"black"}}>Schwerbehinderung</label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown11">Schwerbehinderung: </label></td>
+                <td>
                 <select name="dropdown11">
-                    <option>Bitte auswählen</option>
-                    <option>Ja</option>
                     <option>Nein</option>
+                    <option>Ja</option>
                 </select>
-                <br/>
+                </td></tr>
+                <tr><td>
                 <input type="text" placeholder="Notitzen"/>
-                <br/>
-                <h3>Daten zur durchgeführten Beratung</h3>
-                <label htmlFor="dropdown12" style={{color:"black"}}>zuständige Beratungsstelle: </label>
-                <select name="dropdown12">
+                </td></tr>
+                </table>
+                </fieldset>
+
+                <fieldset style={{width: "450px"}}>
+                <legend>Daten zur durchgeführten Beratung</legend>
+                <table style={{textAlign:"right"}}>
+                <tr><td>
+                <label htmlFor="dropdown12">zuständige Beratungsstelle: </label></td>
+                <td>
+                <select name="dropdown12" style={{width: "200px"}}>
                     <option>Bitte auswählen</option>
                     <option>Fachberatungsstelle für queere Betroffene von sexualisierter Gewalt in der Stadt Leipzig</option>
                     <option>Fachberatung gegen sexualisierte Gewalt im Landkreis Nordsachsen</option>
                     <option>Fachberatung gegen sexualusierte Gewalt Landkreis Leipzig</option>
                 </select>
-                <br/>
-                <label htmlFor="anzahl">Anzahl der Beratungen insgesamt</label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="anzahl">Anzahl der Beratungen insgesamt: </label></td>
+                <td>
                 <input type="number" name="anzahl" min="1" step="1" placeholder="Anzahl"/>
+                </td></tr>
+                </table>
                 <br/>
-                <h5>1. Termin</h5>
+
+                <fieldset>
+                <legend>1. Termin</legend>
+                <table style={{textAlign:"right"}}>
+                <tr><td>
+                <label>Datum: </label></td>
+                <td>
                 <input type="date"/>
-                <br/>
-                <label htmlFor="dropdown13" style={{color:"black"}}>Durchführungsart: </label>
+                </td></tr>
+                <tr><td>    
+                <label htmlFor="dropdown13">Durchführungsart: </label>
+                </td>
+                <td>
                 <select name="dropdown13">
                     <option>Bitte auswählen</option>
                     <option>persönlich</option>
@@ -157,38 +211,64 @@ function DataviewPage(){
                     <option>aufsuchend</option>
                     <option>schriftlich</option>
                 </select>
-                <label htmlFor="dropdown14" style={{color:"black"}}>Durchführungsort: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown14">Durchführungsort: </label>
+                </td>
+                <td>
                 <select name="dropdown14">
                     <option>Bitte auswählen</option>
                     <option>Leipzig Stadt</option>
                     <option>Leipzig Land</option>
                     <option>Nordsachsen</option>
                 </select>
-                <br/>
+                </td></tr>
+                <tr><td>
                 <input type="text" placeholder="Notitzen"/>
-                <br/>
-                <h3>Daten zur Gewalt</h3>
-                <br/>
-                <input type="number" step="1" placeholder="Alter"/>
+                </td></tr>
+                </table>
+                </fieldset>
+                </fieldset>
+
+                <fieldset style={{width: "450px"}}>
+                <legend>Daten zur Gewalt</legend>
+                <table style={{textAlign:"right"}}>
+                <tr><td>
+                <label>Alter zum Zeitpunkt der Gewalt: </label></td>
+                <td>
+                <input type="number" step="1" placeholder="Alter" min="0"/>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown15">Zeitraum der Gewalt: </label>
+                </td>
+                <td>
                 <select>
                     <option>Zeitraum</option>
                     <option>keine Abgabe</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown15" style={{color:"black"}}>Anzahl der Vorfälle: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown15">Anzahl der Vorfälle: </label>
+                </td>
+                <td>
                 <select name="dropdown15">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angbae</option>
                     <option>einmalig</option>
                     <option>mehrere</option>
                     <option>genaue Ahnzahl</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
-                <h5>Täter 1</h5>
-                <br/>
-                <label htmlFor="dropdown16" style={{color:"black"}}>Geschlecht: </label>
+                </td></tr>
+                </table>
+
+                <fieldset>
+                <legend>Täter 1</legend>
+                <table style={{textAlign:"right"}}>
+                <tr><td>
+                <label htmlFor="dropdown16">Geschlecht: </label>
+                </td>
+                <td>
                 <select name="dropdown16">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>cis weiblich</option>
                     <option>cis männlich</option>
                     <option>trans weinlich</option>
@@ -197,12 +277,14 @@ function DataviewPage(){
                     <option>inter</option>
                     <option>agender</option>
                     <option>divers</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br>
-                <label htmlFor="dropdown17" style={{color:"black"}}>Verhältnis zur ratsuchenden Person: </label>
-                <select name="dropdown17">
-                    <option>Bitte auswählen</option>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown17">Verhältnis zur ratsuchenden Person: </label>
+                </td>
+                <td>
+                <select name="dropdown17" style={{width: "150px"}}>
+                    <option>keine Angabe</option>
                     <option>Unbekannte:r</option>
                     <option>Bekannte:r</option>
                     <option>Partner:in</option>
@@ -210,47 +292,67 @@ function DataviewPage(){
                     <option>Ehepartner:in oder eingetragene:r Lebenspartner:in</option>
                     <option>andere Familienangehörige</option>
                     <option>sonstige Personen</option>
-                    <option>keine Angaben</option>
                 </select>
-                <p>Art der Gewalt (merfachauswahl möglich)</p>
-                <input type="checkbpx"/>
+                </td></tr>
+                </table>
+                </fieldset>
+
+                <fieldset>
+                <legend>Art der Gewalt (merfachauswahl möglich)</legend>
+                <div style={{textAlign:"left"}}>
+                <input type="checkbox"/>
                 <label>sexuelle Belästigung im öffentlichen Raum</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>sexuelle Belästigung am Arbeitsplatz</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>sexuelle Belästigung im privatem</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>Vergewaltigung</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>versuchte Vergewaltigung</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>sexueller Missbrauch</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>sexueller Missbrauch in der Kindheit</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>sexuelle Nötigung</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>rituelle Gewalt</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>Upskirting</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>Catcalling</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>digitale sexuelle Gewalt</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>Spiking</label>
-                <input type="checkbpx"/>
-                <label>Andere</label>
-                <input type="checkbpx"/>
-                <label>keine Angabe</label>
                 <br/>
-                <label htmlFor="dropdown18" style={{color:"black"}}>Tatort: </label>
+                <input type="checkbox"/>
+                <label>Andere</label>
+                <br/>
+                <input type="checkbox"/>
+                <label>keine Angabe</label>
+                </div>
+                <br/>
+                <table style={{textAlign:"right"}}>
+                <tr><td>
+                <label htmlFor="dropdown18">Tatort: </label>
+                </td>
+                <td>
                 <select>
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Leipzig</option>
                     <option>Leipzig Land</option>
                     <option>Nordsachsen</option>
@@ -258,249 +360,304 @@ function DataviewPage(){
                     <option>Deutschland</option>
                     <option>auf der Flucht</option>
                     <option>im Herkunftsland</option>
-                    <option>keine Abgabe</option>
                 </select>
-                <label htmlFor="dropdown19" style={{color:"black"}}>Anzeige gemacht: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown19">Anzeige gemacht: </label>
+                </td>
+                <td>
                 <select name="dropdown19">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
                     <option>noch nicht</option>
-                    <option>keine Angabe</option>
                 </select>
-                <label htmlFor="dropdown20" style={{color:"black"}}>medizinische Versorgung: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown20">medizinische Versorgung: </label>
+                </td>
+                <td>
                 <select name="dropdown20">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown21" style={{color:"black"}}>vertrauliche Spuchensicherung: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown21">vertrauliche Spuchensicherung: </label>
+                </td>
+                <td>
                 <select name="dropdown21">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
+                </td></tr>
+                <tr><td>
                 <label>mitbetroffene Kinder: </label>
-                <input type="number" placeholder="Anzahl"/>
+                </td>
+                <td>
+                <input type="number" placeholder="Anzahl" min="0"/>
+                </td></tr>
+                <tr><td>
                 <label>davon direkt betroffen: </label>
-                <input type="number" placeholder="Anzahl"/>
-                <br/>
+                </td>
+                <td>
+                <input type="number" placeholder="Anzahl" min="0"/>
+                </td></tr>
+                <tr><td>
                 <input type="text" placeholder="Notitzen"/>
-                <br/>
-                <h3>Daten zu den Folgen der Gewalt</h3>
-                <br/>
-                <p>psychische Folgen: </p>
-                <br/>
-                <input type="checkbpx"/>
+                </td></tr>
+                </table>
+                </fieldset>
+                </fieldset>
+
+                <fieldset style={{width: "450px"}}>
+                <legend>Daten zu den Folgen der Gewalt</legend>
+                <p style={{textAlign:"left"}}>psychische Folgen: </p>
+                <div style={{textAlign:"left"}}>
+                <input type="checkbox"/>
                 <label>Depressionen</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>Angststörung</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>PTBS</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>Burn-Out</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>Schlafstörungen</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>Sucht/Abhängigkeit</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>Kommunikationsschwierigkeiten</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>Vernachlässigung alltäglicher Dinge</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>andere Diagnose</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>keine Folgen</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>keine Abgabe</label>
+                </div>
                 <br/>
-                <p>körperliche Folgen: </p>
-                <br/>
-                <input type="checkbpx"/>
+                <p style={{textAlign:"left"}}>körperliche Folgen: </p>
+                <div style={{textAlign:"left"}}>
+                <input type="checkbox"/>
                 <label>Schmerzen</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>Lähmung</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>Krankheit</label>
                 <br/>
-                <input type="checkbpx"/>
+                <input type="checkbox"/>
                 <label>Andere</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>keine Folgen</label>
-                <input type="checkbpx"/>
+                <br/>
+                <input type="checkbox"/>
                 <label>keine Angabe</label>
+                </div>
                 <br/>
+                <table style={{textAlign:"right"}}>
+                <tr><td>
                 <label>Dauerhafte kötperliche Beeinträchtigungen: </label>
+                </td>
+                <td>
                 <input type="text" placeholder="Beeinträchtigungen"/>
-                <br/>
-                <label htmlFor="dropdown22" style={{color:"black"}}>Finanzielle Folgen: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown22">Finanzielle Folgen: </label>
+                </td>
+                <td>
                 <select name="dropdown22">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown23" style={{color:"black"}}>Arbeitseinschränkungen/Arbeitsunfähigkeit: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown23">Arbeitseinschränkungen/Arbeitsunfähigkeit: </label>
+                </td>
+                <td>
                 <select name="dropdown23">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown24" style={{color:"black"}}>Verlust der Arbeitsstelle: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown24">Verlust der Arbeitsstelle: </label>
+                </td>
+                <td>
                 <select name="dropdown24">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown25" style={{color:"black"}}>Soziale Isolation: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown25">Soziale Isolation: </label>
+                </td>
+                <td>
                 <select name="dropdown25">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
-                <label htmlFor="dropdown26" style={{color:"black"}}>Suizidalität: </label>
+                </td></tr>
+                <tr><td>
+                <label htmlFor="dropdown26">Suizidalität: </label>
+                </td>
+                <td>
                 <select name="dropdown26">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Ja</option>
                     <option>Nein</option>
-                    <option>keine Angabe</option>
                 </select>
-                <br/>
+                </td></tr>
+                <tr><td>
                 <input type="text" placeholder="weitere Informationen/Notitzen"/>
-                <h3>Daten zu Begleitungen/Verweisen</h3>
+                </td></tr>
+                </table>
+                </fieldset>
+
+                <fieldset style={{width: "450px"}}>
+                <legend>Daten zu Begleitungen/Verweisen</legend>
                 <br/>
                 <label>Anzahl zu Begleitungen insgesamt: </label>
-                <input type="number" placeholder="Anzahl"/>
-                <p>Begleitung bei: </p>
+                <input type="number" placeholder="Anzahl" min="0"/>
+                <p style={{textAlign:"left"}}>Begleitung bei: </p>
+                <div style={{textAlign:"left"}}>
+                <input type="checkbox"/>
+                <label>Gericht </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Gericht</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Polizei </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Polizei</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Rechtsanwält(-innen) </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Rechtsanwält(-innen)</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Ärtze </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Ärtze</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Rechtsmedizin </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Rechtsmedizin</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Jugendamt </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Jugendamt</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Sozialamt </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Sozialamt</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Jobcenter(Arbeitsagentur) </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Jobcenter(Arbeitsagentur)</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Beratungsstellen für Gewaltausübende </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Beratungsstellen für Gewaltausübende</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Frauen- und Kinderschutzeinrichtungen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Frauen- und Kinderschutzeinrichtungen</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>spezialisierte Schutzeinrichtungen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>spezialisierte Schutzeinrichtungen</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Interventions- oder Koordinationsstellen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Interventions- oder Koordinationsstellen</label>
-                <input type="number" placeholder="Anzahl"/>
-                <br/>
-                <input type="checkbpx"/>
-                <label>Sonstige Einrichtungen oder Institutionen</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Sonstige Einrichtungen oder Institutionen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <input type="text"/>
+                </div>
                 <br/>
                 <label>Anzahl zu Verweisen insgesamt: </label>
-                <input type="number" placeholder="Anzahl"/>
-                <p>Verweise an: </p>
+                <input type="number" placeholder="Anzahl" min="0"/>
+                <p style={{textAlign:"left"}}>Verweise an: </p>
+                <div style={{textAlign:"left"}}>
+                <input type="checkbox"/>
+                <label>Gericht </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Gericht</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Polizei </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Polizei</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Rechtsanwält(-innen) </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Rechtsanwält(-innen)</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Ärtze </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Ärtze</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Rechtsmedizin </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Rechtsmedizin</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Jugendamt </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Jugendamt</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Sozialamt </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Sozialamt</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Jobcenter(Arbeitsagentur) </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Jobcenter(Arbeitsagentur)</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Beratungsstellen für Gewaltausübende </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Beratungsstellen für Gewaltausübende</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Frauen- und Kinderschutzeinrichtungen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Frauen- und Kinderschutzeinrichtungen</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>spezialisierte Schutzeinrichtungen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>spezialisierte Schutzeinrichtungen</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Interventions- oder Koordinationsstellen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <br/>
-                <input type="checkbpx"/>
-                <label>Interventions- oder Koordinationsstellen</label>
-                <input type="number" placeholder="Anzahl"/>
-                <br/>
-                <input type="checkbpx"/>
-                <label>Sonstige Einrichtungen oder Institutionen</label>
-                <input type="number" placeholder="Anzahl"/>
+                <input type="checkbox"/>
+                <label>Sonstige Einrichtungen oder Institutionen </label>
+                <input type="number" placeholder="Anzahl" min="0"/>
                 <input type="text"/>
-                <br/>
+                </div>
+                </fieldset>
+                <fieldset style={{width: "450px"}}>
                 <h3>Weitere Daten</h3>
-                <label htmlFor="dropdown27" style={{color:"black"}}>Woher hat die ratsuchende Person von der Beratungsstelle erfahren: </label>
+                <label htmlFor="dropdown27">Woher hat die ratsuchende Person von der Beratungsstelle erfahren: </label>
                 <select name="dropdown27">
-                    <option>Bitte auswählen</option>
+                    <option>keine Angabe</option>
                     <option>Selbstmeldungen über die Polizei</option>
                     <option>private Kontakte</option>
                     <option>Beratungsstellen</option>
@@ -509,14 +666,15 @@ function DataviewPage(){
                     <option>Gesundheitswesen(Arzt/Ärztin)</option>
                     <option>Rechtsanwälte/-innen</option>
                     <option>andere Quellen</option>
-                    <option>keine Angaben</option>
                 </select>
                 <br/>
-                <label htmlFor="dropdown28" style={{color:"black"}}>Wurden Dolmetscherstunden in Anspruch genommen: </label>
+                <label htmlFor="dropdown28">Wurden Dolmetscherstunden in Anspruch genommen: </label>
                 <select name="dropdown28">
                     <option>Nein</option>
                     <option>Ja</option>
                 </select>
+                </fieldset>
+                <button>Speichern</button>
                 </div>}
         </div>
     );
