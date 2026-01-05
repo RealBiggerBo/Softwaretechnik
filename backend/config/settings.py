@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'api.accounts',
     'corsheaders',
     'rest_framework.authtoken',
-
+    'api.apps.ApiConfig',
     'api.database',
 ]
 
