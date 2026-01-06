@@ -1,10 +1,12 @@
 # Anleitung zum Bauen
 
 ## Benötigte Pakete
+
 - Python: https://www.python.org/downloads/
 - Node.js: https://nodejs.org/en/download
 
 ## adminuser
+
 ```
 Username: superuser
 Passwort: 0UsQzBB1
@@ -15,10 +17,10 @@ Passwort: 0UsQzBB1
 1. `cd backend`
 2. Virtuelle Umgebung erstellen und aktivieren
    - Linux (Bash):
-      - Erstellen: `python3 -m venv name` (name ist der Name für die venv)
-      - Aktivieren: `source name/bin/activate`
-      - Deaktivieren: `deactivate`
-   - Windows PowerShell: `python -m venv venv; .\venv\Scripts\Activate.ps1`
+     - Erstellen: `python3 -m venv name` (name ist der Name für die venv)
+     - Aktivieren: `source name/bin/activate`
+     - Deaktivieren: `deactivate`
+   - Windows PowerShell: `python -m venv venv; .\venv\Scripts\Activate.ps1` (Bei Fehler vorher: `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` ausführen)
 3. Abhängigkeiten installieren: `pip install -r requirements.txt`
 4. Datenbank migrieren (legt SQLite-DB an/aktualisiert sie): `python manage.py migrate`
 5. Erstellen der Rollen `python manage.py create_roles` (aktuell noch manuell, später wharscheinlich als script)
@@ -31,27 +33,35 @@ Passwort: 0UsQzBB1
 3. Dependencies holen: `npm install`
 4. Entwicklung: `npm run dev` (öffnet http://127.0.0.1:5173)
 
+Bei sonstigen Fehlermeldungen kann ChatGPT/Gemini helfen.
+
 ## API
 
 ### Data
 
 #### GetDataRecords
-   - URL: /api/data/get_list/T
+
+- URL: /api/data/get_list/T
 
 #### Save
-   - URL: /api/data/save/T
+
+- URL: /api/data/save/T
 
 #### Load
-   - URL: /api/data/get/T/N
+
+- URL: /api/data/get/T/N
 
 #### Search
-   - noch nicht vorhanden (URL: /api/data/T/search)
+
+- noch nicht vorhanden (URL: /api/data/T/search)
 
 #### Update
-   - URL: /api/data/update/T/N
+
+- URL: /api/data/update/T/N
 
 #### Delete
-   - URL: /api/data/get/T/N
+
+- URL: /api/data/get/T/N
 
 T: Typ des DataRecords (anfrage, fall)
 
@@ -208,11 +218,13 @@ N: Index des DataRecords
 ### Aufzählungen
 
 #### Beratungsstelle
+
       "S": "Stadt Leipzig"
       "L": "Landkreis Leipzig"
       "N": "Landkreis Nordsachsen"
 
 #### Ort
+
       "S": "Stadt Leipzig"
       "L": "Landkreis Leipzig"
       "N": "Landkreis Nordsachsen"
@@ -220,12 +232,14 @@ N: Index des DataRecords
       "X": "Sonstiges"
 
 #### Rolle
+
       "B": "Betroffene:r"
       "F": "Fachkraft"
       "A": "Angehörige:r"
       "U": "anonym"
 
 #### AnfrageArt
+
       "M": "medizinische Soforthilfe"
       "S": "Vertrauliche Spurensicherung"
       "B": "Beratungsbedarf"
@@ -233,6 +247,7 @@ N: Index des DataRecords
       "X": "Sonstiges"
 
 #### GeschlechtsIdentität
+
       "C": "cis weiblich"
       "T": "trans weiblich"
       "M": "trans männlich"
@@ -242,6 +257,7 @@ N: Index des DataRecords
       "D": "divers"
 
 #### Sexualitaet
+
       "L": "lesbisch"
       "S": "schwul"
       "B": "bisexuell"
@@ -249,6 +265,7 @@ N: Index des DataRecords
       "H": "heterosexuell"
 
 #### BeruflicheSituation
+
       "L": "arbeitslos"
       "S": "studierend"
       "B": "berufstätig"
@@ -257,10 +274,12 @@ N: Index des DataRecords
       "U": "berufsunfähig"
 
 #### BehinderungsForm
+
       "P": "kognitiv"
       "K": "körperlich"
 
 #### BeratungsArt
+
       "P": "persönlich"
       "V": "video"
       "T": "telefon"
@@ -268,6 +287,7 @@ N: Index des DataRecords
       "S": "schriftlich"
 
 #### Beziehung
+
       "U": "Unbekannte:r"
       "B": "Bekannte:r"
       "P": "Partner:in"
@@ -277,6 +297,7 @@ N: Index des DataRecords
       "X": "Sonstige:r"
 
 #### TatOrt
+
       "S": "Stadt Leipzig"
       "L": "Landkreis Leipzig"
       "N": "Landkreis Nordsachsen"
@@ -287,11 +308,13 @@ N: Index des DataRecords
       "H": "im Herkunftsland"
 
 #### JaNeinUnentschieden
+
       "J": "Ja"
       "N": "Nein"
       "U": "noch nicht entschieden"
 
 #### Quelle
+
       "S": "Selbstmeldung über Polizei"
       "P": "Private Kontakte"
       "B": "Beratungsstellen"
@@ -301,6 +324,7 @@ N: Index des DataRecords
       "R": "Rechtsanwälte/-anwältinnen"
 
 #### Geschlecht
+
       "M": "männlich"
       "W": "weiblich"
       "D": "divers"
