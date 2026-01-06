@@ -78,8 +78,28 @@ export class ApiCaller implements IApiCaller {
     newPswd: string,
     newPswdCtrl: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    // TODO: Implement actual API call
-    throw new Error("Method not implemented.");
+    try {
+      const response = await this.request("/api/auth/change-password/", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({
+          old_password: curPswd,
+          new_password: newPswd,
+          new_password2: newPswdCtrl,
+        }),
+      });
+
+      if (response.ok) {
+        return { success: true, errorMsg: "" };
+      }
+
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.detail || "Passwortänderung fehlgeschlagen";
+
+      return { success: false, errorMsg };
+    } catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
   }
 
   async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
