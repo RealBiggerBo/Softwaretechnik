@@ -56,13 +56,15 @@ class AdminResetPasswordAPI(APIView):
         except User.DoesNotExist:
             # Sollte der Benutzer nicht existieren, gibt es einen Error.
             return Response({"error": "Benutzer nicht gefunden"}, status=404)
-        
+
+# Nur der Admin darf Rollen ändern.        
 class AdminChangeRoleAPI(APIView):
     permission_classes = [IsAdminUser]
 
     def post(self, request, user_id):
         role = request.data.get("role")
 
+        # Prüft ob es eine gültige Rolle gibt.
         if role not in ["base_user", "extended_user", "admin_user"]:
             return Response({"error": "Ungültige Rolle"}, status=400)
 
@@ -75,7 +77,7 @@ class AdminChangeRoleAPI(APIView):
         if user == request.user and role != "admin_user":
             return Response({"error": "Du kannst dir selbst keine Adminrechte entziehen"}, status=403)
 
-        # Es muss min einen Admin geben.
+        # Es muss min. einen Admin geben.
         if (
             user.groups.filter(name="admin_user").exists()
             and role != "admin_user"
