@@ -10,6 +10,7 @@ from api.accounts.permissions import IsBaseUser, IsExtendedUser
 
 # API für die Registrierung.
 class RegisterAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
     def post(self, request):
         # Die Angefragten Daten werden an den Serializer übergeben.
         serializer = RegisterSerializer(data=request.data)
