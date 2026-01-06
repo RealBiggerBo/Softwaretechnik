@@ -2,10 +2,13 @@
 //import FormControlLabel from "@mui/material/FormControlLabel";
 //import Switch from "@mui/material/Switch";
 import { useState } from "react";
+import type { IApiCaller } from "../classes/IApiCaller";
 
+interface Props {
+  caller: IApiCaller;
+}
 
-
-function DataviewPage(){
+function DataviewPage({ caller }: Props){
     const [selected, setSelected] = useState("");
     const [selectedtermin, setSelectedtermin] = useState("");
     const [anzahlTermin, setAnzahlTermin] = useState(1);
@@ -14,6 +17,7 @@ function DataviewPage(){
     const [selectedwohnort, setSelectedwohnort] = useState("");
     const [selectedSchwerbehinderung, setSelectedSchwerbehinderung] = useState("");
     const [selectedDolmetscher, setSelectedDolmetscher] = useState("");
+    const [selectedzeitraum, setSelectedzeitraum] = useState("");
 
     return (
         <div>
@@ -25,7 +29,7 @@ function DataviewPage(){
             </select>
 
 
-            {/* noch anfrage aus ... hinzufügen */}
+            
             {selected === "Anfrage" && <div>
                 <form action={"anfrage.html"} method={"get"}>
                 <h3>Anfrage</h3>
@@ -168,7 +172,6 @@ function DataviewPage(){
 
                 {selectedwohnort === "andere" &&
                 <tr><td>
-                <label>Wohnort: </label>
                 </td>
                 <td>
                 <input type="text" placeholder="Wohnort"/>
@@ -186,14 +189,13 @@ function DataviewPage(){
                 </td>
                 <td>
                 <select name="fall_staatsangehoerigkeit" onChange={(e) => setSelectedStaatsangehörigkeit(e.target.value)}>
-                    <option>deutsch</option>
+                    <option>Deutschland</option>
                     <option>andere</option>
                 </select>
                 </td></tr>
 
                 {selectedStaatsangehörigkeit === "andere" &&
                 <tr><td>
-                <label>Staatsangehörigkeit: </label>
                 </td>
                 <td>
                 <input type="text" placeholder="Staatsangehörigkeit"/>
@@ -318,14 +320,23 @@ function DataviewPage(){
                 <input type="number" step="1" placeholder="Alter" min="0"/>
                 </td></tr>
                 <tr><td>
-                <label htmlFor="dropdown15">Zeitraum der Gewalt: </label>
+                <label htmlFor="zeitraum">Zeitraum der Gewalt: </label>
                 </td>
                 <td>
-                <select>
-                    <option>Zeitraum</option>
+                <select name="zeitraum" onChange={(e) => setSelectedzeitraum(e.target.value)}>
                     <option>keine Abgabe</option>
+                    <option>Zeitraum</option>
                 </select>
                 </td></tr>
+
+                {selectedzeitraum === "Zeitraum" &&
+                <tr><td>
+                </td>
+                <td>
+                <input type="text" placeholder="Zeitraum der Gewalt"/>
+                </td></tr>
+                }
+
                 <tr><td>
                 <label htmlFor="dropdown15">Anzahl der Vorfälle: </label>
                 </td>

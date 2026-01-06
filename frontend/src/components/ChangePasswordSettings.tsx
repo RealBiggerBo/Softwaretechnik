@@ -10,7 +10,7 @@ function submitPasswordChangeRequest(
   caller: IApiCaller,
   oldPswd: string,
   newPswd: string,
-  newPswdCtrl: string
+  newPswdCtrl: string,
 ): void {
   const result = caller.TryChangePassword(oldPswd, newPswd, newPswdCtrl);
   if (!result.success) alert(result.errorMsg);
@@ -23,7 +23,13 @@ function ChangePasswordSettings({ caller }: Props) {
   const [newPswdCtrl, setNewPswdCtrl] = useState("");
 
   return (
-    <form className="passwordChangeForm">
+    <form
+      className="passwordChangeForm"
+      onSubmit={(event) => {
+        event.preventDefault();
+        submitPasswordChangeRequest(caller, oldPswd, newPswd, newPswdCtrl);
+      }}
+    >
       <PasswordInput
         label="Altes Passwort"
         id="oldPassword"
@@ -42,13 +48,7 @@ function ChangePasswordSettings({ caller }: Props) {
         value={newPswdCtrl}
         onValueChange={setNewPswdCtrl}
       />
-      <button
-        id="submit"
-        className="passwordChangeSubmitBtn"
-        onClick={() =>
-          submitPasswordChangeRequest(caller, oldPswd, newPswd, newPswdCtrl)
-        }
-      >
+      <button id="submit" className="passwordChangeSubmitBtn" type="submit">
         Passwort ändern
       </button>
     </form>

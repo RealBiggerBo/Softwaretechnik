@@ -21,12 +21,12 @@ export class ApiCaller implements IApiCaller {
       });
 
       if (response.ok) {
-        return { success: true, errorMsg: "Regstraition sucsess" };
+        return { success: true, errorMsg: "Registratition Erfolgreich" };
       }
 
-      return { success: false, errorMsg: "Regstraition failed" };
+      return { success: false, errorMsg: "Registratition Fehlgeschlagen" };
     } catch {
-      return { success: false, errorMsg: "Network error" };
+      return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
   async TryLogin(
@@ -44,12 +44,12 @@ export class ApiCaller implements IApiCaller {
       });
 
       if (response.ok) {
-        return { success: true, errorMsg: "Login failed" };
+        return { success: true, errorMsg: "Login Erfolgreich" };
       }
 
-      return { success: false, errorMsg: "Login failed" };
+      return { success: false, errorMsg: "Login Fehlgeschlagen" };
     } catch {
-      return { success: false, errorMsg: "Network error" };
+      return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
   async GetUsers(): Promise<string[]> {
@@ -76,6 +76,30 @@ export class ApiCaller implements IApiCaller {
     newPswdCtrl: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
     // TODO: Implement actual API call
+    throw new Error("Method not implemented.");
+  }
+
+  async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
     throw new Error("Method not implemented.");
   }
 }

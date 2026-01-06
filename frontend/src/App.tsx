@@ -5,7 +5,7 @@ import MainPage from "./pages/MainPage";
 import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
 import Navbar from "./components/Navbar";
-import { useState } from "react";
+//import { useState } from "react";
 import type { IApiCaller } from "./classes/IApiCaller";
 import StatisticsPage from "./pages/StatisticsPage";
 import Box from "@mui/material/Box";
@@ -13,14 +13,6 @@ import Container from "@mui/material/Container";
 import DataviewPage from "./pages/DataviewPage";
 import SearchPage from "./pages/SearchPage";
 
-function HomePage() {
-  return (
-    <div>
-      <h1>Home</h1>
-      <p>Willkommen auf der Startseite.</p>
-    </div>
-  );
-}
 
 interface Props {
   caller: IApiCaller;
@@ -33,7 +25,6 @@ function App({ caller }: Props) {
       <Container fixed>
         <Box>
           <Routes>
-            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage caller={caller} />} />
             <Route path="/main" element={<MainPage caller={caller} />} />
             <Route
@@ -44,8 +35,8 @@ function App({ caller }: Props) {
               path="/statistics"
               element={<StatisticsPage caller={caller} />}
             />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/dataview" element={<DataviewPage />} />
+            <Route path="/search" element={<SearchPage caller={caller}/>} />
+            <Route path="/dataview" element={<DataviewPage caller={caller}/>} />
           </Routes>
         </Box>
       </Container>
