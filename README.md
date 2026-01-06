@@ -17,14 +17,16 @@ Passwort: 0UsQzBB1
    - Windows PowerShell: `python -m venv venv; .\venv\Scripts\Activate.ps1`
 3. Abhängigkeiten installieren: `pip install -r requirements.txt`
 4. Datenbank migrieren (legt SQLite-DB an/aktualisiert sie): `python manage.py migrate`
-5. Entwicklung starten: `python manage.py runserver` (läuft unter http://127.0.0.1:8000)
+5. Erstellen der Rollen `python manage.py create_roles` (aktuell noch manuell, später wharscheinlich als script)
+6. Entwicklung starten: `python manage.py runserver` (läuft unter http://127.0.0.1:8000)
 
 ## Frontend (Vite + React)
 
 1. Ein neues zweites Konsolenfenster öffnen
 2. `cd frontend`
 3. Dependencies holen: `npm install`
-4. Entwicklung: `npm run dev` (öffnet http://127.0.0.1:5173)
+4. `npm install @mui/material` oder `install @mui/material`
+5. Entwicklung: `npm run dev` (öffnet http://127.0.0.1:5173)
 
 ## API
 

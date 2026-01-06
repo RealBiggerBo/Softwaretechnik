@@ -47,8 +47,8 @@ INSTALLED_APPS = [
 ]
 
 PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.Argon2PasswordHasher',         # Für alle neuen Passwörter ("pip install argon2-cffi")
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',   # Fallback ("pip install bcrypt")
+    'django.contrib.auth.hashers.Argon2PasswordHasher',         # Für alle neuen Passwörter 
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',   # Fallback
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',         # Backup Fallback
 ]
 
@@ -146,10 +146,10 @@ CORS_ALLOW_CREDENTIALS = True
 # Tokenverwaltung 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'api.accounts.permissions.IsBaseUser', # Da eigene permissions erstellt wurden.
     ],
 }
 

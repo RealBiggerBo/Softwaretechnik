@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ChangePasswordSerializer
+from api.accounts.permissions import IsBaseUser, IsExtendedUser
 
 # API für die Registrierung.
 class RegisterAPIView(APIView):
@@ -38,7 +39,8 @@ class LoginAPIView(APIView):
         
         # Schlägt der Login fehl gibt es eine Fehlermeldung.
         return Response({"error": "Login fehlgeschlagen"}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
+# API für den Logout.    
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -61,6 +63,7 @@ class MeAPIView(APIView):
             "is_admin": request.user.is_staff,
             })
 
+# API für Passwort ändern.
 class ChangePasswordAPI(APIView):
     # Nur angemeldete Benutzer dürfen ihr Passwort ändern.
     permission_classes = [permissions.IsAuthenticated]
@@ -86,3 +89,70 @@ class ChangePasswordAPI(APIView):
 
         # Gibt eine Erfolgsmeldung zurück.
         return Response({"message": "Passwort erfolgreich geändert"}, status=status.HTTP_200_OK)
+
+# API's für was die Rollen Permissions:
+
+# Aktuell noch nicht fertig/im Aufbau!
+
+# API für Datensätze anlegen
+class CreateDatasetAPI(APIView):
+    permission_classes = [IsBaseUser]
+
+    def post(self, request):
+        # Beispiel-Datenverarbeitung
+        data = request.data
+        # dataset = Dataset.objects.create(...)
+        return Response({"message": "Datensatz angelegt"}, status=status.HTTP_201_CREATED)
+
+# API für Datensätze bearbeiten
+class UpdateDatasetAPI(APIView):
+    permission_classes = [IsBaseUser]
+
+    def put(self, request, dataset_id):
+        # dataset = Dataset.objects.get(id=dataset_id)
+        # dataset.update(...)
+        return Response({"message": "Datensatz aktualisiert"})
+
+# API für Statistik abrufen
+class StatisticsAPI(APIView):
+    permission_classes = [IsBaseUser]
+
+    def get(self, request):
+        stats = {
+            "count": 42,
+            "avg": 12.3
+        }
+        return Response(stats)
+    
+# API um eigene Presets zu speichern/löschen
+class UserPresetAPI(APIView):
+    permission_classes = [IsBaseUser]
+
+    def post(self, request):
+        # Preset speichern
+        return Response({"message": "Preset gespeichert"})
+
+    def delete(self, request, preset_id):
+        # Preset löschen
+        return Response({"message": "Preset gelöscht"})
+
+# API um geteilte Presets zuerstellen
+class SharedPresetCreateAPI(APIView):
+    permission_classes = [IsBaseUser]
+
+    def post(self, request):
+        return Response({"message": "Geteiltes Preset erstellt"})
+
+# API um geteilte Presets zulöschen
+class SharedPresetDeleteAPI(APIView):
+    permission_classes = [IsExtendedUser]
+
+    def delete(self, request, preset_id):
+        return Response({"message": "Geteiltes Preset gelöscht"})
+
+# API um Formularfelder zuerweitern
+class CreateFormFieldAPI(APIView):
+    permission_classes = [IsExtendedUser]
+
+    def post(self, request):
+        return Response({"message": "Formularfeld erstellt"})
