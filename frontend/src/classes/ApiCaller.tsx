@@ -4,6 +4,9 @@ const headers = new Headers();
 headers.set("Content-Type", "application/json");
 
 export class ApiCaller implements IApiCaller {
+  Logout(): void {
+    headers.delete("Authorization");
+  }
   private async request(path: string, init: RequestInit): Promise<Response> {
     return fetch(`${baseurl}${path}`, { ...init, headers });
   }
@@ -45,7 +48,6 @@ export class ApiCaller implements IApiCaller {
 
       if (response.ok) {
         response.json().then((data) => {
-          console.log(data);
           headers.set("Authorization", `token ${data.token}`);
         });
         return { success: true, errorMsg: "Login Erfolgreich" };

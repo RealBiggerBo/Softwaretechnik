@@ -1,11 +1,15 @@
 import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import type { IApiCaller } from "../classes/IApiCaller";
 
+interface Props {
+  caller: IApiCaller;
+}
 
-function Navbar() {
+function Navbar({ caller }: Props) {
   const navigate = useNavigate();
   return (
-        <AppBar position="static">
+    <AppBar position="static">
       <Toolbar>
         {/* Linke Seite */}
         <Button color="inherit" onClick={() => navigate("/help")}>
@@ -16,7 +20,13 @@ function Navbar() {
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Rechte Seite */}
-        <Button color="inherit" onClick={() => navigate("/login")}>
+        <Button
+          color="inherit"
+          onClick={() => {
+            caller.Logout();
+            navigate("/login");
+          }}
+        >
           Logout
         </Button>
         <Button color="inherit" onClick={() => navigate("/main")}>

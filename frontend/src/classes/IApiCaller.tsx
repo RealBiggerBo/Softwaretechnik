@@ -1,6 +1,5 @@
-import {Case} from "./Case";
-import {Anfrage} from "./Anfrage";
-
+import { Case } from "./Case";
+import { Anfrage } from "./Anfrage";
 
 export interface IApiCaller {
   GetUsers(): Promise<string[]>;
@@ -25,15 +24,15 @@ export interface IApiCaller {
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
+  Logout(): void;
+
   TryRegister(
     user: string,
     pswd1: string,
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TryCreateCase(
-    newCase: Case,
-  ): Promise<{ success: boolean; errorMsg: string }>;
+  TryCreateCase(newCase: Case): Promise<{ success: boolean; errorMsg: string }>;
 
   TryCreateAnfrage(
     newAnfrage: Anfrage,
@@ -49,6 +48,9 @@ export interface IApiCaller {
 }
 
 export class MockApiCaller implements IApiCaller {
+  Logout(): void {
+    throw new Error("Method not implemented.");
+  }
   async TryRegister(
     user: string,
     pswd1: string,
