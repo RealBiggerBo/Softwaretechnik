@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import type { Dayjs } from "dayjs";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { type IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
@@ -14,11 +14,21 @@ interface Props {
 }
 
 function StatisticsPage({ caller }: Props) {
-  const presets = useMemo(() => caller.GetStatisticsPresets(), [caller]);
+  const [presets, setPresets] = useState<string[]>([]);
   const [timeStart, setTimeStart] = useState<Dayjs | null>(null);
   const [timeEnd, setTimeEnd] = useState<Dayjs | null>(null);
-  const [preset, setPreset] = useState<string>(presets[0] ?? "");
+  const [preset, setPreset] = useState<string>("");
   const [fileFormat, setFileFormat] = useState<string>("CSV");
+
+  useEffect(() => {
+    const fetchPresets = async () => {
+      const availablePresets = await caller.GetStatisticsPresets();
+      setPresets(availablePresets);
+      setPreset((prev) => prev || availablePresets[0] || "");
+    };
+
+    void fetchPresets();
+  }, [caller]);
 
   const exportDisabled =
     !timeStart ||
@@ -31,8 +41,8 @@ function StatisticsPage({ caller }: Props) {
     return value?.toISOString() ?? "";
   }
 
-  function handleExport() {
-    const url = caller.GetExportUrl(
+  async function handleExport() {
+    const url = await caller.GetExportUrl(
       formatDateForApi(timeStart),
       formatDateForApi(timeEnd),
       preset,
