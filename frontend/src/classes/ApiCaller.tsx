@@ -50,7 +50,7 @@ export class ApiCaller implements IApiCaller {
         });
         return { success: true, errorMsg: "Login Erfolgreich" };
       }
-      return { success: true, errorMsg: "Login Fehlgeschlagen" };
+      return { success: false, errorMsg: "Login Fehlgeschlagen" };
     } catch {
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
