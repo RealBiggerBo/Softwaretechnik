@@ -25,8 +25,7 @@ Passwort: 0UsQzBB1
 1. Ein neues zweites Konsolenfenster öffnen
 2. `cd frontend`
 3. Dependencies holen: `npm install`
-4. `npm install @mui/material` oder `install @mui/material`
-5. Entwicklung: `npm run dev` (öffnet http://127.0.0.1:5173)
+4. Entwicklung: `npm run dev` (öffnet http://127.0.0.1:5173)
 
 ## API
 
