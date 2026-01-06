@@ -1,4 +1,7 @@
 import type { IApiCaller } from "./IApiCaller";
+import type { Case } from "./Case";
+import type { Anfrage } from "./Anfrage";
+
 const baseurl = "http://127.0.0.1:8000";
 const headers = new Headers();
 headers.set("Content-Type", "application/json");
@@ -104,16 +107,61 @@ export class ApiCaller implements IApiCaller {
     }
   }
 
-  async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+  async TryCreateCase(
+    newCase: Case
+  ): Promise<{ success: boolean; errorMsg: string }> {
+
+    try{
+      const response = await this.request("/api/data/save/fall", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(newCase),
+      });
+
+      if (response.ok) {
+        return { success: true, errorMsg: "" };
+      }
+
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.detail || "Fall konnte nicht gespeichert werden.";
+
+      return { success: false, errorMsg };
+    }
+    catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
   }
 
-  async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+  async TryCreateAnfrage(
+    newAnfrage: Anfrage,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+
+    try{
+      const response = await this.request("/api/data/save/anfrage", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(newAnfrage),
+      });
+
+      if (response.ok) {
+        return { success: true, errorMsg: "" };
+      }
+
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.detail || "Anfrage konnte nicht gespeichert werden.";
+
+      return { success: false, errorMsg };
+    }
+    catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
+
   }
 
   async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
+
     throw new Error("Method not implemented.");
+
   }
 
   async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
