@@ -91,7 +91,7 @@ class ChangePasswordAPI(APIView):
         # Gibt eine Erfolgsmeldung zurück.
         return Response({"message": "Passwort erfolgreich geändert"}, status=status.HTTP_200_OK)
 
-# API's für was die Rollen Permissions:
+# API's für die Rollen Permissions:
 
 # Aktuell noch nicht fertig/im Aufbau!
 
