@@ -16,7 +16,7 @@ function Navbar() {
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Rechte Seite */}
-        <Button color="inherit" onClick={() => navigate("/logout")}>
+        <Button color="inherit" onClick={() => navigate("/login")}>
           Logout
         </Button>
         <Button color="inherit" onClick={() => navigate("/main")}>

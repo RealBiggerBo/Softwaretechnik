@@ -78,4 +78,28 @@ export class ApiCaller implements IApiCaller {
     // TODO: Implement actual API call
     throw new Error("Method not implemented.");
   }
+
+  async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
 }
