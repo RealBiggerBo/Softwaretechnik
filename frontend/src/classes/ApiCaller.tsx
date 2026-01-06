@@ -21,12 +21,12 @@ export class ApiCaller implements IApiCaller {
       });
 
       if (response.ok) {
-        return { success: true, errorMsg: "Regstraition sucsess" };
+        return { success: true, errorMsg: "Registratition Erfolgreich" };
       }
 
-      return { success: false, errorMsg: "Regstraition failed" };
+      return { success: false, errorMsg: "Registratition Fehlgeschlagen" };
     } catch {
-      return { success: false, errorMsg: "Network error" };
+      return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
   async TryLogin(
@@ -44,12 +44,12 @@ export class ApiCaller implements IApiCaller {
       });
 
       if (response.ok) {
-        return { success: true, errorMsg: "Login successful" };
+        return { success: true, errorMsg: "Login Erfolgreich" };
       }
 
-      return { success: false, errorMsg: "Login failed" };
+      return { success: false, errorMsg: "Login Fehlgeschlagen" };
     } catch {
-      return { success: false, errorMsg: "Network error" };
+      return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
   async GetUsers(): Promise<string[]> {

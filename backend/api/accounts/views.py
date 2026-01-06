@@ -22,6 +22,7 @@ class RegisterAPIView(APIView):
 
 # API für den Login.
 class LoginAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
     def post(self, request):
         # Die Login-Daten werden ausgelesen.
         username = request.data.get('username')

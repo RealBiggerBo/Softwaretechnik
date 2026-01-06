@@ -91,7 +91,7 @@ class BeratungSerializer(serializers.ModelSerializer):
         fields = ["fall",
                     "datum",
                     "art",
-                    "ort",
+                    "stelle",
                     "notizen"]
 
 class GewalttatSerializer(serializers.ModelSerializer):
@@ -128,6 +128,6 @@ class GewalttatSerializer(serializers.ModelSerializer):
 class TaeterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Taeter
-        fields = ["tat",
+        fields = ["gewalttat",
                     "geschlecht",
                     "beziehung"]

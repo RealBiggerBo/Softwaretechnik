@@ -68,7 +68,7 @@ N: Index des DataRecords
    "mit_termin": bool,
    "termin_ort": "-> Aufzählungen",
    "termin_datum": "YYYY-MM-DD"
-    }
+}
 ```
 
 #### Fall
@@ -76,17 +76,17 @@ N: Index des DataRecords
 ```
 {
    "alias": "string (maxLänge: 50)",
-   "rolle": "-> Aufzählungen",
+   "rolle": "-> Rolle",
    "alter": int,
-   "geschlecht": "-> Aufzählungen",
-   "sexualitaet": "-> Aufzählungen",
-   "wohnort": "-> Aufzählungen",
+   "geschlecht": "-> GeschlechtsIdentität",
+   "sexualitaet": "-> Sexualitaet",
+   "wohnort": "-> Ort",
    "staatsangehoerigkeit": "string (maxLänge: 50)",
-   "berufssituation": "-> Aufzählungen",
+   "berufssituation": "-> BeruflicheSituation",
    "schwerbehinderung": bool,
-   "schwerbehinderung_form": "-> Aufzählungen",
+   "schwerbehinderung_form": "-> BehinderungsForm",
    "schwerbehinderung_grad": "string optional (maxLänge: 50)",
-   "beratungsstelle": "-> Aufzählungen",
+   "beratungsstelle": "-> Beratungsstelle",
    "anzahl_beratungen": int,
    "depression": bool,
    "angststoerung": bool,
@@ -136,7 +136,7 @@ N: Index des DataRecords
    "verweise_schutzeinrichtungen_spezialisiert": int,
    "verweise_interventionsstellen": int,
    "verweise_sonstige": "string optional (maxLänge: 200)",
-   "quelle": "-> Aufzählungen",
+   "quelle": "-> Quelle",
    "andere_quelle": "string optional (maxLänge: 50)",
    "dolmetsch_zeit": int,
    "dolmetsch_sprache": "string optional (maxLänge: 50)",
@@ -146,9 +146,59 @@ N: Index des DataRecords
 
 #### Beratung
 
+```
+{
+    "fall": int (Index des Falls),
+    "datum": "YYYY-MM-DD",
+    "art": "-> AnfrageArt",
+    "stelle": "-> Beratungsstelle",
+    "notizen": "string optional (maxLänge: 200)"
+}
+```
+
 #### Gewalttat
 
+```
+{
+    "fall": int (Index des Falls),
+    "alter": int optional,
+    "zeitraum": int optional,
+    "anzahl_vorfaelle": int optional,
+    "anzahl_taeter": int optional,
+    "sexuelle_belaestigung_oeffentlich": bool,
+    "sexuelle_belaestigung_arbeit": bool,
+    "sexuelle_belaestigung_privat": bool,
+    "vergewaltigung": bool,
+    "versuchte_vergewaltigung": bool,
+    "sexueller_missbrauch": bool,
+    "sexueller_missbrauch_kindheit": bool,
+    "sexuelle_noetigung": bool,
+    "rituelle_gewalt": bool,
+    "zwangsprostitution": bool,
+    "sexuelle_ausbeutung": bool,
+    "upskirting": bool,
+    "catcalling": bool,
+    "digitale_sexuelle_gewalt": bool,
+    "spiking": bool,
+    "weitere": "string optional (maxLänge: 200)",
+    "tatort": "-> TatOrt",
+    "anzeige": "-> JaNeinUnentschieden",
+    "med_versorgung": bool,
+    "betroffene_kinder": int optional,
+    "betroffene_kinder_direkt": int optional,
+    "notizen": "string optional (maxLänge: 200)"
+}
+```
+
 #### Taeter
+
+```
+{
+    "gewalttat": int (Index der Gewalttat),
+    "geschlecht": "-> Geschlecht",
+    "beziehung": "-> Beziehung"
+}
+```
 
 ### Aufzählungen
 
