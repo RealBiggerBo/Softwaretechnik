@@ -1,18 +1,21 @@
 import type { IApiCaller } from "./IApiCaller";
 const baseurl = "http://127.0.0.1:8000";
+const headers = new Headers();
+headers.set("Content-Type", "application/json");
 
 export class ApiCaller implements IApiCaller {
+  private async request(path: string, init: RequestInit): Promise<Response> {
+    return fetch(`${baseurl}${path}`, { ...init, headers });
+  }
+
   async TryRegister(
     user: string,
     pswd1: string,
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
     try {
-      const response = await fetch(`${baseurl}/api/auth/register/`, {
+      const response = await this.request("/api/auth/register/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           username: user,
           password: pswd1,
@@ -34,20 +37,20 @@ export class ApiCaller implements IApiCaller {
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
     try {
-      const response = await fetch(`${baseurl}/api/auth/login/`, {
+      const response = await this.request("/api/auth/login/", {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ username: user, password: pswd }),
       });
 
       if (response.ok) {
+        response.json().then((data) => {
+          console.log(data);
+          headers.set("Authorization", `token ${data.token}`);
+        });
         return { success: true, errorMsg: "Login Erfolgreich" };
       }
-
-      return { success: false, errorMsg: "Login Fehlgeschlagen" };
+      return { success: true, errorMsg: "Login Fehlgeschlagen" };
     } catch {
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
