@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
       <BrowserRouter>
-        <App caller={new MockApiCaller()} />
+        <App caller={new ApiCaller()} />
       </BrowserRouter>
     </LocalizationProvider>
   </StrictMode>,

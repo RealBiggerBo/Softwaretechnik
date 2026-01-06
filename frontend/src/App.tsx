@@ -13,7 +13,6 @@ import Container from "@mui/material/Container";
 import DataviewPage from "./pages/DataviewPage";
 import SearchPage from "./pages/SearchPage";
 
-
 interface Props {
   caller: IApiCaller;
 }
@@ -21,7 +20,7 @@ interface Props {
 function App({ caller }: Props) {
   return (
     <div className="mainContainer">
-      <Navbar />
+      <Navbar caller={caller} />
       <Container fixed>
         <Box>
           <Routes>
@@ -35,8 +34,11 @@ function App({ caller }: Props) {
               path="/statistics"
               element={<StatisticsPage caller={caller} />}
             />
-            <Route path="/search" element={<SearchPage caller={caller}/>} />
-            <Route path="/dataview" element={<DataviewPage caller={caller}/>} />
+            <Route path="/search" element={<SearchPage caller={caller} />} />
+            <Route
+              path="/dataview"
+              element={<DataviewPage caller={caller} />}
+            />
           </Routes>
         </Box>
       </Container>
