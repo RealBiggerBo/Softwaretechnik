@@ -38,9 +38,13 @@ export interface IApiCaller {
     newAnfrage: Anfrage,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TrySearchFall(): Promise<{ success: boolean; errorMsg: string }>;
+  TrySearchFall(
+    caseToSearch: Case,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }>;
+  TrySearchAnfrage(
+    anfrageToSearch: Anfrage,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 
   TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }>;
 
@@ -145,26 +149,26 @@ export class MockApiCaller implements IApiCaller {
     };
   }
   async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: true, errorMsg: "" };
+    return { success: false, errorMsg: "Not implemented in mock!" };
   }
 
   async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: true, errorMsg: "" };
+    return { success: false, errorMsg: "Not implemented in mock!" };
   }
 
   async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: true, errorMsg: "" };
+    return { success: false, errorMsg: "Not implemented in mock!" };
   }
 
   async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: true, errorMsg: "" };
+    return { success: false, errorMsg: "Not implemented in mock!" };
   }
 
   async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: true, errorMsg: "" };
+    return { success: false, errorMsg: "Not implemented in mock!" };
   }
 
   async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: true, errorMsg: "" };
+    return { success: false, errorMsg: "Not implemented in mock!" };
   }
 }

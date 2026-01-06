@@ -1,4 +1,7 @@
 import type { IApiCaller } from "./IApiCaller";
+import { Anfrage } from "./Anfrage";
+import { Case } from "./Case";
+
 const baseurl = "http://127.0.0.1:8000";
 const headers = new Headers();
 headers.set("Content-Type", "application/json");
@@ -112,12 +115,50 @@ export class ApiCaller implements IApiCaller {
     throw new Error("Method not implemented.");
   }
 
-  async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+  async TrySearchFall(
+    caseToSearch: Case,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    try {
+      const response = await this.request("/api/data/fall/search", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(caseToSearch),
+      });
+
+      if (response.ok) {
+        return { success: true, errorMsg: "" };
+      }
+
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.detail || "Suche fehlgeschlagen";
+
+      return { success: false, errorMsg };
+    } catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
   }
 
-  async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+  async TrySearchAnfrage(
+    anfrageToSearch: Anfrage,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    try {
+      const response = await this.request("/api/data/anfrage/search", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(anfrageToSearch),
+      });
+
+      if (response.ok) {
+        return { success: true, errorMsg: "" };
+      }
+
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.detail || "Suche fehlgeschlagen";
+
+      return { success: false, errorMsg };
+    } catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
   }
 
   async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
