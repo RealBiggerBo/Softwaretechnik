@@ -106,7 +106,7 @@ function DataviewPage({ caller }: Props){
                 </div>}
 
                 <br/>
-                <input type="submit" value="Speichern"/></form>
+                <input type="submit" value="Speichern" onClick={()=>caller.TryCreateAnfrage}/></form>
                 </div>}
 
             {selected === "Fall" && <div>
@@ -789,7 +789,7 @@ function DataviewPage({ caller }: Props){
                 }
 
                 </fieldset>
-                <input type="submit" value="Speichern"/></form>
+                <input type="submit" value="Speichern" onClick={()=> caller.TryCreateCase}/></form>
                 </div>}
         </div>
     );
