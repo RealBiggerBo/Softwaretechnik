@@ -6,13 +6,13 @@ interface Props {
   caller: IApiCaller;
 }
 
-function submitPasswordChangeRequest(
+async function submitPasswordChangeRequest(
   caller: IApiCaller,
   oldPswd: string,
   newPswd: string,
   newPswdCtrl: string,
-): void {
-  const result = caller.TryChangePassword(oldPswd, newPswd, newPswdCtrl);
+): Promise<void> {
+  const result = await caller.TryChangePassword(oldPswd, newPswd, newPswdCtrl);
   if (!result.success) alert(result.errorMsg);
 }
 
@@ -25,9 +25,14 @@ function ChangePasswordSettings({ caller }: Props) {
   return (
     <form
       className="passwordChangeForm"
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        submitPasswordChangeRequest(caller, oldPswd, newPswd, newPswdCtrl);
+        await submitPasswordChangeRequest(
+          caller,
+          oldPswd,
+          newPswd,
+          newPswdCtrl,
+        );
       }}
     >
       <PasswordInput
