@@ -19,7 +19,14 @@ class IsExtendedUser(BasePermission):
 # Admin
 class IsAdminUser(BasePermission):
     def has_permission(self, request, view):
-        # Es wird geprüft ob der Nutzer angemeldet ist und ob er zur Admin Gruppe gehört.
-        return request.user.is_authenticated and request.user.groups.filter(
-            name="admin_user"
-        ).exists()
+        user = request.user
+
+        if not user.is_authenticated:
+            return False
+        
+        # Superuser darf Immer
+        if user.is_superuser:
+            return True
+
+        # Normale Admins
+        return user.groups.filter(name="admin_user").exists()

@@ -4,12 +4,13 @@ from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ChangePasswordSerializer
 from api.accounts.permissions import IsBaseUser, IsExtendedUser
 
 # API für die Registrierung.
 class RegisterAPIView(APIView):
+    permissions_classes = [AllowAny]
     def post(self, request):
         # Die Angefragten Daten werden an den Serializer übergeben.
         serializer = RegisterSerializer(data=request.data)
@@ -23,7 +24,7 @@ class RegisterAPIView(APIView):
 
 # API für den Login.
 class LoginAPIView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
     def post(self, request):
         # Die Login-Daten werden ausgelesen.
         username = request.data.get('username')
@@ -61,13 +62,13 @@ class MeAPIView(APIView):
             "id": request.user.id, 
             "username": request.user.username, 
             "roles": roles,
-            "is_admin": request.user.is_staff,
+            "is_staff": request.user.is_staff,
             })
 
 # API für Passwort ändern.
 class ChangePasswordAPI(APIView):
     # Nur angemeldete Benutzer dürfen ihr Passwort ändern.
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         # Holt die Daten aus der Anfrage und übergibt sie an den Serializer
