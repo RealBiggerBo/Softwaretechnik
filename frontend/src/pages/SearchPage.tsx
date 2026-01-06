@@ -1,8 +1,12 @@
 import { Switch } from "@mui/material";
 import { useState } from "react";
+import type { IApiCaller } from "../classes/IApiCaller";
 
+interface Props {
+  caller: IApiCaller;
+}
 
-function SearchPage(){
+function SearchPage({ caller }: Props){
     const [selected, setSelected] = useState("");
     return(
         <div>

@@ -44,7 +44,7 @@ export class ApiCaller implements IApiCaller {
       });
 
       if (response.ok) {
-        return { success: true, errorMsg: "Login failed" };
+        return { success: true, errorMsg: "Login successful" };
       }
 
       return { success: false, errorMsg: "Login failed" };
@@ -76,6 +76,30 @@ export class ApiCaller implements IApiCaller {
     newPswdCtrl: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
     // TODO: Implement actual API call
+    throw new Error("Method not implemented.");
+  }
+
+  async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
     throw new Error("Method not implemented.");
   }
 }

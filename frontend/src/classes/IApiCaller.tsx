@@ -1,5 +1,10 @@
+import {Case} from "./Case";
+import {Anfrage} from "./Anfrage";
+
+
 export interface IApiCaller {
   GetUsers(): Promise<string[]>;
+
   GetExportUrl(
     timeStart: string,
     timeEnd: string,
@@ -8,20 +13,39 @@ export interface IApiCaller {
     fileformat: string,
   ): Promise<string>;
   GetStatisticsPresets(): Promise<string[]>;
+
   TryChangePassword(
     curPswd: string,
     newPswd: string,
     newPswdCtrl: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
+
   TryLogin(
     user: string,
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
+
   TryRegister(
     user: string,
     pswd1: string,
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
+
+  TryCreateCase(
+    newCase: Case,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
+  TryCreateAnfrage(
+    newAnfrage: Anfrage,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
+  TrySearchFall(): Promise<{ success: boolean; errorMsg: string }>;
+
+  TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }>;
+
+  TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }>;
+
+  TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }>;
 }
 
 export class MockApiCaller implements IApiCaller {
@@ -117,5 +141,28 @@ export class MockApiCaller implements IApiCaller {
       success: true,
       errorMsg: "",
     };
+  }
+  async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: true, errorMsg: "" };
+  }
+
+  async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: true, errorMsg: "" };
+  }
+
+  async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: true, errorMsg: "" };
+  }
+
+  async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: true, errorMsg: "" };
+  }
+
+  async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: true, errorMsg: "" };
+  }
+
+  async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: true, errorMsg: "" };
   }
 }
