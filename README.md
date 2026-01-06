@@ -1,5 +1,9 @@
 # Anleitung zum Bauen
 
+## Benötigte Pakete
+- Python: https://www.python.org/downloads/
+- Node.js: https://nodejs.org/en/download
+
 ## adminuser
 ```
 Username: superuser
