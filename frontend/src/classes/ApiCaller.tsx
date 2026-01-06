@@ -159,7 +159,9 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
+
     throw new Error("Method not implemented.");
+
   }
 
       const error = await response.json().catch(() => ({}));
