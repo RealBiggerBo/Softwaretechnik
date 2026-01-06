@@ -101,7 +101,17 @@ def get(request, type, pk):
     if data_record == None:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = FallSerializer(data_record)
+    if type == "anfrage":
+        serializer = AnfrageSerializer(data_record)
+    elif type == "fall":
+        serializer = FallSerializer(data_record)
+    elif type == "beratung":
+        serializer = BeratungSerializer(data_record)
+    elif type == "gewalttat":
+        serializer = GewalttatSerializer(data_record)
+    elif type == "taeter":
+        serializer = TaeterSerializer(data_record)
+
     return Response(serializer.data)
 
 @api_view(["PUT"])
@@ -117,7 +127,16 @@ def update(request, type, pk):
     if data_record == None:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = FallSerializer(data_record, data=request.data)
+    if type == "anfrage":
+        return AnfrageSerializer(data_record, data=request.data)
+    elif type == "fall":
+        return FallSerializer(data_record, data=request.data)
+    elif type == "beratung":
+        return BeratungSerializer(data_record, data=request.data)
+    elif type == "gewalttat":
+        return GewalttatSerializer(data_record, data=request.data)
+    elif type == "taeter":
+        return TaeterSerializer(data_record, data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
