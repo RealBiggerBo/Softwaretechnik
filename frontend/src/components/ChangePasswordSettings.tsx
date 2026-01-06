@@ -10,10 +10,11 @@ async function submitPasswordChangeRequest(
   caller: IApiCaller,
   oldPswd: string,
   newPswd: string,
-  newPswdCtrl: string,
+  newPswdCtrl: string
 ): Promise<void> {
   const result = await caller.TryChangePassword(oldPswd, newPswd, newPswdCtrl);
   if (!result.success) alert(result.errorMsg);
+  else alert("Passwort erfolgreich geändert");
 }
 
 //Generiert den Change Password bereich in den Einstellungen
@@ -31,7 +32,7 @@ function ChangePasswordSettings({ caller }: Props) {
           caller,
           oldPswd,
           newPswd,
-          newPswdCtrl,
+          newPswdCtrl
         );
       }}
     >
