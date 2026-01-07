@@ -35,129 +35,47 @@ Passwort: 0UsQzBB1
 
 Bei sonstigen Fehlermeldungen kann ChatGPT/Gemini helfen.
 
-## API
-
-### Data
-
-#### GetDataRecords
-
-- URL: /api/data/get_list/T
-
-#### Save
-
-- URL: /api/data/save/T
-
-#### Load
-
-- URL: /api/data/get/T/N
-
-#### Search
-
-- noch nicht vorhanden (URL: /api/data/T/search)
-
-#### Update
-
-- URL: /api/data/update/T/N
-
-#### Delete
-
-- URL: /api/data/get/T/N
+# API's
 
 T: Typ des DataRecords (anfrage, fall)
 
 N: Index des DataRecords
 
-### DataRecords
+## DataAPI
 
-#### Anfrage
+URL: /api/data/data/T/N
 
-```
-{
-   "sende_art": "string (maxLänge: 200)",
-   "sende_datum": "YYYY-MM-DD",
-   "sende_ort": "-> Aufzählungen",
-   "sender_rolle": "-> Aufzählungen",
-   "im_auftrag": bool,
-   "ist_queer": bool,
-   "anfrage_art": "-> Aufzählungen",
-   "mit_termin": bool,
-   "termin_ort": "-> Aufzählungen",
-   "termin_datum": "YYYY-MM-DD"
-}
-```
+Methoden: DELETE, GET, POST, PUT
 
-#### Fall
+## DataRecordAPI
 
-```
-{
-   "alias": "string (maxLänge: 50)",
-   "rolle": "-> Rolle",
-   "alter": int,
-   "geschlecht": "-> GeschlechtsIdentität",
-   "sexualitaet": "-> Sexualitaet",
-   "wohnort": "-> Ort",
-   "staatsangehoerigkeit": "string (maxLänge: 50)",
-   "berufssituation": "-> BeruflicheSituation",
-   "schwerbehinderung": bool,
-   "schwerbehinderung_form": "-> BehinderungsForm",
-   "schwerbehinderung_grad": "string optional (maxLänge: 50)",
-   "beratungsstelle": "-> Beratungsstelle",
-   "anzahl_beratungen": int,
-   "depression": bool,
-   "angststoerung": bool,
-   "ptbs": bool,
-   "anderes": bool,
-   "burn_out": bool,
-   "schlafstoerung": bool,
-   "sucht": bool,
-   "kommunikationsschwierigkeiten": bool,
-   "vernachlaessigung_alltäglicher_dinge": bool,
-   "schmerzen": bool,
-   "laehmungen": bool,
-   "krankheit": bool,
-   "dauerhafte_beeintraechtigung": "string optional (maxLänge: 200)",
-   "finanzielle_folgen": bool,
-   "arbeits_einschraenkung": bool,
-   "verlust_arbeit": bool,
-   "soziale_isolation": bool,
-   "suizidalität": bool,
-   "weiteres": "string optional (maxLänge: 200)",
-   "notizen_folgen": "string optional (maxLänge: 200)",
-   "begleitungen_gesamt": int,
-   "begleitungen_gerichte": int,
-   "begleitungen_polizei": int,
-   "begleitungen_rechtsanwaelte": int,
-   "begleitungen_aerzte": int,
-   "begleitungen_rechtsmedizin": int,
-   "begleitungen_jugendamt": int,
-   "begleitungen_sozialamt": int,
-   "begleitungen_jobcenter": int,
-   "begleitungen_beratungstellen": int,
-   "begleitungen_schutzeinrichtungen": int,
-   "begleitungen_schutzeinrichtungen_spezialisiert": int,
-   "begleitungen_interventionsstellen": int,
-   "begleitungen_sonstige": "string optional (maxLänge: 200)",
-   "verweise_gesamt": int,
-   "verweise_gerichte": int,
-   "verweise_polizei": int,
-   "verweise_rechtsanwaelte": int,
-   "verweise_aerzte": int,
-   "verweise_rechtsmedizin": int,
-   "verweise_jugendamt": int,
-   "verweise_sozialamt": int,
-   "verweise_jobcenter": int,
-   "verweise_beratungstellen": int,
-   "verweise_schutzeinrichtungen": int,
-   "verweise_schutzeinrichtungen_spezialisiert": int,
-   "verweise_interventionsstellen": int,
-   "verweise_sonstige": "string optional (maxLänge: 200)",
-   "quelle": "-> Quelle",
-   "andere_quelle": "string optional (maxLänge: 50)",
-   "dolmetsch_zeit": int,
-   "dolmetsch_sprache": "string optional (maxLänge: 50)",
-   "notizen": "string optional (maxLänge: 200)"
-}
-```
+-> [/api/data/data_record](http://127.0.0.1:8000/api/data/data_record)
+
+Methoden: GET, POST
+
+## ListAPI
+
+URL: /api/data/list/T
+
+Methoden: GET
+
+
+## SearchAPI
+
+noch nicht vorhanden (URL: /api/data/search/T)
+
+# DataRecords
+
+## Anfrage
+
+-> [backend/api/database/anfrage.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/anfrage.json)
+
+
+## Fall
+
+-> [backend/api/database/fall.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/fall.json)
+
+## Weitere
 
 #### Beratung
 
