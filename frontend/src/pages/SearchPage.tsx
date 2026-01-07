@@ -30,6 +30,7 @@ function SearchPage({ caller }: Props) {
   const [selected, setSelected] = useState("");
   return (
     <div>
+      <label>{Anfrage.GetNewJonsonFormat()}</label>
       <label htmlFor="dropdown">Fall oder Anfrage: </label>
       <select
         value={selected}
