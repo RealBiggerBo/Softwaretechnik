@@ -131,3 +131,9 @@ class TaeterSerializer(serializers.ModelSerializer):
         fields = ["gewalttat",
                     "geschlecht",
                     "beziehung"]
+
+class DataRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataRecord
+        fields = ["name",
+                    "structure"]

@@ -1,0 +1,24 @@
+{
+    "Sendeart": {
+        "type": "String",
+        "required": true,
+        "maxLength": 200
+    },
+
+    "Sendedatum": {
+        "type": "Date",
+        "required": true
+    },
+
+    "Sendeort": {
+        "type": "String",
+        "required": true,
+        "possibleValues": [
+            "Stadt Leipzig",
+            "Landkreis Leipzig",
+            "Landkreis Nordsachsen",
+            "Sachsen",
+            "Sonstiges"
+        ]
+    }
+}

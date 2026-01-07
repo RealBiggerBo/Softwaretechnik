@@ -253,3 +253,12 @@ class Taeter(models.Model):
 
     def __str__(self):
         return f"{self.geschlecht}"
+
+class DataRecord(models.Model):
+    """
+    Definiert die Struktur, das heißt die Felder
+    mit Name, Erforderlichkeit und allen weiteren Werten,
+    eines DataRecords.
+    """
+    name = models.CharField(max_length=100)
+    structure = models.JSONField()

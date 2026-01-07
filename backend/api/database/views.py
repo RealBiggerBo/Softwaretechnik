@@ -89,6 +89,8 @@ class DataAPI(APIView):
             serializer = GewalttatSerializer(data_record)
         elif type == "taeter":
             serializer = TaeterSerializer(data_record)
+        elif type == "type":
+            serializer = TypeSerializer(data_record)
 
         return Response(serializer.data)
     
@@ -167,3 +169,30 @@ class SearchAPI(APIView):
 
     def get(request):
         return Response({"message": "Hello from Django API"})
+
+class DataRecordAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Gibt die Struktur aller DataRecords zurück.
+        """
+        data_record_list = DataRecord.objects.all()
+        serializer = DataRecordSerializer(data_record_list, many=True)
+
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        """
+        Gibt die Struktur eines DataRecords zurück.
+        """
+        try:
+            data_record = DataRecord.objects.get(pk=request.data["pk"])
+        except DataRecord.DoesNotExist:
+            Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DataRecordSerializer(data_record)
+
+        return Response(serializer.data["structure"], status=status.HTTP_201_CREATED)
+    
