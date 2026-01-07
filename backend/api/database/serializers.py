@@ -21,7 +21,7 @@ class FallSerializer(serializers.ModelSerializer):
         fields = ["alias",
                     "rolle",
                     "alter",
-                    "geschlecht",
+                    "geschlechts_indentitaet",
                     "sexualitaet",
                     "wohnort",
                     "staatsangehoerigkeit",

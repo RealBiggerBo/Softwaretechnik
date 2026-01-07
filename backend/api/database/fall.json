@@ -1,0 +1,404 @@
+{
+   "alias": {
+        "type": "String",
+        "required": true,
+        "maxLength": 50
+    },
+
+   "rolle": {
+        "type": "String",
+        "required": true,
+        "maxLength": 100,
+        "possibleValues": [
+            "Betroffene:r",
+            "Fachkraft",
+            "Angehörige:r",
+            "anonym"
+        ]
+    },
+
+   "alter": {
+        "type": "Integer",
+        "required": false
+    },
+
+   "geschlechts_identitaet": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100,
+        "possibleValues": [
+            "cis weiblich",
+            "trans weiblich",
+            "trans männlich",
+            "trans nicht binär",
+            "inter",
+            "agender",
+            "divers"
+        ]
+    },
+
+   "sexualitaet": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100,
+        "possibleValues": [
+            "lesbisch",
+            "schwul",
+            "bisexuell",
+            "asexuell",
+            "heterosexuell"
+        ]
+    },
+
+   "wohnort": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100,
+        "possibleValues": [
+            "Stadt Leipzig",
+            "Landkreis Leipzig",
+            "Landkreis Nordsachsen",
+            "Sachsen",
+            "Sonstiges"
+        ]
+    },
+
+   "staatsangehoerigkeit": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100
+    },
+
+   "berufssituation": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100,
+        "possibleValues": [
+            "arbeitslos",
+            "studierend",
+            "berufstätig",
+            "berentet",
+            "Azubi",
+            "berufsunfähig"
+        ]
+    },
+
+   "schwerbehinderung": {
+        "type": "Boolean",
+        "required": true
+    },
+   "schwerbehinderung_form": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100,
+        "possibleValues": [
+            "kognitiv",
+            "körperlich"
+        ]
+    },
+
+   "schwerbehinderung_grad": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100
+    },
+
+   "notizen": {
+        "type": "String",
+        "required": false,
+        "maxLength": 200
+    },
+
+   "beratungsstelle": {
+        "type": "String",
+        "required": true,
+        "maxLength": 100,
+        "possibleValues": [
+            "Stadt Leipzig",
+            "Landkreis Leipzig",
+            "Landkreis Nordsachsen"
+        ]
+    },
+
+   "anzahl_beratungen": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "depression": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "angststoerung": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "ptbs": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "anderes": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "burn_out": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "schlafstoerung": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "sucht": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "kommunikationsschwierigkeiten": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "vernachlaessigung_alltäglicher_dinge": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "schmerzen": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "laehmungen": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "krankheit": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "dauerhafte_beeintraechtigung": {
+        "type": "String",
+        "required": false,
+        "maxLength": 200
+    },
+
+   "finanzielle_folgen": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "arbeits_einschraenkung": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "verlust_arbeit": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "soziale_isolation": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "suizidalität": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "weiteres": {
+        "type": "String",
+        "required": false,
+        "maxLength": 200
+    },
+    
+   "notizen_folgen": {
+        "type": "String",
+        "required": false,
+        "maxLength": 200
+    },
+    
+   "begleitungen_gesamt": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_gerichte": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_polizei": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_rechtsanwaelte": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_aerzte": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_rechtsmedizin": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_jugendamt": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_sozialamt": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_jobcenter": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_beratungstellen": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_schutzeinrichtungen": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_schutzeinrichtungen_spezialisiert": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_interventionsstellen": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "begleitungen_sonstige": {
+        "type": "String",
+        "required": false,
+        "maxLength": 200
+    },
+    
+   "verweise_gesamt": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_gerichte": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_polizei": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_rechtsanwaelte": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_aerzte": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_rechtsmedizin": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_jugendamt": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_sozialamt": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_jobcenter": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_beratungstellen": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_schutzeinrichtungen": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_schutzeinrichtungen_spezialisiert": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_interventionsstellen": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "verweise_sonstige": {
+        "type": "String",
+        "required": false,
+        "maxLength": 200
+    },
+    
+   "quelle": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100,
+        "possibleValues": [
+            "Selbstmeldung über Polizei",
+            "Private Kontakte",
+            "Beratungsstellen",
+            "Internet",
+            "Ämter",
+            "Gesundheitswesen (Arzt/Ärztin)",
+            "Rechtsanwälte/-anwältinnen"
+        ]
+    },
+    
+   "andere_quelle": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100
+    },
+    
+   "dolmetsch_zeit": {
+        "type": "Integer",
+        "required": true
+    },
+
+   "dolmetsch_sprache": {
+        "type": "String",
+        "required": false,
+        "maxLength": 100
+    }
+}

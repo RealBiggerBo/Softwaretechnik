@@ -28,32 +28,32 @@ class AnfrageArt(models.TextChoices):
     "Sonstiges"
 
 class GeschlechtsIdentität(models.TextChoices):
-    C = "C", "cis weiblich"
-    T = "T", "trans weiblich"
-    M = "M", "trans männlich"
-    N = "N", "trans nicht binär"
-    I = "I", "inter"
-    A = "A", "agender"
-    D = "D", "divers"
+    "cis weiblich"
+    "trans weiblich"
+    "trans männlich"
+    "trans nicht binär"
+    "inter"
+    "agender"
+    "divers"
 
 class Sexualitaet(models.TextChoices):
-    L = "L", "lesbisch"
-    S = "S", "schwul"
-    B = "B", "bisexuell"
-    A = "A", "asexuell"
-    H = "H", "heterosexuell"
+    "lesbisch"
+    "schwul"
+    "bisexuell"
+    "asexuell"
+    "heterosexuell"
 
 class BeruflicheSituation(models.TextChoices):
-    L = "L", "arbeitslos"
-    S = "S", "studierend"
-    B = "B", "berufstätig"
-    R = "R", "berentet"
-    A = "A", "Azubi"
-    U = "U", "berufsunfähig"
+    "arbeitslos"
+    "studierend"
+    "berufstätig"
+    "berentet"
+    "Azubi"
+    "berufsunfähig"
 
 class BehinderungsForm(models.TextChoices):
-    P = "P", "kognitiv"
-    K = "K", "körperlich"
+    "kognitiv"
+    "körperlich"
 
 class BeratungsArt(models.TextChoices):
     P = "P", "persönlich"
@@ -87,13 +87,13 @@ class JaNeinUnentschieden(models.TextChoices):
     U = "U", "noch nicht entschieden"
 
 class Quelle(models.TextChoices):
-    S = "S", "Selbstmeldung über Polizei"
-    P = "P", "Private Kontakte"
-    B = "B", "Beratungsstellen"
-    I = "I", "Internet"
-    A = "A", "Ämter"
-    G = "G", "Gesundheitswesen (Arzt/Ärztin)"
-    R = "R", "Rechtsanwälte/-anwältinnen"
+    "Selbstmeldung über Polizei"
+    "Private Kontakte"
+    "Beratungsstellen"
+    "Internet"
+    "Ämter"
+    "Gesundheitswesen (Arzt/Ärztin)"
+    "Rechtsanwälte/-anwältinnen"
 
 class Geschlecht(models.TextChoices):
     M = "M", "männlich"
@@ -122,43 +122,43 @@ class Fall(models.Model):
 
     #Personendaten
     alias = models.CharField(max_length=50)
-    rolle = models.CharField(max_length=1, choices=Rolle)
+    rolle = models.CharField(max_length=100, choices=Rolle)
     alter = models.IntegerField(blank=True)
-    geschlecht = models.CharField(max_length=1, choices=GeschlechtsIdentität, blank=True)
-    sexualitaet = models.CharField(max_length=1, choices=Sexualitaet, blank=True)
-    wohnort = models.CharField(max_length=1, choices=Ort, blank=True)
-    staatsangehoerigkeit = models.CharField(max_length=50, default="Deutschland")
-    berufssituation = models.CharField(max_length=1, choices=BeruflicheSituation, blank=True)
+    geschlechts_identitaet = models.CharField(max_length=100, choices=GeschlechtsIdentität, blank=True)
+    sexualitaet = models.CharField(max_length=100, choices=Sexualitaet, blank=True)
+    wohnort = models.CharField(max_length=100, choices=Ort, blank=True)
+    staatsangehoerigkeit = models.CharField(max_length=100, default="Deutschland", blank=True)
+    berufssituation = models.CharField(max_length=100, choices=BeruflicheSituation, blank=True)
     schwerbehinderung = models.BooleanField()
-    schwerbehinderung_form = models.CharField(max_length=1, choices=BehinderungsForm, blank=True)
-    schwerbehinderung_grad = models.CharField(max_length=50, blank=True)
+    schwerbehinderung_form = models.CharField(max_length=100, choices=BehinderungsForm, blank=True)
+    schwerbehinderung_grad = models.CharField(max_length=100, blank=True)
     notizen = models.CharField(max_length=200, blank=True)
 
     #Beratungsdaten
-    beratungsstelle = models.CharField(max_length=1, choices=Beratungsstelle)
+    beratungsstelle = models.CharField(max_length=100, choices=Beratungsstelle)
     anzahl_beratungen = models.IntegerField(default=0)
 
     #Daten zur Gewalt
 
     #Daten zu den Gewaltfolgen
-    depression = models.BooleanField(default=False)
-    angststoerung = models.BooleanField(default=False)
-    ptbs = models.BooleanField(default=False)
-    anderes = models.BooleanField(default=False)
-    burn_out = models.BooleanField(default=False)
-    schlafstoerung = models.BooleanField(default=False)
-    sucht = models.BooleanField(default=False)
-    kommunikationsschwierigkeiten = models.BooleanField(default=False)
-    vernachlaessigung_alltäglicher_dinge = models.BooleanField(default=False)
-    schmerzen = models.BooleanField(default=False)
-    laehmungen = models.BooleanField(default=False)
-    krankheit = models.BooleanField(default=False)
-    dauerhafte_beeintraechtigung = models.CharField(max_length=50, blank=True)
-    finanzielle_folgen = models.BooleanField(default=False)
-    arbeits_einschraenkung = models.BooleanField(default=False)
-    verlust_arbeit = models.BooleanField(default=False)
-    soziale_isolation = models.BooleanField(default=False)
-    suizidalität = models.BooleanField(default=False)
+    depression = models.BooleanField()
+    angststoerung = models.BooleanField()
+    ptbs = models.BooleanField()
+    anderes = models.BooleanField()
+    burn_out = models.BooleanField()
+    schlafstoerung = models.BooleanField()
+    sucht = models.BooleanField()
+    kommunikationsschwierigkeiten = models.BooleanField()
+    vernachlaessigung_alltäglicher_dinge = models.BooleanField()
+    schmerzen = models.BooleanField()
+    laehmungen = models.BooleanField()
+    krankheit = models.BooleanField()
+    dauerhafte_beeintraechtigung = models.CharField(max_length=200, blank=True)
+    finanzielle_folgen = models.BooleanField()
+    arbeits_einschraenkung = models.BooleanField()
+    verlust_arbeit = models.BooleanField()
+    soziale_isolation = models.BooleanField()
+    suizidalität = models.BooleanField()
     weiteres = models.CharField(max_length=200, blank=True)
     notizen_folgen = models.CharField(max_length=200, blank=True)
 
@@ -196,9 +196,9 @@ class Fall(models.Model):
 
     #Weitere Daten
     quelle = models.CharField(max_length=1, choices=Quelle, blank=True)
-    andere_quelle = models.CharField(max_length=50, blank=True)
+    andere_quelle = models.CharField(max_length=100, blank=True)
     dolmetsch_zeit = models.IntegerField(default=0)
-    dolmetsch_sprache = models.CharField(max_length=50, blank=True)
+    dolmetsch_sprache = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.alias
