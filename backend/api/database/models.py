@@ -3,29 +3,29 @@ from datetime import date
 
 #Aufzählungen für Wahl-Felder
 class Beratungsstelle(models.TextChoices):
-    S = "S", "Stadt Leipzig"
-    L = "L", "Landkreis Leipzig"
-    N = "N", "Landkreis Nordsachsen"
+    "Stadt Leipzig"
+    "Landkreis Leipzig"
+    "Landkreis Nordsachsen"
 
 class Ort(models.TextChoices):
-    S = "S", "Stadt Leipzig"
-    L = "L", "Landkreis Leipzig"
-    N = "N", "Landkreis Nordsachsen"
-    B = "B", "Sachsen"
-    X = "X", "Sonstiges"
+    "Stadt Leipzig"
+    "Landkreis Leipzig"
+    "Landkreis Nordsachsen"
+    "Sachsen"
+    "Sonstiges"
 
 class Rolle(models.TextChoices):
-    B = "B", "Betroffene:r"
-    F = "F", "Fachkraft"
-    A = "A", "Angehörige:r"
-    U = "U", "anonym"
+    "Betroffene:r"
+    "Fachkraft"
+    "Angehörige:r"
+    "anonym"
 
 class AnfrageArt(models.TextChoices):
-    M = "M", "medizinische Soforthilfe"
-    S = "S", "Vertrauliche Spurensicherung"
-    B = "B", "Beratungsbedarf"
-    R = "R", "Beratungsbedarf zu Rechtlichem"
-    X = "X", "Sonstiges"
+    "medizinische Soforthilfe"
+    "Vertrauliche Spurensicherung"
+    "Beratungsbedarf"
+    "Beratungsbedarf zu Rechtlichem"
+    "Sonstiges"
 
 class GeschlechtsIdentität(models.TextChoices):
     C = "C", "cis weiblich"
@@ -103,15 +103,15 @@ class Geschlecht(models.TextChoices):
 #Modelle
 class Anfrage(models.Model):
     """Anfrage Data-Record"""
-    sende_art = models.CharField(max_length=200)
-    sende_datum = models.DateField(default=date.today)
-    sende_ort = models.CharField(max_length=1, choices=Ort)
-    sender_rolle = models.CharField(max_length=1, choices=Rolle)
+    sende_art = models.CharField(max_length=100)
+    sende_datum = models.DateField()
+    sende_ort = models.CharField(max_length=100, choices=Ort)
+    sender_rolle = models.CharField(max_length=100, choices=Rolle)
     im_auftrag = models.BooleanField()
     ist_queer = models.BooleanField()
-    anfrage_art = models.CharField(max_length=1, choices=AnfrageArt)
+    anfrage_art = models.CharField(max_length=100, choices=AnfrageArt)
     mit_termin = models.BooleanField()
-    termin_ort = models.CharField(max_length=1, choices=Beratungsstelle, blank=True)
+    termin_ort = models.CharField(max_length=100, choices=Beratungsstelle, blank=True)
     termin_datum = models.DateField(blank=True)
 
     def __str__(self):

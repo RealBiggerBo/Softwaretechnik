@@ -1,18 +1,19 @@
 {
-    "Sendeart": {
+   "sende_art": {
         "type": "String",
         "required": true,
-        "maxLength": 200
+        "maxLength": 100
     },
 
-    "Sendedatum": {
+   "sende_datum": {
         "type": "Date",
         "required": true
     },
 
-    "Sendeort": {
+   "sende_ort": {
         "type": "String",
         "required": true,
+        "maxLength": 100,
         "possibleValues": [
             "Stadt Leipzig",
             "Landkreis Leipzig",
@@ -20,5 +21,61 @@
             "Sachsen",
             "Sonstiges"
         ]
+    },
+
+   "sender_rolle": {
+        "type": "String",
+        "required": true,
+        "maxLength": 100,
+        "possibleValues": [
+            "Betroffene:r",
+            "Fachkraft",
+            "Angehörige:r",
+            "anonym"
+        ]
+    },
+
+   "im_auftrag": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "ist_queer": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "anfrage_art": {
+        "type": "String",
+        "required": true,
+        "maxLength": 100,
+        "possibleValues": [
+            "medizinische Soforthilfe",
+            "Vertrauliche Spurensicherung",
+            "Beratungsbedarf",
+            "Beratungsbedarf zu Rechtlichem",
+            "Sonstiges"
+        ]
+    },
+
+   "mit_termin": {
+        "type": "Boolean",
+        "required": true
+    },
+
+   "termin_ort": {
+        "type": "String",
+        "required": true,
+        "maxLength": 100,
+        "possibleValues": [
+            "Stadt Leipzig",
+            "Landkreis Leipzig",
+            "Landkreis Nordsachsen"
+        ]
+    },
+
+   "termin_datum": {
+        "type": "Date",
+        "required": false
     }
 }
