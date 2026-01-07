@@ -1,8 +1,10 @@
-import { Switch } from "@mui/material";
+import { Checkbox, Switch, ToggleButton } from "@mui/material";
 import { useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { Anfrage } from "../classes/Anfrage";
 import { Case } from "../classes/Case";
+import TextDataField from "../components/TextDataField";
+import { TextField } from "../classes/DataField";
 
 interface Props {
   caller: IApiCaller;
@@ -28,9 +30,28 @@ async function submitSearchCaseRequest(
 
 function SearchPage({ caller }: Props) {
   const [selected, setSelected] = useState("");
+
+  const initialTextField = new TextField("Name", 0, true, "Text");
+  const [textField, setTextField] = useState<TextField>(initialTextField);
+  const [isEditMode, setIsEditMode] = useState(false);
+
   return (
     <div>
+      <input
+        type="checkbox"
+        onChange={(e) => setIsEditMode(e.target.checked)}
+      ></input>
+      <TextDataField
+        textField={textField}
+        isEditMode={isEditMode}
+        onChange={setTextField}
+      ></TextDataField>
+      <button onClick={() => alert("Api erhält: " + textField.Display())}>
+        Dummy Sende an API
+      </button>
+      <br></br> {/*line break for clarity*/}
       <label>{Anfrage.GetNewJonsonFormat()}</label>
+      <br></br> {/*line break for clarity*/}
       <label htmlFor="dropdown">Fall oder Anfrage: </label>
       <select
         value={selected}
@@ -41,7 +62,6 @@ function SearchPage({ caller }: Props) {
         <option value="Anfrage">Anfrage</option>
         <option value="Fall">Fall</option>
       </select>
-
       {selected === "Anfrage" && (
         <div>
           <input type="date" />
@@ -67,7 +87,6 @@ function SearchPage({ caller }: Props) {
           </button>
         </div>
       )}
-
       {selected === "Fall" && (
         <div>
           <fieldset style={{ width: "450px" }}>
