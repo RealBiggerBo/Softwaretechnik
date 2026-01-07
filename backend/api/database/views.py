@@ -1,7 +1,9 @@
+from django.http import Http404
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 
@@ -25,140 +27,143 @@ def get_data_record(type, pk):
         try:
             return Anfrage.objects.get(pk=pk)
         except Anfrage.DoesNotExist:
-            return None
+            raise Http404
     elif type == "fall":
         try:
             return Fall.objects.get(pk=pk)
         except Fall.DoesNotExist:
-            return None
+            raise Http404
     elif type == "beratung":
         try:
             return Beratung.objects.get(pk=pk)
         except Beratung.DoesNotExist:
-            return None
+            raise Http404
     elif type == "gewalttat":
         try:
             return Gewalttat.objects.get(pk=pk)
         except Gewalttat.DoesNotExist:
-            return None
+            raise Http404
     elif type == "taeter":
         try:
             return Taeter.objects.get(pk=pk)
         except Taeter.DoesNotExist:
-            return None
+            raise Http404
 
-@api_view(["GET"])
-def get_list(request, type):
-    """
-    Listet DataRecords auf.
-    """
-    if type == "anfrage":
-        data_record_list = Anfrage.objects.all()
-        serializer = AnfrageSerializer(data_record_list, many=True)
-    elif type == "fall":
-        data_record_list = Fall.objects.all()
-        serializer = FallSerializer(data_record_list, many=True)
-    elif type == "beratung":
-        data_record_list = Beratung.objects.all()
-        serializer = BeratungSerializer(data_record_list, many=True)
-    elif type == "gewalttat":
-        data_record_list = Gewalttat.objects.all()
-        serializer = GewalttatSerializer(data_record_list, many=True)
-    elif type == "taeter":
-        data_record_list = Taeter.objects.all()
-        serializer = TaeterSerializer(data_record_list, many=True)
-    else:
-        return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+class DataAPI(APIView):
+    permission_classes = [IsAuthenticated]
 
-    return Response(serializer.data)
+    def post(self, request, type):
+        """
+        Erstellt ein neues DataRecord.
+        """
 
-@api_view(["POST"])
-def save(request, type):
-    """
-    Erstellt ein neues DataRecord.
-    """
+        if not type_is_valid(type):
+            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not type_is_valid(type):
-        return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = get_serializer(request, type)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    serializer = get_serializer(request, type)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    serializer.save()
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-@api_view(["GET"])
-def get(request, type, pk):
-    """
-    Gibt ein DataRecord zurück.
-    """
-
-    if not type_is_valid(type):
-        return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    data_record = get_data_record(type, pk)
-    if data_record == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, type, pk):
+        """
+        Gibt ein DataRecord zurück.
+        """
 
-    if type == "anfrage":
-        serializer = AnfrageSerializer(data_record)
-    elif type == "fall":
-        serializer = FallSerializer(data_record)
-    elif type == "beratung":
-        serializer = BeratungSerializer(data_record)
-    elif type == "gewalttat":
-        serializer = GewalttatSerializer(data_record)
-    elif type == "taeter":
-        serializer = TaeterSerializer(data_record)
+        if not type_is_valid(type):
+            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        data_record = get_data_record(type, pk)
+        if data_record == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    return Response(serializer.data)
+        if type == "anfrage":
+            serializer = AnfrageSerializer(data_record)
+        elif type == "fall":
+            serializer = FallSerializer(data_record)
+        elif type == "beratung":
+            serializer = BeratungSerializer(data_record)
+        elif type == "gewalttat":
+            serializer = GewalttatSerializer(data_record)
+        elif type == "taeter":
+            serializer = TaeterSerializer(data_record)
 
-@api_view(["PUT"])
-def update(request, type, pk):
-    """
-    Überschreibt ein DataRecord.
-    """
-
-    if not type_is_valid(type):
-        return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
     
-    data_record = get_data_record(type, pk)
-    if data_record == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def put(self, request, type, pk):
+        """
+        Überschreibt ein DataRecord.
+        """
 
-    if type == "anfrage":
-        return AnfrageSerializer(data_record, data=request.data)
-    elif type == "fall":
-        return FallSerializer(data_record, data=request.data)
-    elif type == "beratung":
-        return BeratungSerializer(data_record, data=request.data)
-    elif type == "gewalttat":
-        return GewalttatSerializer(data_record, data=request.data)
-    elif type == "taeter":
-        return TaeterSerializer(data_record, data=request.data)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not type_is_valid(type):
+            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        data_record = get_data_record(type, pk)
+        if data_record == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer.save()
-    return Response(serializer.data)
+        if type == "anfrage":
+            return AnfrageSerializer(data_record, data=request.data)
+        elif type == "fall":
+            return FallSerializer(data_record, data=request.data)
+        elif type == "beratung":
+            return BeratungSerializer(data_record, data=request.data)
+        elif type == "gewalttat":
+            return GewalttatSerializer(data_record, data=request.data)
+        elif type == "taeter":
+            return TaeterSerializer(data_record, data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["DELETE"])
-def delete(request, type, pk):
-    """
-    Löscht ein DataRecord.
-    """
+        serializer.save()
+        return Response(serializer.data)
     
-    if not type_is_valid(type):
-        return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    data_record = get_data_record(type, pk)
-    if data_record == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def delete(self, request, type, pk):
+        """
+        Löscht ein DataRecord.
+        """
+        
+        if not type_is_valid(type):
+            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        data_record = get_data_record(type, pk)
+        if data_record == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    data_record.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+        data_record.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['GET'])
-def search(request):
-    return Response({"message": "Hello from Django API"})
+class ListAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(request, type):
+        """
+        Listet DataRecords auf.
+        """
+        if type == "anfrage":
+            data_record_list = Anfrage.objects.all()
+            serializer = AnfrageSerializer(data_record_list, many=True)
+        elif type == "fall":
+            data_record_list = Fall.objects.all()
+            serializer = FallSerializer(data_record_list, many=True)
+        elif type == "beratung":
+            data_record_list = Beratung.objects.all()
+            serializer = BeratungSerializer(data_record_list, many=True)
+        elif type == "gewalttat":
+            data_record_list = Gewalttat.objects.all()
+            serializer = GewalttatSerializer(data_record_list, many=True)
+        elif type == "taeter":
+            data_record_list = Taeter.objects.all()
+            serializer = TaeterSerializer(data_record_list, many=True)
+        else:
+            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.data)
+
+class SearchAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(request):
+        return Response({"message": "Hello from Django API"})
