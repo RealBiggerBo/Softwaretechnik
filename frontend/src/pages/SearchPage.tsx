@@ -10,16 +10,18 @@ interface Props {
 
 async function submitSearchAnfrageRequest(
   caller: IApiCaller,
-  anfrageData: Anfrage
+  anfrageData?: Anfrage,
 ): Promise<void> {
+  if (anfrageData == undefined) return;
   const result = await caller.TrySearchAnfrage(anfrageData);
   if (!result.success) alert(result.errorMsg);
 }
 
 async function submitSearchCaseRequest(
   caller: IApiCaller,
-  caseData: Case
+  caseData?: Case,
 ): Promise<void> {
+  if (caseData == undefined) return;
   const result = await caller.TrySearchFall(caseData);
   if (!result.success) alert(result.errorMsg);
 }
@@ -56,10 +58,8 @@ function SearchPage({ caller }: Props) {
           <br />
           <button
             onClick={async () => {
-              await submitSearchAnfrageRequest(
-                caller,
-                new Anfrage("", "", "", "", "", "", "", "", "")
-              );
+              //TODO: get data from fields into anfrage class
+              await submitSearchAnfrageRequest(caller, undefined);
             }}
           >
             Anfrage suchen
@@ -308,56 +308,8 @@ function SearchPage({ caller }: Props) {
           </fieldset>
           <button
             onClick={async () => {
-              await submitSearchCaseRequest(
-                caller,
-                new Case(
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  [],
-                  "",
-                  "",
-                  "",
-                  "",
-                  [],
-                  [],
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  [],
-                  [],
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  [],
-                  "",
-                  [],
-                  "",
-                  "",
-                  "",
-                  ""
-                )
-              );
+              //TODO: get data from fields into case class
+              await submitSearchCaseRequest(caller, undefined);
             }}
           >
             Fall suchen

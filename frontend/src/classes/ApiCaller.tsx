@@ -108,14 +108,13 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryCreateCase(
-    newCase: Case
+    caseToCreate: Case,
   ): Promise<{ success: boolean; errorMsg: string }> {
-
-    try{
+    try {
       const response = await this.request("/api/data/save/fall", {
         method: "POST",
         credentials: "include",
-        body: JSON.stringify(newCase),
+        body: JSON.stringify(caseToCreate),
       });
 
       if (response.ok) {
@@ -123,24 +122,22 @@ export class ApiCaller implements IApiCaller {
       }
 
       const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || "Fall konnte nicht gespeichert werden.";
+      const errorMsg = error.detail || "Erstellen fehlgeschlagen";
 
       return { success: false, errorMsg };
-    }
-    catch {
+    } catch {
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
 
   async TryCreateAnfrage(
-    newAnfrage: Anfrage,
+    anfrageToCreate: Anfrage,
   ): Promise<{ success: boolean; errorMsg: string }> {
-
-    try{
+    try {
       const response = await this.request("/api/data/save/anfrage", {
         method: "POST",
         credentials: "include",
-        body: JSON.stringify(newAnfrage),
+        body: JSON.stringify(anfrageToCreate),
       });
 
       if (response.ok) {
@@ -148,21 +145,50 @@ export class ApiCaller implements IApiCaller {
       }
 
       const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || "Anfrage konnte nicht gespeichert werden.";
+      const errorMsg = error.detail || "Erstellen fehlgeschlagen";
 
       return { success: false, errorMsg };
-    }
-    catch {
+    } catch {
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
-
   }
 
-  async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
+  async TrySearchFall(
+    caseToSearch: Case,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    try {
+      const response = await this.request("/api/data/fall/search", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(caseToSearch),
+      });
 
-    throw new Error("Method not implemented.");
+      if (response.ok) {
+        return { success: true, errorMsg: "" };
+      }
 
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.detail || "Suche fehlgeschlagen";
+
+      return { success: false, errorMsg };
+    } catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
   }
+
+  async TrySearchAnfrage(
+    anfrageToSearch: Anfrage,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    try {
+      const response = await this.request("/api/data/anfrage/search", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(anfrageToSearch),
+      });
+
+      if (response.ok) {
+        return { success: true, errorMsg: "" };
+      }
 
       const error = await response.json().catch(() => ({}));
       const errorMsg = error.detail || "Suche fehlgeschlagen";

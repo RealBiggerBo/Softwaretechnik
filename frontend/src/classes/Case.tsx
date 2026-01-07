@@ -1,395 +1,282 @@
-export class Taeter{
-    private geschlaecht: string;
-    private verhaeltnis: string;
+import type {
+  BehinderungsForm,
+  Beratungsstelle,
+  BeruflicheSituation,
+  GeschlechtsIdentitaet,
+  Ort,
+  Quelle,
+  SenderRolle,
+  Sexualitaet,
+} from "./unions";
 
-    constructor(geschlaecht: string, verhaeltnis: string){
-        this.geschlaecht = geschlaecht;
-        this.verhaeltnis = verhaeltnis;
-    }
+export class Taeter {
+  private geschlaecht: string;
+  private verhaeltnis: string;
 
-    public getGeschlaecht(): string{
-        return this.geschlaecht;
-    }
+  constructor(geschlaecht: string, verhaeltnis: string) {
+    this.geschlaecht = geschlaecht;
+    this.verhaeltnis = verhaeltnis;
+  }
 
-    public getVerhaeltnis(): string{
-        return this.verhaeltnis;
-    }
+  public getGeschlaecht(): string {
+    return this.geschlaecht;
+  }
+
+  public getVerhaeltnis(): string {
+    return this.verhaeltnis;
+  }
 }
 
 export class Beratungstermine {
-    private datum: string;
-    private art: string;
-    private ort: string;
-    private notizen: string;
+  private datum: string;
+  private art: string;
+  private ort: string;
+  private notizen: string;
 
-    constructor(datum: string, art: string, ort: string, notizen: string){
-        this.datum = datum;
-        this.art = art;
-        this.ort = ort;
-        this.notizen = notizen;
-    }
+  constructor(datum: string, art: string, ort: string, notizen: string) {
+    this.datum = datum;
+    this.art = art;
+    this.ort = ort;
+    this.notizen = notizen;
+  }
 
-    public getDatum(): string{
-        return this.datum;
-    }
+  public getDatum(): string {
+    return this.datum;
+  }
 
-    public getArt(): string{
-        return this.art;
-    }
+  public getArt(): string {
+    return this.art;
+  }
 
-    public getOrt(): string{
-        return this.ort;
-    }
+  public getOrt(): string {
+    return this.ort;
+  }
 
-    public getNotizen(): string{
-        return this.notizen;
-    }
-
+  public getNotizen(): string {
+    return this.notizen;
+  }
 }
 
 export class Case {
-    //Personenbezogene Daten
-    private alias: string;
-    private rolle: string;
-    private alter: string;
-    private geschlecht: string;
-    private sexualitaet: string;
-    private wohnort: string;
-    private nationalitaet: string;
-    private beruf: string;
-    private behinderung: string;
-    private artbehinderung: string;
-    private gradbehinderung: string;
-    private notizenPersonenbezogen: string;
+  // Stammdaten
+  public alias: string;
+  public rolle: SenderRolle;
+  public alter: number;
+  public geschlecht: GeschlechtsIdentitaet;
+  public sexualitaet: Sexualitaet;
+  public wohnort: Ort;
+  public staatsangehoerigkeit: string;
+  public berufssituation: BeruflicheSituation;
 
-    //Daten zur durchgeführten Beratung
-    private beratungsstelle: string;
-    private anzahlBeratungen: string;
-    private termine: Beratungstermine[];
+  // Schwerbehinderung
+  public schwerbehinderung: boolean;
+  public schwerbehinderung_form: BehinderungsForm;
+  public schwerbehinderung_grad?: string;
 
-    //Daten zur Gewalt
-    private alterzZeitpunkt: string;
-    private zeitrsaum: string;
-    private artVorfall: string;
-    private anzahlTaeter: string;
-    private taeter: Taeter[];
-    private artderGewalt: boolean[];
-    private tatort: string;
-    private anzeige: string;
-    private medizinischeVersorgung: string;
-    private spurensicherung: string;
-    private mitbetroffeneKids: string;
-    private direktbetroffen: string;
-    private notizenGewalt: string;
+  // Beratungskontext
+  public beratungsstelle: Beratungsstelle;
+  public anzahl_beratungen: number;
 
-    //Daten zu den Folgen der Gewalt
-    private psychischeFolgen: boolean[];
-    private körperlicheFolgen: boolean[];
-    private körperlicheBeeinträchtigung: string;
-    private finanzielleFolgen: string;
-    private arbeitseinschraenkungen: string;
-    private verlustArbeit: string;
-    private sozialeIsolation: string;
-    private suizidalität: string;
-    private notizenFolgen: string;
+  // Psychische / Physische Folgen
+  public depression: boolean;
+  public angststoerung: boolean;
+  public ptbs: boolean;
+  public anderes: boolean;
+  public burn_out: boolean;
+  public schlafstoerung: boolean;
+  public sucht: boolean;
+  public kommunikationsschwierigkeiten: boolean;
+  public vernachlaessigung_alltaeglicher_dinge: boolean;
+  public schmerzen: boolean;
+  public laehmungen: boolean;
+  public krankheit: boolean;
+  public dauerhafte_beeintraechtigung?: string;
 
-    //Daten zu Begleitung/verweise
-    private anzahlBegleitungen: string;
-    private begleitungBei: boolean[];
-    private anzahlVerweise: string;
-    private verweiseZu: boolean[];
-    //weitere Daten
-    private wohererfahren: string;
-    private dolmetscher: string;
-    private sprache: string;
-    private stunden: string;
+  // Soziale / Wirtschaftliche Folgen
+  public finanzielle_folgen: boolean;
+  public arbeits_einschraenkung: boolean;
+  public verlust_arbeit: boolean;
+  public soziale_isolation: boolean;
+  public suizidalitaet: boolean;
+  public weiteres?: string;
+  public notizen_folgen?: string;
 
-    constructor(
-        //Personenbezogene Daten
-        alias: string,
-        rolle: string,
-        alter: string,
-        geschlecht: string,
-        sexualitaet: string,
-        wohnort: string,
-        nationalitaet: string,
-        beruf: string,
-        behinderung: string,
-        artbehinderung: string,
-        gradbehinderung: string,
-        notizenPersonenbezogen: string,
+  // Begleitungen (Statistik)
+  public begleitungen_gesamt: number;
+  public begleitungen_gerichte: number;
+  public begleitungen_polizei: number;
+  public begleitungen_rechtsanwaelte: number;
+  public begleitungen_aerzte: number;
+  public begleitungen_rechtsmedizin: number;
+  public begleitungen_jugendamt: number;
+  public begleitungen_sozialamt: number;
+  public begleitungen_jobcenter: number;
+  public begleitungen_beratungstellen: number;
+  public begleitungen_schutzeinrichtungen: number;
+  public begleitungen_schutzeinrichtungen_spezialisiert: number;
+  public begleitungen_interventionsstellen: number;
+  public begleitungen_sonstige?: string;
 
-        //Daten zur durchgeführten Beratung
-        beratungsstelle: string,
-        anzahlBeratungen: string,
-        termine: Beratungstermine[],
+  // Verweise (Statistik)
+  public verweise_gesamt: number;
+  public verweise_gerichte: number;
+  public verweise_polizei: number;
+  public verweise_rechtsanwaelte: number;
+  public verweise_aerzte: number;
+  public verweise_rechtsmedizin: number;
+  public verweise_jugendamt: number;
+  public verweise_sozialamt: number;
+  public verweise_jobcenter: number;
+  public verweise_beratungstellen: number;
+  public verweise_schutzeinrichtungen: number;
+  public verweise_schutzeinrichtungen_spezialisiert: number;
+  public verweise_interventionsstellen: number;
+  public verweise_sonstige?: string;
 
-        //Daten zur Gewalt
-        alterzZeitpunkt: string,
-        zeitrsaum: string,
-        artVorfall: string,
-        anzahlTaeter: string,
-        taeter: Taeter[],
-        artderGewalt: boolean[],
-        tatort: string,
-        anzeige: string,
-        medizinischeVersorgung: string,
-        spurensicherung: string,
-        mitbetroffeneKids: string,
-        direktbetroffen: string,
-        notizenGewalt: string,
+  // Meta
+  public quelle: Quelle;
+  public andere_quelle?: string;
+  public dolmetsch_zeit: number;
+  public dolmetsch_sprache?: string;
+  public notizen?: string;
 
-        //Daten zu den Folgen der Gewalt
-        psychischeFolgen: boolean[],
-        körperlicheFolgen: boolean[],
-        körperlicheBeeinträchtigung: string,
-        finanzielleFolgen: string,
-        arbeitseinschraenkungen: string,
-        verlustArbeit: string,
-        sozialeIsolation: string,
-        suizidalität: string,
-        notizenFolgen: string,
-
-        //Daten zu Begleitung/verweise
-        anzahlBegleitungen: string,
-        begleitungBei: boolean[],
-        anzahlVerweise: string,
-        verweiseZu: boolean[],
-
-        //weitere Daten
-        wohererfahren: string,
-        dolmetscher: string,
-        sprache: string,
-        stunden: string,
-    ){
-        this.alias = alias;
-        this.rolle = rolle;
-        this.alter = alter;
-        this.geschlecht = geschlecht;
-        this.sexualitaet = sexualitaet;
-        this.wohnort = wohnort;
-        this.nationalitaet = nationalitaet;
-        this.beruf = beruf;
-        this.behinderung = behinderung;
-        this.artbehinderung = artbehinderung;
-        this.gradbehinderung = gradbehinderung;
-        this.notizenPersonenbezogen = notizenPersonenbezogen;
-
-        this.beratungsstelle = beratungsstelle;
-        this.anzahlBeratungen = anzahlBeratungen;
-        this.termine = termine;
-
-        this.alterzZeitpunkt = alterzZeitpunkt;
-        this.zeitrsaum = zeitrsaum;
-        this.artVorfall = artVorfall;
-        this.anzahlTaeter = anzahlTaeter;
-        this.taeter = taeter;
-        this.artderGewalt = artderGewalt;
-        this.tatort = tatort;
-        this.anzeige = anzeige;
-        this.medizinischeVersorgung = medizinischeVersorgung;
-        this.spurensicherung = spurensicherung;
-        this.mitbetroffeneKids = mitbetroffeneKids;
-        this.direktbetroffen = direktbetroffen;
-        this.notizenGewalt = notizenGewalt;
-
-        this.psychischeFolgen = psychischeFolgen;
-        this.körperlicheFolgen = körperlicheFolgen;
-        this.körperlicheBeeinträchtigung = körperlicheBeeinträchtigung;
-        this.finanzielleFolgen = finanzielleFolgen;
-        this.arbeitseinschraenkungen = arbeitseinschraenkungen;
-        this.verlustArbeit = verlustArbeit;
-        this.sozialeIsolation = sozialeIsolation;
-        this.suizidalität = suizidalität;
-        this.notizenFolgen = notizenFolgen;
-
-        this.anzahlBegleitungen = anzahlBegleitungen;
-        this.begleitungBei = begleitungBei;
-        this.anzahlVerweise = anzahlVerweise;
-        this.verweiseZu = verweiseZu;
-
-        this.wohererfahren = wohererfahren;
-        this.dolmetscher = dolmetscher;
-        this.sprache = sprache;
-        this.stunden = stunden;
-    }
-
-    public getAlias(): string{
-        return this.alias;
-    }
-
-    public getRolle(): string{
-        return this.rolle;
-    }
-    public getAlter(): string{
-        return this.alter;
-    }
-    
-    public getGeschlecht(): string{
-        return this.geschlecht;
-    }
-
-    public getSexualitaet(): string{
-        return this.sexualitaet;
-    }
-
-    public getWohnort(): string{
-        return this.wohnort;
-    }
-
-    public getNationalitaet(): string{
-        return this.nationalitaet;
-    }
-
-    public getBeruf(): string{
-        return this.beruf;
-    }
-
-    public getBehinderung(): string{
-        return this.behinderung;
-    }
-
-    public getArtbehinderung(): string{
-        return this.artbehinderung;
-    }
-
-    public getGradbehinderung(): string{
-        return this.gradbehinderung;
-    }
-
-    public getNotizenPersonenbezogen(): string{
-        return this.notizenPersonenbezogen;
-    }
-
-    public getBeratungsstelle(): string{
-        return this.beratungsstelle;
-    }
-
-    public getAnzahlBeratungen(): string{
-        return this.anzahlBeratungen;
-    }
-
-    public getTermine(): Beratungstermine[]{
-        return this.termine;
-    }
-
-    public getAlterzZeitpunkt(): string{
-        return this.alterzZeitpunkt;
-    }
-
-    public getZeitrsaum(): string{
-        return this.zeitrsaum;
-    }
-
-    public getArtVorfall(): string{
-        return this.artVorfall;
-    }
-
-    public getAnzahlTaeter(): string{
-        return this.anzahlTaeter;
-    }
-
-    public getTaeter(): Taeter[]{
-        return this.taeter;
-    }
-
-    public getArtderGewalt(): boolean[]{
-        return this.artderGewalt;
-    }
-
-    public getTatort(): string{
-        return this.tatort;
-    }
-
-    public getAnzeige(): string{
-        return this.anzeige;
-    }
-
-    public getMedizinischeVersorgung(): string{
-        return this.medizinischeVersorgung;
-    }
-
-    public getSpurensicherung(): string{
-        return this.spurensicherung;
-    }
-
-    public getMitbetroffeneKids(): string{
-        return this.mitbetroffeneKids;
-    }
-
-    public getDirektbetroffen(): string{
-        return this.direktbetroffen;
-    }
-
-    public getNotizenGewalt(): string{
-        return this.notizenGewalt;
-    }
-
-    public getPsychischeFolgen(): boolean[]{
-        return this.psychischeFolgen;
-    }
-
-    public getKörperlicheFolgen(): boolean[]{
-        return this.körperlicheFolgen;
-    }
-
-    public getKörperlicheBeeinträchtigung(): string{
-        return this.körperlicheBeeinträchtigung;
-    }
-
-    public getFinanzielleFolgen(): string{
-        return this.finanzielleFolgen;
-    }
-
-    public getArbeitseinschraenkungen(): string{
-        return this.arbeitseinschraenkungen;
-    }
-
-    public getVerlustArbeit(): string{
-        return this.verlustArbeit;
-    }
-
-    public getSozialeIsolation(): string{
-        return this.sozialeIsolation;
-    }
-
-    public getSuizidalität(): string{
-        return this.suizidalität;
-    }
-
-    public getNotizenFolgen(): string{
-        return this.notizenFolgen;
-    }
-
-    public getAnzahlBegleitungen(): string{
-        return this.anzahlBegleitungen;
-    }
-
-    public getBegleitungBei(): boolean[]{
-        return this.begleitungBei;
-    }
-
-    public getAnzahlVerweise(): string{
-        return this.anzahlVerweise;
-    }
-
-    public getVerweiseZu(): boolean[]{
-        return this.verweiseZu;
-    }
-
-    public getWohererfahren(): string{
-        return this.wohererfahren;
-    }
-
-    public getDolmetscher(): string{
-        return this.dolmetscher;
-    }
-
-    public getSprache(): string{
-        return this.sprache;
-    }
-
-    public getStunden(): string{
-        return this.stunden;
-    }
+  constructor(
+    alias: string,
+    rolle: SenderRolle,
+    alter: number,
+    geschlecht: GeschlechtsIdentitaet,
+    sexualitaet: Sexualitaet,
+    wohnort: Ort,
+    staatsangehoerigkeit: string,
+    berufssituation: BeruflicheSituation,
+    schwerbehinderung: boolean,
+    schwerbehinderung_form: BehinderungsForm,
+    beratungsstelle: Beratungsstelle,
+    anzahl_beratungen: number,
+    depression: boolean,
+    angststoerung: boolean,
+    ptbs: boolean,
+    anderes: boolean,
+    burn_out: boolean,
+    schlafstoerung: boolean,
+    sucht: boolean,
+    kommunikationsschwierigkeiten: boolean,
+    vernachlaessigung_alltaeglicher_dinge: boolean,
+    schmerzen: boolean,
+    laehmungen: boolean,
+    krankheit: boolean,
+    finanzielle_folgen: boolean,
+    arbeits_einschraenkung: boolean,
+    verlust_arbeit: boolean,
+    soziale_isolation: boolean,
+    suizidalitaet: boolean,
+    begleitungen_gesamt: number,
+    begleitungen_gerichte: number,
+    begleitungen_polizei: number,
+    begleitungen_rechtsanwaelte: number,
+    begleitungen_aerzte: number,
+    begleitungen_rechtsmedizin: number,
+    begleitungen_jugendamt: number,
+    begleitungen_sozialamt: number,
+    begleitungen_jobcenter: number,
+    begleitungen_beratungstellen: number,
+    begleitungen_schutzeinrichtungen: number,
+    begleitungen_schutzeinrichtungen_spezialisiert: number,
+    begleitungen_interventionsstellen: number,
+    verweise_gesamt: number,
+    verweise_gerichte: number,
+    verweise_polizei: number,
+    verweise_rechtsanwaelte: number,
+    verweise_aerzte: number,
+    verweise_rechtsmedizin: number,
+    verweise_jugendamt: number,
+    verweise_sozialamt: number,
+    verweise_jobcenter: number,
+    verweise_beratungstellen: number,
+    verweise_schutzeinrichtungen: number,
+    verweise_schutzeinrichtungen_spezialisiert: number,
+    verweise_interventionsstellen: number,
+    quelle: Quelle,
+    dolmetsch_zeit: number,
+    // Optionale Parameter am Ende oder explizit übergeben
+    schwerbehinderung_grad?: string,
+    dauerhafte_beeintraechtigung?: string,
+    weiteres?: string,
+    notizen_folgen?: string,
+    begleitungen_sonstige?: string,
+    verweise_sonstige?: string,
+    andere_quelle?: string,
+    dolmetsch_sprache?: string,
+    notizen?: string,
+  ) {
+    this.alias = alias;
+    this.rolle = rolle;
+    this.alter = alter;
+    this.geschlecht = geschlecht;
+    this.sexualitaet = sexualitaet;
+    this.wohnort = wohnort;
+    this.staatsangehoerigkeit = staatsangehoerigkeit;
+    this.berufssituation = berufssituation;
+    this.schwerbehinderung = schwerbehinderung;
+    this.schwerbehinderung_form = schwerbehinderung_form;
+    this.schwerbehinderung_grad = schwerbehinderung_grad;
+    this.beratungsstelle = beratungsstelle;
+    this.anzahl_beratungen = anzahl_beratungen;
+    this.depression = depression;
+    this.angststoerung = angststoerung;
+    this.ptbs = ptbs;
+    this.anderes = anderes;
+    this.burn_out = burn_out;
+    this.schlafstoerung = schlafstoerung;
+    this.sucht = sucht;
+    this.kommunikationsschwierigkeiten = kommunikationsschwierigkeiten;
+    this.vernachlaessigung_alltaeglicher_dinge =
+      vernachlaessigung_alltaeglicher_dinge;
+    this.schmerzen = schmerzen;
+    this.laehmungen = laehmungen;
+    this.krankheit = krankheit;
+    this.dauerhafte_beeintraechtigung = dauerhafte_beeintraechtigung;
+    this.finanzielle_folgen = finanzielle_folgen;
+    this.arbeits_einschraenkung = arbeits_einschraenkung;
+    this.verlust_arbeit = verlust_arbeit;
+    this.soziale_isolation = soziale_isolation;
+    this.suizidalitaet = suizidalitaet;
+    this.weiteres = weiteres;
+    this.notizen_folgen = notizen_folgen;
+    this.begleitungen_gesamt = begleitungen_gesamt;
+    this.begleitungen_gerichte = begleitungen_gerichte;
+    this.begleitungen_polizei = begleitungen_polizei;
+    this.begleitungen_rechtsanwaelte = begleitungen_rechtsanwaelte;
+    this.begleitungen_aerzte = begleitungen_aerzte;
+    this.begleitungen_rechtsmedizin = begleitungen_rechtsmedizin;
+    this.begleitungen_jugendamt = begleitungen_jugendamt;
+    this.begleitungen_sozialamt = begleitungen_sozialamt;
+    this.begleitungen_jobcenter = begleitungen_jobcenter;
+    this.begleitungen_beratungstellen = begleitungen_beratungstellen;
+    this.begleitungen_schutzeinrichtungen = begleitungen_schutzeinrichtungen;
+    this.begleitungen_schutzeinrichtungen_spezialisiert =
+      begleitungen_schutzeinrichtungen_spezialisiert;
+    this.begleitungen_interventionsstellen = begleitungen_interventionsstellen;
+    this.begleitungen_sonstige = begleitungen_sonstige;
+    this.verweise_gesamt = verweise_gesamt;
+    this.verweise_gerichte = verweise_gerichte;
+    this.verweise_polizei = verweise_polizei;
+    this.verweise_rechtsanwaelte = verweise_rechtsanwaelte;
+    this.verweise_aerzte = verweise_aerzte;
+    this.verweise_rechtsmedizin = verweise_rechtsmedizin;
+    this.verweise_jugendamt = verweise_jugendamt;
+    this.verweise_sozialamt = verweise_sozialamt;
+    this.verweise_jobcenter = verweise_jobcenter;
+    this.verweise_beratungstellen = verweise_beratungstellen;
+    this.verweise_schutzeinrichtungen = verweise_schutzeinrichtungen;
+    this.verweise_schutzeinrichtungen_spezialisiert =
+      verweise_schutzeinrichtungen_spezialisiert;
+    this.verweise_interventionsstellen = verweise_interventionsstellen;
+    this.verweise_sonstige = verweise_sonstige;
+    this.quelle = quelle;
+    this.andere_quelle = andere_quelle;
+    this.dolmetsch_zeit = dolmetsch_zeit;
+    this.dolmetsch_sprache = dolmetsch_sprache;
+    this.notizen = notizen;
+  }
 }

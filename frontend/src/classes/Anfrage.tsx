@@ -1,69 +1,49 @@
+import type { AnfrageArt, Ort, SenderRolle } from "./unions";
+
 export class Anfrage {
-    private alias: string;
-    private datum: string;
-    private wer: string;
-    private aus: string;
-    private art: string;
-    private wie: string;
-    private termin: string;
-    private datumTermin: string;
-    private ort: string;
+  //    "sende_art": "string (maxLänge: 200)",
+  //    "sende_datum": "YYYY-MM-DD",
+  //    "sende_ort": "-> Aufzählungen",
+  //    "sender_rolle": "-> Aufzählungen",
+  //    "im_auftrag": bool,
+  //    "ist_queer": bool,
+  //    "anfrage_art": "-> Aufzählungen",
+  //    "mit_termin": bool,
+  //    "termin_ort": "-> Aufzählungen",
+  //    "termin_datum": "YYYY-MM-DD"
 
-    constructor(
-        alias: string,
-        datum: string,
-        wer: string,
-        aus: string,
-        art: string,
-        wie: string,
-        termin: string,
-        datumTermin: string,
-        ort: string
-    ) {
-        this.alias = alias;
-        this.datum = datum;
-        this.wer = wer;
-        this.aus = aus;
-        this.art = art;
-        this.wie = wie;
-        this.termin = termin;
-        this.datumTermin = datumTermin;
-        this.ort = ort;
-    }
+  public sende_art: string;
+  public sende_datum: string;
+  public sende_ort: Ort;
+  public sender_rolle: SenderRolle;
+  public im_auftrag: boolean;
+  public ist_queer: boolean;
+  public anfrage_art: AnfrageArt;
+  public mit_termin: boolean;
+  public termin_ort: Ort;
+  public termin_datum: string;
 
-    public getAlias(): string {
-        return this.alias;
-    }
-
-    public getDatum(): string {
-        return this.datum;
-    }
-
-    public getWer(): string {
-        return this.wer;
-    }
-
-    public getAus(): string {
-        return this.aus;
-    }
-
-    public getArt(): string {
-        return this.art;
-    }
-
-    public getWie(): string {
-        return this.wie;
-    }
-
-    public getTermin(): string {
-        return this.termin;
-    }
-
-    public getDatumTermin(): string {
-        return this.datumTermin;
-    }
-
-    public getOrt(): string {
-        return this.ort;
-    }
+  constructor(
+    sende_art: string,
+    sende_datum: string,
+    sende_ort: Ort,
+    sender_rolle: SenderRolle,
+    im_auftrag: boolean,
+    ist_queer: boolean,
+    anfrage_art: AnfrageArt,
+    mit_termin: boolean,
+    termin_ort: Ort,
+    termin_datum: string,
+  ) {
+    this.sende_art = sende_art;
+    this.sende_datum = sende_datum;
+    this.sende_ort = sende_ort;
+    this.sender_rolle = sender_rolle;
+    this.im_auftrag = im_auftrag;
+    this.ist_queer = ist_queer;
+    this.anfrage_art = anfrage_art;
+    this.mit_termin = mit_termin;
+    this.termin_ort = termin_ort;
+    this.termin_datum = termin_datum;
+  }
 }
