@@ -72,19 +72,19 @@ class Beziehung(models.TextChoices):
     X = "X", "Sonstige:r"
 
 class TatOrt(models.TextChoices):
-    S = "S", "Stadt Leipzig"
-    L = "L", "Landkreis Leipzig"
-    N = "N", "Landkreis Nordsachsen"
-    B = "B", "Sachsen"
-    D = "D", "Deutschland"
-    A = "A", "Ausland"
-    F = "F", "auf der Flucht"
-    H = "H", "im Herkunftsland"
+    "Stadt Leipzig"
+    "Landkreis Leipzig"
+    "Landkreis Nordsachsen"
+    "Sachsen"
+    "Deutschland"
+    "Ausland"
+    "auf der Flucht"
+    "im Herkunftsland"
 
 class JaNeinUnentschieden(models.TextChoices):
-    J = "J", "Ja"
-    N = "N", "Nein"
-    U = "U", "noch nicht entschieden"
+    "Ja"
+    "Nein"
+    "noch nicht entschieden"
 
 class Quelle(models.TextChoices):
     "Selbstmeldung über Polizei"
@@ -236,8 +236,8 @@ class Gewalttat(models.Model):
     digitale_sexuelle_gewalt = models.BooleanField(default=False)
     spiking = models.BooleanField(default=False)
     weitere = models.CharField(max_length=200, blank=True)
-    tatort = models.CharField(max_length=1, choices=TatOrt)
-    anzeige = models.CharField(max_length=1, choices=JaNeinUnentschieden)
+    tatort = models.CharField(max_length=100, choices=TatOrt)
+    anzeige = models.CharField(max_length=100, choices=JaNeinUnentschieden)
     med_versorgung = models.BooleanField(blank=True)
     betroffene_kinder = models.IntegerField(blank=True)
     betroffene_kinder_direkt = models.IntegerField(blank=True)
