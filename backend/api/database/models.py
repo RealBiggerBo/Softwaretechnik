@@ -63,13 +63,13 @@ class BeratungsArt(models.TextChoices):
     "schriftlich"
 
 class Beziehung(models.TextChoices):
-    U = "U", "Unbekannte:r"
-    B = "B", "Bekannte:r"
-    P = "P", "Partner:in"
-    A = "A", "Partner:in ehemalig"
-    E = "E", "Ehepartner:in oder eingetragene:r Lebenspartner:in"
-    F = "F", "andere:r Familienangehörige:r"
-    X = "X", "Sonstige:r"
+    "Unbekannte:r"
+    "Bekannte:r"
+    "Partner:in"
+    "Partner:in ehemalig"
+    "Ehepartner:in oder eingetragene:r Lebenspartner:in"
+    "andere:r Familienangehörige:r"
+    "Sonstige:r"
 
 class TatOrt(models.TextChoices):
     "Stadt Leipzig"
@@ -96,9 +96,9 @@ class Quelle(models.TextChoices):
     "Rechtsanwälte/-anwältinnen"
 
 class Geschlecht(models.TextChoices):
-    M = "M", "männlich"
-    W = "W", "weiblich"
-    D = "D", "divers"
+    "männlich"
+    "weiblich"
+    "divers"
 
 #Modelle
 class Anfrage(models.Model):
@@ -248,8 +248,8 @@ class Gewalttat(models.Model):
 
 class Taeter(models.Model):
     gewalttat = models.ForeignKey(Gewalttat, on_delete=models.CASCADE)
-    geschlecht = models.CharField(max_length=1, choices=Geschlecht)
-    beziehung = models.CharField(max_length=1, choices=Beziehung)
+    geschlecht = models.CharField(max_length=100, choices=Geschlecht)
+    beziehung = models.CharField(max_length=100, choices=Beziehung)
 
     def __str__(self):
         return f"{self.geschlecht}"
