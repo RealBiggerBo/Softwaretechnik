@@ -56,11 +56,11 @@ class BehinderungsForm(models.TextChoices):
     "körperlich"
 
 class BeratungsArt(models.TextChoices):
-    P = "P", "persönlich"
-    V = "V", "video"
-    T = "T", "telefon"
-    A = "A", "aufsuchend"
-    S = "S", "schriftlich"
+    "persönlich"
+    "video"
+    "telefon"
+    "aufsuchend"
+    "schriftlich"
 
 class Beziehung(models.TextChoices):
     U = "U", "Unbekannte:r"
@@ -207,8 +207,8 @@ class Fall(models.Model):
 class Beratung(models.Model):
     fall = models.ForeignKey(Fall, on_delete=models.CASCADE)
     datum = models.DateField(default=date.today)
-    art = models.CharField(max_length=1, choices=BeratungsArt)
-    stelle = models.CharField(max_length=1, choices=Beratungsstelle)
+    art = models.CharField(max_length=100, choices=BeratungsArt)
+    stelle = models.CharField(max_length=100, choices=Beratungsstelle)
     notizen = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
