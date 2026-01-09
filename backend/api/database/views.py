@@ -7,136 +7,118 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 
-def type_is_valid(type):
-    return type in ["anfrage", "fall", "beratung", "gewalttat", "taeter"]
-
-def get_serializer(request, type):
-    if type == "anfrage":
-        return AnfrageSerializer(data=request.data)
-    elif type == "fall":
-        return FallSerializer(data=request.data)
-    elif type == "beratung":
-        return BeratungSerializer(data=request.data)
-    elif type == "gewalttat":
-        return GewalttatSerializer(data=request.data)
-    elif type == "taeter":
-        return TaeterSerializer(data=request.data)
-
-def get_data_record(type, pk):
-    if type == "anfrage":
-        try:
-            return Anfrage.objects.get(pk=pk)
-        except Anfrage.DoesNotExist:
-            raise Http404
-    elif type == "fall":
-        try:
-            return Fall.objects.get(pk=pk)
-        except Fall.DoesNotExist:
-            raise Http404
-    elif type == "beratung":
-        try:
-            return Beratung.objects.get(pk=pk)
-        except Beratung.DoesNotExist:
-            raise Http404
-    elif type == "gewalttat":
-        try:
-            return Gewalttat.objects.get(pk=pk)
-        except Gewalttat.DoesNotExist:
-            raise Http404
-    elif type == "taeter":
-        try:
-            return Taeter.objects.get(pk=pk)
-        except Taeter.DoesNotExist:
-            raise Http404
-
 class DataAPI(APIView):
     permission_classes = [IsAuthenticated]
 
+    def type_is_valid(self, type):
+        return type in ["anfrage", "fall"]
+    
+    def get_data(self, type, pk):
+        if not self.type_is_valid(type):
+            return Response({"Error": "ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if type == "anfrage":
+            try:
+                data = Anfrage.objects.get(pk=pk)
+            except Anfrage.DoesNotExist:
+                raise Http404
+        elif type == "fall":
+            try:
+                data = Fall.objects.get(pk=pk)
+            except Fall.DoesNotExist:
+                raise Http404
+
+        if data == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return data
+        
+    def delete(self, request, type):
+        """
+        Löscht einen Datensatz.
+        """
+
+        data = self.get_data(type, request.DELETE.get("id", None))
+
+        if isinstance(data, Response):
+            return data
+
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get(self, request, type):
+        """
+        Gibt einen Datensatz zurück.
+        """
+
+        data = self.get_data(type, request.GET.get("id", None))
+
+        if isinstance(data, Response):
+            return data
+
+        if type == "anfrage":
+            serializer = AnfrageSerializer(data)
+        elif type == "fall":
+            serializer = FallSerializer(data)
+
+        return Response(serializer.data)
+
     def post(self, request, type):
         """
-        Erstellt ein neues DataRecord.
+        Erstellt einen neuen Datensatz.
         """
 
-        if not type_is_valid(type):
+        if not self.type_is_valid(type):
             return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = get_serializer(request, type)
+        if type == "anfrage":
+            serializer = AnfrageSerializer(data=request.data)
+        elif type == "fall":
+            serializer = FallSerializer(data=request.data)
+
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    def get(self, request, type, pk):
+    def put(self, request, type):
         """
-        Gibt ein DataRecord zurück.
+        Überschreibt einen Datensatz.
         """
 
-        if not type_is_valid(type):
-            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        data_record = get_data_record(type, pk)
-        if data_record == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        data = self.get_data(type, request.PUT.get("id", None))
+
+        if isinstance(data, Response):
+            return data
 
         if type == "anfrage":
-            serializer = AnfrageSerializer(data_record)
+            return AnfrageSerializer(data, data=request.data)
         elif type == "fall":
-            serializer = FallSerializer(data_record)
-        elif type == "beratung":
-            serializer = BeratungSerializer(data_record)
-        elif type == "gewalttat":
-            serializer = GewalttatSerializer(data_record)
-        elif type == "taeter":
-            serializer = TaeterSerializer(data_record)
-        elif type == "type":
-            serializer = TypeSerializer(data_record)
-
-        return Response(serializer.data)
-    
-    def put(self, request, type, pk):
-        """
-        Überschreibt ein DataRecord.
-        """
-
-        if not type_is_valid(type):
-            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        data_record = get_data_record(type, pk)
-        if data_record == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        if type == "anfrage":
-            return AnfrageSerializer(data_record, data=request.data)
-        elif type == "fall":
-            return FallSerializer(data_record, data=request.data)
-        elif type == "beratung":
-            return BeratungSerializer(data_record, data=request.data)
-        elif type == "gewalttat":
-            return GewalttatSerializer(data_record, data=request.data)
-        elif type == "taeter":
-            return TaeterSerializer(data_record, data=request.data)
+            return FallSerializer(data, data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
         return Response(serializer.data)
+
+class DataRecordAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Gibt die Struktur eines DataRecords zurück.
+        """
+
+        try:
+            data_record = DataRecord.objects.get(pk=request.GET.get("id", None))
+        except DataRecord.DoesNotExist:
+            Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DataRecordSerializer(data_record)
+
+        return Response(serializer.data["structure"], status=status.HTTP_201_CREATED)
     
-    def delete(self, request, type, pk):
-        """
-        Löscht ein DataRecord.
-        """
-        
-        if not type_is_valid(type):
-            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        data_record = get_data_record(type, pk)
-        if data_record == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        data_record.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 class ListAPI(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -169,30 +151,3 @@ class SearchAPI(APIView):
 
     def get(request):
         return Response({"message": "Hello from Django API"})
-
-class DataRecordAPI(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """
-        Gibt die Struktur aller DataRecords zurück.
-        """
-        data_record_list = DataRecord.objects.all()
-        serializer = DataRecordSerializer(data_record_list, many=True)
-
-        return Response(serializer.data)
-
-
-    def post(self, request):
-        """
-        Gibt die Struktur eines DataRecords zurück.
-        """
-        try:
-            data_record = DataRecord.objects.get(pk=request.data["pk"])
-        except DataRecord.DoesNotExist:
-            Response(status=status.HTTP_404_NOT_FOUND)
-
-        serializer = DataRecordSerializer(data_record)
-
-        return Response(serializer.data["structure"], status=status.HTTP_201_CREATED)
-    
