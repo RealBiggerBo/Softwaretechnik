@@ -1,13 +1,13 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import type { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { type IApiCaller } from "../classes/IApiCaller";
+import DatePickerRange from "../components/DatePickerRange";
 
 interface Props {
   caller: IApiCaller;
@@ -65,20 +65,12 @@ function StatisticsPage({ caller }: Props) {
           <h1>Auswahlmenü</h1>
           <form>
             <Stack direction="column" spacing={2}>
-              <Stack spacing={2} direction="row">
-                <DatePicker
-                  label="Von"
-                  value={timeStart}
-                  maxDate={timeEnd ?? undefined}
-                  onChange={setTimeStart}
-                />
-                <DatePicker
-                  label="Bis"
-                  value={timeEnd}
-                  minDate={timeStart ?? undefined}
-                  onChange={setTimeEnd}
-                />
-              </Stack>
+              <DatePickerRange
+                start={timeStart}
+                end={timeEnd}
+                onStartChange={setTimeStart}
+                onEndChange={setTimeEnd}
+              />
               <Stack spacing={2} direction="row">
                 <TextField
                   select
