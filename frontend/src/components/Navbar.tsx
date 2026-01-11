@@ -1,6 +1,8 @@
 import { AppBar, Toolbar, Button, Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
+
+
 
 interface Props {
   caller: IApiCaller;
@@ -8,6 +10,9 @@ interface Props {
 
 function Navbar({ caller }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -20,6 +25,7 @@ function Navbar({ caller }: Props) {
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Rechte Seite */}
+        {!isLoginPage && (
         <Button
           color="inherit"
           onClick={() => {
@@ -29,10 +35,12 @@ function Navbar({ caller }: Props) {
         >
           Logout
         </Button>
-        <Button color="inherit" onClick={() => navigate("/main")}>
+        )}
+        
+        <Button color="inherit" disabled={isLoginPage} onClick={() => navigate("/main")}>
           Home
         </Button>
-        <Button color="inherit" onClick={() => navigate("/settings")}>
+        <Button color="inherit" disabled={isLoginPage} onClick={() => navigate("/settings")}>
           Settings
         </Button>
       </Toolbar>
