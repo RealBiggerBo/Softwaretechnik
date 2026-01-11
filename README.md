@@ -49,11 +49,15 @@ Löscht einen Datensatz.
 
 URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
 
+Zugriffsrecht: Standard
+
 ### GET
 
 Gibt einen Datensatz zurück.
 
 URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
+
+Zugriffsrecht: Standard
 
 Rückgabewert:
 
@@ -65,6 +69,8 @@ Speichert einen Datensatz.
 
 URL: [/api/data/data/%T](http://127.0.0.1:8000/api/data/data/fall)
 
+Zugriffsrecht: Standard
+
 Parameter:
             
     Format III
@@ -74,6 +80,8 @@ Parameter:
 Überschreibt einen Datensatz.
 
 URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
+
+Zugriffsrecht: Standard
 
 Parameter:
             
@@ -87,6 +95,8 @@ Gibt die Struktur eines DataRecords zurück.
 
 URL: [/api/data/data_record/%T?id=%N](http://127.0.0.1:8000/api/data/data_record)
 
+Zugriffsrecht: Standard
+
 Rückgabewert:
 
     Format II
@@ -98,6 +108,8 @@ Rückgabewert:
 Gibt alle Datensätze eines Types zurück.
 
 URL: [/api/data/list/%T](http://127.0.0.1:8000/api/data/list/fall)
+
+Zugriffsrecht: Standard
 
 Rückgabewert:
 
