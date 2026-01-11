@@ -37,52 +37,103 @@ Bei sonstigen Fehlermeldungen kann ChatGPT/Gemini helfen.
 
 # API's
 
-T: Typ des DataRecords (anfrage, fall)
+%T: Typ des DataRecords (anfrage, fall)
 
-N: Index des DataRecords
+%N: Index des DataRecords
 
 ## DataAPI
 
-URL: /api/data/data/T/N
+### DELETE
 
-- DELETE
-- GET
-- POST
-- PUT
+Löscht einen Datensatz.
 
-## DataRecordAPI
+URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
 
--> [/api/data/data_record](http://127.0.0.1:8000/api/data/data_record)
+### GET
 
-#### GET
+Gibt einen Datensatz zurück.
 
-Gibt die Struktur aller DataRecords zurück.
+URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
 
-#### POST
+Rückgabewert:
 
-Gibt die Struktur eines DataRecords zurück.
+    Format III
+
+### POST
+
+Speichert einen Datensatz.
+
+URL: [/api/data/data/%T](http://127.0.0.1:8000/api/data/data/fall)
 
 Parameter:
             
-      {"pk": N}
+    Format III
+
+### PUT
+
+Überschreibt einen Datensatz.
+
+URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
+
+Parameter:
+            
+    Format III
+
+## DataRecordAPI
+
+### GET
+
+Gibt die Struktur eines DataRecords zurück.
+
+URL: [/api/data/data_record/%T?id=%N](http://127.0.0.1:8000/api/data/data_record)
+
+Rückgabewert:
+
+    Format II
 
 ## ListAPI
 
-URL: /api/data/list/T
+### GET
 
-- GET
+Gibt alle Datensätze eines Types zurück.
 
+URL: [/api/data/list/%T](http://127.0.0.1:8000/api/data/list/fall)
+
+Rückgabewert:
+
+    [Format III]
 
 ## SearchAPI
 
-noch nicht vorhanden (URL: /api/data/search/T)
+noch nicht vorhanden (URL: /api/data/search/%T)
+
+# Kommunikations-Formate
+
+### Format I
+
+    {
+        noch zu entscheiden
+    }
+
+### Format II
+
+    {
+        noch zu entscheiden
+    }
+
+### Format III
+
+    {
+        noch zu entscheiden
+    }
 
 # DataRecords
+
+im vorläufigen Format II
 
 ## Anfrage
 
 -> [backend/api/database/anfrage.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/anfrage.json)
-
 
 ## Fall
 
