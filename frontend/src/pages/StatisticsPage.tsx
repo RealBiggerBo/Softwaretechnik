@@ -8,17 +8,20 @@ import type { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { type IApiCaller } from "../classes/IApiCaller";
 import DatePickerRange from "../components/DatePickerRange";
+import TemplateDialog from "../components/TemplateDialog";
 
 interface Props {
   caller: IApiCaller;
 }
 
 function StatisticsPage({ caller }: Props) {
-  const [presets, setPresets] = useState<string[]>([]);
+  const [presets, setPresets] = useState<string[]>(["Vorlage 1", "Vorlage 2"]);
   const [timeStart, setTimeStart] = useState<Dayjs | null>(null);
   const [timeEnd, setTimeEnd] = useState<Dayjs | null>(null);
   const [preset, setPreset] = useState<string>("");
   const [fileFormat, setFileFormat] = useState<string>("CSV");
+  const [TemplatesDialogueOpen, setTemplatesDialogueOpen] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const fetchPresets = async () => {
@@ -86,6 +89,19 @@ function StatisticsPage({ caller }: Props) {
                     </MenuItem>
                   ))}
                 </TextField>
+                <Button
+                  onClick={() => setTemplatesDialogueOpen(true)}
+                  variant="outlined"
+                  size="large"
+                  sx={{ px: 3 }}
+                >
+                  Vorlage Erstellen
+                </Button>
+                <TemplateDialog
+                  caller={caller}
+                  open={TemplatesDialogueOpen}
+                  onClose={() => setTemplatesDialogueOpen(false)}
+                />
                 <Button variant="contained" size="large" sx={{ px: 3 }}>
                   Anzeigen
                 </Button>
