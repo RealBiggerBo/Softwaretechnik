@@ -99,7 +99,18 @@ Zugriffsrecht: Standard
 
 Rückgabewert:
 
-    Format II
+    {
+        "Name": {
+            "id": Integer,
+            "type": String,
+            "required": Boolean,
+            ...
+            "maxLength": Integer (für "type"="String"),
+            "possibleValues": [Typ äquivalent zu Feldtyp]
+        },
+
+        ...
+    }
 
 ## ListAPI
 
@@ -119,29 +130,7 @@ Rückgabewert:
 
 noch nicht vorhanden (URL: /api/data/search/%T)
 
-# Kommunikations-Formate
-
-### Format I
-
-    {
-        noch zu entscheiden
-    }
-
-### Format II
-
-    {
-        noch zu entscheiden
-    }
-
-### Format III
-
-    {
-        noch zu entscheiden
-    }
-
 # DataRecords
-
-im vorläufigen Format II
 
 ## Anfrage
 
