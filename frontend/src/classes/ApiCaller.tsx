@@ -19,6 +19,19 @@ export class ApiCaller implements IApiCaller {
     pswd1: string,
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    const registerObject = {
+      username: user,
+      password: pswd1,
+      password2: pswd2,
+    };
+    return this.SendApiCall(
+      "/api/auth/register/",
+      "POST",
+      false,
+      JSON.stringify(registerObject),
+      "Registrierung fehlgeschlagen",
+    );
+
     try {
       const response = await this.request("/api/auth/register/", {
         method: "POST",
@@ -42,6 +55,19 @@ export class ApiCaller implements IApiCaller {
     user: string,
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    const loginObject = { username: user, password: pswd };
+    return this.SendApiCall(
+      "/api/auth/login/",
+      "POST",
+      true,
+      JSON.stringify(loginObject),
+      "Login fehlgeschlagen",
+      (response) =>
+        response.json().then((data) => {
+          headers.set("Authorization", `token ${data.token}`);
+        }),
+    );
+
     try {
       const response = await this.request("/api/auth/login/", {
         method: "POST",
@@ -83,6 +109,19 @@ export class ApiCaller implements IApiCaller {
     newPswd: string,
     newPswdCtrl: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    const passwordObject = {
+      old_password: curPswd,
+      new_password: newPswd,
+      new_password2: newPswdCtrl,
+    };
+
+    return this.SendApiCall(
+      "/api/auth/change-password/",
+      "POST",
+      true,
+      JSON.stringify(passwordObject),
+      "Passwortänderung fehlgeschlagen",
+    );
     try {
       const response = await this.request("/api/auth/change-password/", {
         method: "POST",
@@ -110,6 +149,13 @@ export class ApiCaller implements IApiCaller {
   async TryCreateCase(
     caseToCreate: Case,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/save/fall",
+      "POST",
+      true,
+      JSON.stringify(caseToCreate),
+      "Erstellen fehlgeschlagen",
+    );
     try {
       const response = await this.request("/api/data/save/fall", {
         method: "POST",
@@ -133,6 +179,13 @@ export class ApiCaller implements IApiCaller {
   async TryCreateAnfrage(
     anfrageToCreate: Anfrage,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/save/anfrage",
+      "POST",
+      true,
+      JSON.stringify(anfrageToCreate),
+      "Erstellen fehlgeschlagen",
+    );
     try {
       const response = await this.request("/api/data/save/anfrage", {
         method: "POST",
@@ -156,6 +209,14 @@ export class ApiCaller implements IApiCaller {
   async TrySearchFall(
     caseToSearch: Case,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/fall/search",
+      "POST",
+      true,
+      JSON.stringify(caseToSearch),
+      "Suche fehlgeschlagen",
+    );
+
     try {
       const response = await this.request("/api/data/fall/search", {
         method: "POST",
@@ -179,6 +240,14 @@ export class ApiCaller implements IApiCaller {
   async TrySearchAnfrage(
     anfrageToSearch: Anfrage,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/anfrage/search",
+      "POST",
+      true,
+      JSON.stringify(anfrageToSearch),
+      "Suche fehlgeschlagen",
+    );
+
     try {
       const response = await this.request("/api/data/anfrage/search", {
         method: "POST",
@@ -205,5 +274,34 @@ export class ApiCaller implements IApiCaller {
 
   async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
     throw new Error("Method not implemented.");
+  }
+
+  async SendApiCall(
+    url: string,
+    method: "GET" | "POST" | "PUT",
+    includeCredentials: boolean,
+    body: string,
+    fallbackErrorMsg: string,
+    successAction?: (response: Response) => void,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    try {
+      const response = await this.request(url, {
+        method: method,
+        credentials: includeCredentials ? "include" : undefined,
+        body: body,
+      });
+
+      if (response.ok) {
+        if (successAction != undefined) successAction(response);
+        return { success: true, errorMsg: "" };
+      }
+
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.detail || fallbackErrorMsg;
+
+      return { success: false, errorMsg };
+    } catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
   }
 }

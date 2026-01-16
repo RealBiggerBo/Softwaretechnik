@@ -59,7 +59,7 @@ export class DateField extends DataField {
   }
   override IsValid(): boolean {
     const datePattern = /dddd-dd-dd/;
-    //TODO: check for valid date eg. 2026-02-31 -> invalid
+    //TODO: check for valid date: eg. 2026-02-31 -> invalid
     return datePattern.test(this.date);
   }
 }

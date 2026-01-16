@@ -1,4 +1,5 @@
 import type { TextField } from "../classes/DataField";
+import { TextField as Tf} from "@mui/material";
 
 interface Props {
   textField: TextField;
@@ -11,26 +12,28 @@ function TextDataField({ textField, isEditMode, onChange }: Props) {
     <>
       {!isEditMode && <label>{textField.name}</label>}
       {isEditMode && (
-        <input
+        <Tf
           type="text"
           onChange={(e) => {
             textField.name = e.target.value;
             onChange(textField);
           }}
           defaultValue={textField.name}
-        ></input>
+        ></Tf>
       )}
 
       {
-        <input
+        <Tf
           type="text"
           disabled={isEditMode}
           onChange={(e) => {
             textField.text = e.target.value;
             onChange(textField);
           }}
+          placeholder={textField.name}
           defaultValue={textField.text}
-        ></input>
+          size="small"
+        ></Tf>
       }
     </>
   );

@@ -32,8 +32,8 @@ function TemplateDialog({ caller, open, onClose }: TemplateDialogProps) {
                 {preset}
               </MenuItem>
             ))}
-            <MenuItem value="Neue Vorlage Erstellen">
-              Neue Vorlage Erstellen
+            <MenuItem value="Neue Vorlage erstellen">
+              Neue Vorlage erstellen
             </MenuItem>
           </TextField>
           <Button type="button">Erstellen/Bearbeiten</Button>
@@ -50,22 +50,22 @@ function TemplateDialog({ caller, open, onClose }: TemplateDialogProps) {
                 <Stack spacing={1} direction="row">
                   <TextField fullWidth label="Name"></TextField>
                   <TextField fullWidth select label="Funktion">
-                    <MenuItem value="Zähle">Zähle</MenuItem>
+                    <MenuItem value="zähle">zähle</MenuItem>
                   </TextField>
                   <TextField fullWidth select label="Wo">
-                    <MenuItem value="Gäschlecht">Gäschlecht</MenuItem>
+                    <MenuItem value="Geschlecht">Geschlecht</MenuItem>
                   </TextField>
                   <TextField fullWidth select label="Gelich">
                     <MenuItem value="*">*</MenuItem>
-                    <MenuItem value="Mänlich">Mänlich</MenuItem>
-                    <MenuItem value="Weiblich">Weiblich</MenuItem>
-                    <MenuItem value="Divese">Divese</MenuItem>
+                    <MenuItem value="männlich">männlich</MenuItem>
+                    <MenuItem value="weiblich">weiblich</MenuItem>
+                    <MenuItem value="divers">divers</MenuItem>
                   </TextField>
                 </Stack>
-                <Button type="button">Weitere Funktion Hinzufügen</Button>
+                <Button type="button">Weitere Funktion hinzufügen</Button>
               </Stack>
             </Card>
-            <Button type="button">Weitere Gruppe Hinzufügen Hinzufügen</Button>
+            <Button type="button">Weitere Gruppe hinzufügen</Button>
           </Stack>
         </form>
       </DialogContent>
