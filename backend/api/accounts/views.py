@@ -19,7 +19,7 @@ class RegisterAPIView(APIView):
         if serializer.is_valid():
             # Der Benutzer wird erstellt und es gibt eine Erfolgsmeldung.
             serializer.save()
-            return Response({"message": "Benutzer erfolgreich angelegt"}, status=status.HTTP_201_CREATED)
+            return Response({"debug": "Benutzer erfolgreich angelegt"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # API für den Login.
@@ -49,7 +49,7 @@ class LogoutAPIView(APIView):
     def post(self, request):
         # Die aktuelle Session wird beendet und es gibt eine Bestätigung.
         request.user.auth_token.delete()
-        return Response({"message": "Logout erfolgreich"})
+        return Response({"debug": "Logout erfolgreich"})
     
 class MeAPIView(APIView):
     # Der Endpoint darf nur von eingeloggten Benutzern verwendet werden.
@@ -90,7 +90,7 @@ class ChangePasswordAPI(APIView):
         user.save()
 
         # Gibt eine Erfolgsmeldung zurück.
-        return Response({"message": "Passwort erfolgreich geändert"}, status=status.HTTP_200_OK)
+        return Response({"debug": "Passwort erfolgreich geändert"}, status=status.HTTP_200_OK)
 
 # API's für die Rollen Permissions:
 
@@ -104,7 +104,7 @@ class CreateDatasetAPI(APIView):
         # Beispiel-Datenverarbeitung
         data = request.data
         # dataset = Dataset.objects.create(...)
-        return Response({"message": "Datensatz angelegt"}, status=status.HTTP_201_CREATED)
+        return Response({"debug": "Datensatz angelegt"}, status=status.HTTP_201_CREATED)
 
 # API für Datensätze bearbeiten
 class UpdateDatasetAPI(APIView):
@@ -113,7 +113,7 @@ class UpdateDatasetAPI(APIView):
     def put(self, request, dataset_id):
         # dataset = Dataset.objects.get(id=dataset_id)
         # dataset.update(...)
-        return Response({"message": "Datensatz aktualisiert"})
+        return Response({"debug": "Datensatz aktualisiert"})
 
 # API für Statistik abrufen
 class StatisticsAPI(APIView):
@@ -132,29 +132,29 @@ class UserPresetAPI(APIView):
 
     def post(self, request):
         # Preset speichern
-        return Response({"message": "Preset gespeichert"})
+        return Response({"debug": "Preset gespeichert"})
 
     def delete(self, request, preset_id):
         # Preset löschen
-        return Response({"message": "Preset gelöscht"})
+        return Response({"debug": "Preset gelöscht"})
 
 # API um geteilte Presets zuerstellen
 class SharedPresetCreateAPI(APIView):
     permission_classes = [IsBaseUser]
 
     def post(self, request):
-        return Response({"message": "Geteiltes Preset erstellt"})
+        return Response({"debug": "Geteiltes Preset erstellt"})
 
 # API um geteilte Presets zulöschen
 class SharedPresetDeleteAPI(APIView):
     permission_classes = [IsExtendedUser]
 
     def delete(self, request, preset_id):
-        return Response({"message": "Geteiltes Preset gelöscht"})
+        return Response({"debug": "Geteiltes Preset gelöscht"})
 
 # API um Formularfelder zuerweitern
 class CreateFormFieldAPI(APIView):
     permission_classes = [IsExtendedUser]
 
     def post(self, request):
-        return Response({"message": "Formularfeld erstellt"})
+        return Response({"debug": "Formularfeld erstellt"})

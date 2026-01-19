@@ -25,7 +25,7 @@ class AdminUserDeleteAPI(APIView):
 
             # Löscht den Benutzer aus der Datenbank. Dann gibt es eine Erfolgsmeldung.
             user.delete()
-            return Response({"message": "Benutzer gelöscht"})
+            return Response({"debug": "Benutzer gelöscht"})
         except User.DoesNotExist:
             # Es gibt keinen Benutzer mit dieser ID -> Fehlermeldung.
             return Response({"error": "Benutzer nicht gefunden"}, status=404)
@@ -52,7 +52,7 @@ class AdminResetPasswordAPI(APIView):
             user.save()
 
             # PW erfolgreich zurück gesetzt.
-            return Response({"message": "Passwort zurückgesetzt"})
+            return Response({"debug": "Passwort zurückgesetzt"})
         except User.DoesNotExist:
             # Sollte der Benutzer nicht existieren, gibt es einen Error.
             return Response({"error": "Benutzer nicht gefunden"}, status=404)
@@ -104,4 +104,4 @@ class AdminChangeRoleAPI(APIView):
         user.save()
 
         # Erfolgreich die Rolle geändert
-        return Response({"message": f"Rolle geändert zu {role}"})
+        return Response({"debug": f"Rolle geändert zu {role}"})
