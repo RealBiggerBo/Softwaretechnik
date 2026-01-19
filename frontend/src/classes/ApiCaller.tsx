@@ -297,7 +297,7 @@ export class ApiCaller implements IApiCaller {
       }
 
       const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || fallbackErrorMsg;
+      const errorMsg = error.error || fallbackErrorMsg;
 
       return { success: false, errorMsg };
     } catch {
