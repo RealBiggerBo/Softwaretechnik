@@ -260,7 +260,15 @@ class DataRecord(models.Model):
     mit Name, Erforderlichkeit und allen weiteren Werten,
     eines DataRecords.
     """
-    
+
     name = models.CharField(max_length=100)
     version = models.BigIntegerField()
     structure = models.JSONField()
+
+class DataSet(models.Model):
+    """
+    Der Datensatz als JSON, mit Referenz auf das enstprechende DataRecord
+    """
+
+    data_record = models.ForeignKey(DataRecord, on_delete=models.CASCADE)
+    data = models.JSONField()

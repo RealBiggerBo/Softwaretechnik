@@ -135,5 +135,9 @@ class TaeterSerializer(serializers.ModelSerializer):
 class DataRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataRecord
-        fields = ["name",
-                    "structure"]
+        exclude = ["id"]
+
+class DataSetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataSet
+        exclude = ["id"]
