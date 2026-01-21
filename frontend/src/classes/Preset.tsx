@@ -1,6 +1,5 @@
-import type { DataField } from "./DataField";
-import type { FilterOption } from "./FilterOption";
+import type { Query } from "./Query";
 
 export class Preset {
-  filters: { [dataFieldId: number]: FilterOption } = [];
+  queries: Query[] = [];
 }

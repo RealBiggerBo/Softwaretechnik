@@ -1,4 +1,5 @@
 export abstract class DataField {
+  readonly type: string = "";
   name: string = "";
   id: number = -1;
   required: boolean = false;
@@ -18,6 +19,7 @@ export abstract class DataField {
 }
 
 export class TextField extends DataField {
+  readonly type: string = "text";
   text: string = "";
   maxLength: number = -1; //no length bound
 
@@ -42,6 +44,7 @@ export class TextField extends DataField {
 }
 
 export class DateField extends DataField {
+  readonly type: string = "date";
   date: string = ""; //YYYY-MM-DD
 
   constructor(
@@ -65,6 +68,7 @@ export class DateField extends DataField {
 }
 
 export class IntegerField extends DataField {
+  readonly type: string = "integer";
   value: number = 0;
   minValue: number = 0;
   maxValue: number = -1; //no upper bound (due to minValue > maxValue)
@@ -95,6 +99,7 @@ export class IntegerField extends DataField {
 }
 
 export class EnumField extends DataField {
+  readonly type: string = "enum";
   selectedValue: string = "";
   enumType: string = "";
   private possibleValues: string[] = [];
@@ -126,6 +131,7 @@ export class EnumField extends DataField {
 }
 
 export class ToggleField extends DataField {
+  readonly type: string = "boolean";
   isSelected: boolean = false;
 
   constructor(

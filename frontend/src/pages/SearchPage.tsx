@@ -1,54 +1,48 @@
-import { Checkbox, Switch, ToggleButton } from "@mui/material";
 import { useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { Anfrage } from "../classes/Anfrage";
-import { Case } from "../classes/Case";
 import TextDataField from "../components/TextDataField";
 import { TextField } from "../classes/DataField";
+import QueryDisplay from "../components/QueryDisplay";
+import { Query } from "../classes/Query";
+import { DataRecord } from "../classes/DataRecord";
+import { DataRecordConverter } from "../classes/DataRecordConverter";
+import { Button } from "@mui/material";
 
 interface Props {
   caller: IApiCaller;
 }
 
-async function submitSearchAnfrageRequest(
-  caller: IApiCaller,
-  anfrageData?: Anfrage,
+async function submitSearchApiCall<T>(
+  searchaApiCall: (data: T) => Promise<{
+    success: boolean;
+    errorMsg: string;
+  }>,
+  data?: T,
 ): Promise<void> {
-  if (anfrageData == undefined) return;
-  const result = await caller.TrySearchAnfrage(anfrageData);
-  if (!result.success) alert(result.errorMsg);
-}
-
-async function submitSearchCaseRequest(
-  caller: IApiCaller,
-  caseData?: Case,
-): Promise<void> {
-  if (caseData == undefined) return;
-  const result = await caller.TrySearchFall(caseData);
+  if (data == undefined) return;
+  const result = await searchaApiCall(data);
   if (!result.success) alert(result.errorMsg);
 }
 
 function SearchPage({ caller }: Props) {
   const [selected, setSelected] = useState("");
 
-  const initialTextField = new TextField("Name", 0, true, "Text");
-  const [textField, setTextField] = useState<TextField>(initialTextField);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const initialQuery = new Query();
+  const [query, setQuery] = useState(initialQuery);
 
   return (
     <div>
-      <input
-        type="checkbox"
-        onChange={(e) => setIsEditMode(e.target.checked)}
-      ></input>
-      <TextDataField
-        textField={textField}
-        isEditMode={isEditMode}
-        onChange={setTextField}
-      ></TextDataField>
-      <button onClick={() => alert("Api erhält: " + textField.Display())}>
-        Dummy Sende an API
-      </button>
+      <QueryDisplay
+        query={query}
+        format={Object.assign(
+          new DataRecord(0, []),
+          DataRecordConverter.ConvertFormatToDataRecord(
+            Anfrage.GetNewJonsonFormat(),
+          ),
+        )}
+      />
+      <Button onClick={() => alert(JSON.stringify(query))}>TEST</Button>
       <br></br> {/*line break for clarity*/}
       <label>{Anfrage.GetNewJonsonFormat()}</label>
       <br></br> {/*line break for clarity*/}
@@ -80,7 +74,7 @@ function SearchPage({ caller }: Props) {
           <button
             onClick={async () => {
               //TODO: get data from fields into anfrage class
-              await submitSearchAnfrageRequest(caller, undefined);
+              await submitSearchApiCall(caller.TrySearchAnfrage, undefined);
             }}
           >
             Anfrage suchen
@@ -329,7 +323,7 @@ function SearchPage({ caller }: Props) {
           <button
             onClick={async () => {
               //TODO: get data from fields into case class
-              await submitSearchCaseRequest(caller, undefined);
+              await submitSearchApiCall(caller.TrySearchFall, undefined);
             }}
           >
             Fall suchen

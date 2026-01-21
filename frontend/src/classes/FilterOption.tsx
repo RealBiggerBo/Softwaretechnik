@@ -31,7 +31,8 @@ export class DateRangeFilter extends RangeFilter {
   maxValue: string = "";
 }
 
-export abstract class FilterAction {}
+export abstract class DisplayAction {}
 
-export class MaxFilterAction extends FilterAction {}
-export class MinFilterAction extends FilterAction {}
+export class MaxFilterAction extends DisplayAction {}
+export class MinFilterAction extends DisplayAction {}
+export class AverageFilterAction extends DisplayAction {}

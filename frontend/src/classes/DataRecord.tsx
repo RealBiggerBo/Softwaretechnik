@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { DataField } from "./DataField";
 
 export class DataRecord {
@@ -9,14 +10,17 @@ export class DataRecord {
     this.dataFields = dataFields;
   }
 
-  DisplayDataRecord(): string {
-    let res = "";
-
-    this.dataFields.forEach((dataField) => {
-      res += dataField.Display();
-    });
-
-    return res;
+  DisplayDataRecord(includeLineBreak: boolean): ReactNode {
+    return (
+      <>
+        {this.dataFields.map((f, _) => (
+          <>
+            <label>{f.Display()}</label>
+            {includeLineBreak && <br />}
+          </>
+        ))}
+      </>
+    );
   }
 
   IsValid(): boolean {
