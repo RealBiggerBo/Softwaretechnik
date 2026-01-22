@@ -8,7 +8,7 @@ from .models import *
 from .serializers import *
 
 class DataAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def type_is_valid(self, type):
         return type in ["anfrage", "fall"]
@@ -17,16 +17,10 @@ class DataAPI(APIView):
         if not self.type_is_valid(type):
             return Response({"Error": "ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if type == "anfrage":
-            try:
-                data = Anfrage.objects.get(pk=pk)
-            except Anfrage.DoesNotExist:
-                raise Http404
-        elif type == "fall":
-            try:
-                data = Fall.objects.get(pk=pk)
-            except Fall.DoesNotExist:
-                raise Http404
+        try:
+            data = DataSet.objects.get(pk=pk)
+        except DataSet.DoesNotExist:
+            raise Http404
 
         if data == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -56,10 +50,7 @@ class DataAPI(APIView):
         if isinstance(data, Response):
             return data
 
-        if type == "anfrage":
-            serializer = AnfrageSerializer(data)
-        elif type == "fall":
-            serializer = FallSerializer(data)
+        serializer = DataSetSerializer(data)
 
         return Response(serializer.data)
 
@@ -71,10 +62,7 @@ class DataAPI(APIView):
         if not self.type_is_valid(type):
             return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if type == "anfrage":
-            serializer = AnfrageSerializer(data=request.data)
-        elif type == "fall":
-            serializer = FallSerializer(data=request.data)
+        serializer = DataSetSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -92,10 +80,8 @@ class DataAPI(APIView):
         if isinstance(data, Response):
             return data
 
-        if type == "anfrage":
-            return AnfrageSerializer(data, data=request.data)
-        elif type == "fall":
-            return FallSerializer(data, data=request.data)
+        serializer = DataSetSerializer(data=request.data)
+
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -103,7 +89,7 @@ class DataAPI(APIView):
         return Response(serializer.data)
 
 class DataRecordAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         """
@@ -113,11 +99,11 @@ class DataRecordAPI(APIView):
         try:
             data_record = DataRecord.objects.get(pk=request.GET.get("id", None))
         except DataRecord.DoesNotExist:
-            Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = DataRecordSerializer(data_record)
 
-        return Response(serializer.data["structure"], status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class ListAPI(APIView):
     permission_classes = [IsAuthenticated]

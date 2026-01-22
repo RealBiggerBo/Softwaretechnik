@@ -267,7 +267,7 @@ class DataRecord(models.Model):
 
 class DataSet(models.Model):
     """
-    Der Datensatz als JSON, mit Referenz auf das enstprechende DataRecord
+    Der Datensatz als JSON, mit Referenz auf das entsprechende DataRecord.
     """
 
     data_record = models.ForeignKey(DataRecord, on_delete=models.CASCADE)
