@@ -1,22 +1,35 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import type { DataRecord } from "../classes/DataRecord";
-import type { Query } from "../classes/Query";
 import { TextField } from "@mui/material";
-import type { DisplayAction } from "../classes/FilterOption";
+import {
+  AverageFilterAction,
+  DisplayAction,
+  MinFilterAction,
+} from "../classes/FilterOption";
 
 interface Props {
-  action: DisplayAction;
+  action: { id: Number; action: DisplayAction };
   format: DataRecord;
+  onChange: (action: { id: Number; action: DisplayAction }) => void;
 }
 
-function DisplayActionDisplay({ action, format }: Props) {
+function DisplayActionDisplay({ action, format, onChange }: Props) {
   return (
     <>
       <Autocomplete
-        options={format.dataFields.map((field, i) => field.name)}
+        options={format.dataFields.map((field) => {
+          return { label: field.name, field: field };
+        })}
         renderInput={(params) => <TextField {...params} label="Select" />}
-      ></Autocomplete>{" "}
-      {format.DisplayDataRecord(true)}
+        getOptionKey={(options) => options.field.id}
+        onChange={(_, newValue) => {
+          onChange(
+            newValue == null
+              ? { id: -1, action: AverageFilterAction }
+              : { id: newValue.field.id, action: action.action },
+          );
+        }}
+      ></Autocomplete>
     </>
   );
 }

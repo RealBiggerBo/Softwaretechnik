@@ -35,11 +35,9 @@ function SearchPage({ caller }: Props) {
     <div>
       <QueryDisplay
         query={query}
-        format={Object.assign(
-          new DataRecord(0, []),
-          DataRecordConverter.ConvertFormatToDataRecord(
-            Anfrage.GetNewJonsonFormat(),
-          ),
+        onChange={setQuery}
+        format={DataRecordConverter.ConvertFormatToDataRecord(
+          Anfrage.GetNewJonsonFormat(),
         )}
       />
       <Button onClick={() => alert(JSON.stringify(query))}>TEST</Button>
