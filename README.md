@@ -59,9 +59,14 @@ URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
 
 Zugriffsrecht: Standard
 
-Rückgabewert:
+Rückgabewert (Format III):
 
-    Format III
+```json
+{
+    "Name": Wert,
+    ...
+}
+```
 
 ### POST
 
@@ -71,9 +76,14 @@ URL: [/api/data/data/%T](http://127.0.0.1:8000/api/data/data/fall)
 
 Zugriffsrecht: Standard
 
-Parameter:
-            
-    Format III
+Parameter (Format III):
+
+```json
+{
+    "Name": Wert,
+    ...
+}
+```
 
 ### PUT
 
@@ -83,9 +93,14 @@ URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
 
 Zugriffsrecht: Standard
 
-Parameter:
-            
-    Format III
+Parameter (Format III):
+
+```json
+{
+    "Name": Wert,
+    ...
+}
+```
 
 ## DataRecordAPI
 
@@ -124,9 +139,17 @@ URL: [/api/data/list/%T](http://127.0.0.1:8000/api/data/list/fall)
 
 Zugriffsrecht: Standard
 
-Rückgabewert:
+Rückgabewert (Liste von Format III):
 
-    [Format III]
+```json
+[
+    {
+        "Name": Wert,
+        ...
+    },
+    ...
+]
+```
 
 ## SearchAPI
 
