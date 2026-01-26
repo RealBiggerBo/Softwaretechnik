@@ -97,20 +97,22 @@ URL: [/api/data/data_record/%T?id=%N](http://127.0.0.1:8000/api/data/data_record
 
 Zugriffsrecht: Standard
 
-Rückgabewert:
+Rückgabewert (Format II):
 
-    {
-        "Name": {
-            "id": Integer,
-            "type": String,
-            "required": Boolean,
-            ...
-            "maxLength": Integer (für "type"="String"),
-            "possibleValues": [Typ äquivalent zu Feldtyp]
-        },
-
+```json
+{
+    "Name": {
+        "id": Integer,
+        "type": String,
+        "required": Boolean,
         ...
-    }
+        "maxLength": Integer (für "type"="String"),
+        "possibleValues": [Typ äquivalent zu Feldtyp]
+    },
+
+    ...
+}
+```
 
 ## ListAPI
 
@@ -132,22 +134,6 @@ noch nicht vorhanden (URL: /api/data/search/%T)
 
 # DataRecords
 
-## Anfrage
+- [Anfrage](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/anfrage.json)
 
--> [backend/api/database/anfrage.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/anfrage.json)
-
-## Fall
-
--> [backend/api/database/fall.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/fall.json)
-
-## Beratung
-
--> [backend/api/database/beratung.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/beratung.json)
-
-## Gewalttat
-
--> [backend/api/database/gewalttat.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/gewalttat.json)
-
-## Taeter
-
--> [backend/api/database/taeter.json](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/taeter.json)
+- [Fall](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/fall.json)
