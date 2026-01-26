@@ -1,16 +1,19 @@
 {
    "sende_art": {
+        "id": 1,
         "type": "String",
         "required": true,
         "maxLength": 100
     },
 
    "sende_datum": {
+        "id": 2,
         "type": "Date",
         "required": true
     },
 
    "sende_ort": {
+        "id": 3,
         "type": "String",
         "required": true,
         "maxLength": 100,
@@ -24,6 +27,7 @@
     },
 
    "sender_rolle": {
+        "id": 4,
         "type": "String",
         "required": true,
         "maxLength": 100,
@@ -36,16 +40,19 @@
     },
 
    "im_auftrag": {
+        "id": 5,
         "type": "Boolean",
         "required": true
     },
 
    "ist_queer": {
+        "id": 7,
         "type": "Boolean",
         "required": true
     },
 
    "anfrage_art": {
+        "id": 8,
         "type": "String",
         "required": true,
         "maxLength": 100,
@@ -59,11 +66,13 @@
     },
 
    "mit_termin": {
+        "id": 9,
         "type": "Boolean",
         "required": true
     },
 
    "termin_ort": {
+        "id": 10,
         "type": "String",
         "required": false,
         "maxLength": 100,
@@ -75,6 +84,7 @@
     },
 
    "termin_datum": {
+        "id": 11,
         "type": "Date",
         "required": false
     }
