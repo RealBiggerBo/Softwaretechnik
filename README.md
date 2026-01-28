@@ -160,3 +160,12 @@ noch nicht vorhanden (URL: /api/data/search/%T)
 - [Anfrage](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/anfrage.json)
 
 - [Fall](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/fall.json)
+
+
+
+## Projekt lokal mit Docker starten
+Vorraussetzungen: Docker Desktop
+Repository lokal öffnen
+Docker Image bauen: docker build -t softwaretechnik .
+Container starten: docker run -p 8080:80 softwaretechnik
+Anwendung im Browser öffnen: http://localhost:8080
