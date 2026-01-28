@@ -164,8 +164,19 @@ noch nicht vorhanden (URL: /api/data/search/%T)
 
 
 ## Projekt lokal mit Docker starten
-Vorraussetzungen: Docker Desktop
-Repository lokal öffnen
-Docker Image bauen: docker build -t softwaretechnik .
-Container starten: docker run -p 8080:80 softwaretechnik
-Anwendung im Browser öffnen: http://localhost:8080
+
+### Voraussetzungen
+- Docker Desktop
+
+### Schritte
+
+1. Repository lokal öffnen
+2. Docker Image bauen:
+   ```bash
+   docker build -t softwaretechnik . 
+   ```
+3. Container starten:
+   ```bash
+   docker run -p 8080:80 softwaretechnik 
+   ```
+4. Anwendung im Browser öffnen: http://localhost:8080
