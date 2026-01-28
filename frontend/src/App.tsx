@@ -12,6 +12,7 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import DataviewPage from "./pages/DataviewPage";
 import SearchPage from "./pages/SearchPage";
+import HelpPage from "./pages/HelpPage"
 
 interface Props {
   caller: IApiCaller;
@@ -39,6 +40,7 @@ function App({ caller }: Props) {
               path="/dataview"
               element={<DataviewPage caller={caller} />}
             />
+            <Route path="/help" element={<HelpPage/>}/>
           </Routes>
         </Box>
       </Container>
