@@ -1,38 +1,80 @@
-export abstract class FilterOption {}
+export type EmptyFilter = {
+  type: "Empty";
+  fieldId: number;
+};
 
-export abstract class ValueFilter extends FilterOption {}
+export type IntegerValueFilter = {
+  type: "IntegerValueFilter";
+  fieldId: number;
+  value: number;
+};
 
-export class IntegerValueFilter extends ValueFilter {
-  value: number = 0;
-}
+export type DateValueFilter = {
+  type: "DateValueFilter";
+  fieldId: number;
+  value: string;
+};
 
-export class DateValueFilter extends ValueFilter {
-  value: string = "";
-}
+export type StringValueFilter = {
+  type: "StringValueFilter";
+  fieldId: number;
+  value: string;
+};
 
-export class StringValueFilter extends ValueFilter {
-  value: string = "";
-}
+export type EnumValueFilter = {
+  type: "EnumValueFilter";
+  fieldId: number;
+  value: string;
+  possibleValues: string[];
+};
 
-export class EnumValueFilter extends ValueFilter {
-  value: string = "";
-  possibleValues: string[] = [];
-}
+export type IntegerRangeFilter = {
+  type: "IntegerRangeFilter";
+  fieldId: number;
+  minValue: number;
+  maxValue: number;
+};
 
-export abstract class RangeFilter extends FilterOption {}
+export type DateRangeFilter = {
+  type: "DateRangeFilter";
+  fieldId: number;
+  minValue: string;
+  maxValue: string;
+};
 
-export class IntegerRangeFilter extends RangeFilter {
-  minValue: number = 0;
-  maxValue: number = 0;
-}
+// 2. The Discriminated Union
+export type FilterOption =
+  | EmptyFilter
+  | IntegerValueFilter
+  | DateValueFilter
+  | StringValueFilter
+  | EnumValueFilter
+  | IntegerRangeFilter
+  | DateRangeFilter;
 
-export class DateRangeFilter extends RangeFilter {
-  minValue: string = "";
-  maxValue: string = "";
-}
+export type EmptyFilterAction = {
+  type: "Empty";
+  fieldId: number;
+};
 
-export abstract class DisplayAction {}
+export type MaxFilterAction = {
+  type: "Max";
+  fieldId: number;
+};
 
-export class MaxFilterAction extends DisplayAction {}
-export class MinFilterAction extends DisplayAction {}
-export class AverageFilterAction extends DisplayAction {}
+export type MinFilterAction = {
+  type: "Min";
+  fieldId: number;
+};
+
+export type AverageFilterAction = {
+  type: "Average";
+  fieldId: number;
+};
+
+// 2. The Discriminated Union
+export type DisplayAction =
+  | EmptyFilterAction
+  | MaxFilterAction
+  | MinFilterAction
+  | AverageFilterAction;

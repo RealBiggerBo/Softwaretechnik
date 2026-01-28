@@ -1,5 +1,5 @@
 import type { TextField } from "../classes/DataField";
-import { TextField as Tf} from "@mui/material";
+import { TextField as Tf } from "@mui/material";
 
 interface Props {
   textField: TextField;

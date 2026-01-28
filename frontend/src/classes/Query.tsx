@@ -1,6 +1,6 @@
 import type { DisplayAction, FilterOption } from "./FilterOption";
 
 export class Query {
-  displayActions: { id: Number; action: DisplayAction }[] = [];
+  displayActions: DisplayAction[] = [];
   filterOptions: { id: Number; filter: FilterOption }[] = [];
 }
