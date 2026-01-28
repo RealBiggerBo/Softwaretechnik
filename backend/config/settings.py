@@ -170,3 +170,10 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Benutzer Aktivität setzt die Ablaufzeit zurück
 
 SESSION_SAVE_EVERY_REQUEST = True
+
+# Konfiguration der statischen Dateien für Docker und nginx
+STATIC_ROOT = "/app/staticfiles"
+STATIC_URL = "/static/"
+
+# Erlaubte Hosts für lokale Entwicklung
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
