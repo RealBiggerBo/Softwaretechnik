@@ -9,13 +9,21 @@ import {
 import { DataRecord } from "./DataRecord";
 
 export class DataRecordConverter {
-  public static ConvertFormatToDataRecord(raw: any) {
+  public static ConvertFormatToDataRecord(raw: unknown) {
     let dataRecordID = -1;
-    let dataFields = [];
+    let dataFields: DataField[] = [];
 
-    if (raw.id != undefined) dataRecordID = raw.id;
-    if (raw.dataFields != undefined)
+    if (
+      raw &&
+      typeof raw === "object" &&
+      "id" in raw &&
+      typeof raw.id === "number" &&
+      "dataFields" in raw &&
+      Array.isArray(raw.dataFields)
+    ) {
+      dataRecordID = raw.id;
       dataFields = raw.dataFields.map(this.CreateDataFields);
+    }
 
     const dataRecord = new DataRecord(dataRecordID, dataFields);
 
