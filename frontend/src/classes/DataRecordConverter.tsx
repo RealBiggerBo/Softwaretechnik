@@ -10,10 +10,10 @@ import { DataRecord } from "./DataRecord";
 
 export class DataRecordConverter {
   public static ConvertFormatToDataRecord(raw: any) {
-
     let dataRecordID = -1;
-    if (raw.id != undefined) dataRecordID = raw.id;
     let dataFields = [];
+
+    if (raw.id != undefined) dataRecordID = raw.id;
     if (raw.dataFields != undefined)
       dataFields = raw.dataFields.map(this.CreateDataFields);
 
@@ -26,25 +26,25 @@ export class DataRecordConverter {
     switch (raw.type) {
       case "Text":
         return new TextField(
-            raw.name,
-            raw.id,
-            raw.required,
-            raw.text,
-            raw.maxLength,
-          );
+          raw.name,
+          raw.id,
+          raw.required,
+          raw.text,
+          raw.maxLength,
+        );
 
       case "Date":
         return new DateField(raw.name, raw.id, raw.required, raw.date);
 
       case "Integer":
         return new IntegerField(
-            raw.name,
-            raw.id,
-            raw.required,
-            raw.value,
-            raw.minValue,
-            raw.maxValue,
-          );
+          raw.name,
+          raw.id,
+          raw.required,
+          raw.value,
+          raw.minValue,
+          raw.maxValue,
+        );
 
       case "Enum":
         const ef = new EnumField(raw.name, raw.id, raw.required, raw.enumType);

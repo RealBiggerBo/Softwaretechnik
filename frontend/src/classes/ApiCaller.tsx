@@ -31,25 +31,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify(registerObject),
       "Registrierung fehlgeschlagen",
     );
-
-    try {
-      const response = await this.request("/api/auth/register/", {
-        method: "POST",
-        body: JSON.stringify({
-          username: user,
-          password: pswd1,
-          password2: pswd2,
-        }),
-      });
-
-      if (response.ok) {
-        return { success: true, errorMsg: "Registratition Erfolgreich" };
-      }
-
-      return { success: false, errorMsg: "Registratition Fehlgeschlagen" };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
   }
   async TryLogin(
     user: string,
@@ -67,24 +48,6 @@ export class ApiCaller implements IApiCaller {
           headers.set("Authorization", `token ${data.token}`);
         }),
     );
-
-    try {
-      const response = await this.request("/api/auth/login/", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({ username: user, password: pswd }),
-      });
-
-      if (response.ok) {
-        response.json().then((data) => {
-          headers.set("Authorization", `token ${data.token}`);
-        });
-        return { success: true, errorMsg: "Login Erfolgreich" };
-      }
-      return { success: false, errorMsg: "Login Fehlgeschlagen" };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
   }
   async GetUsers(): Promise<string[]> {
     // TODO: Implement actual API call
@@ -122,28 +85,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify(passwordObject),
       "Passwortänderung fehlgeschlagen",
     );
-    try {
-      const response = await this.request("/api/auth/change-password/", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({
-          old_password: curPswd,
-          new_password: newPswd,
-          new_password2: newPswdCtrl,
-        }),
-      });
-
-      if (response.ok) {
-        return { success: true, errorMsg: "" };
-      }
-
-      const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || "Passwortänderung fehlgeschlagen";
-
-      return { success: false, errorMsg };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
   }
 
   async TryCreateCase(
@@ -156,24 +97,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify(caseToCreate),
       "Erstellen fehlgeschlagen",
     );
-    try {
-      const response = await this.request("/api/data/save/fall", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(caseToCreate),
-      });
-
-      if (response.ok) {
-        return { success: true, errorMsg: "" };
-      }
-
-      const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || "Erstellen fehlgeschlagen";
-
-      return { success: false, errorMsg };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
   }
 
   async TryCreateAnfrage(
@@ -186,24 +109,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify(anfrageToCreate),
       "Erstellen fehlgeschlagen",
     );
-    try {
-      const response = await this.request("/api/data/save/anfrage", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(anfrageToCreate),
-      });
-
-      if (response.ok) {
-        return { success: true, errorMsg: "" };
-      }
-
-      const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || "Erstellen fehlgeschlagen";
-
-      return { success: false, errorMsg };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
   }
 
   async TrySearchFall(
@@ -216,25 +121,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify(caseToSearch),
       "Suche fehlgeschlagen",
     );
-
-    try {
-      const response = await this.request("/api/data/fall/search", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(caseToSearch),
-      });
-
-      if (response.ok) {
-        return { success: true, errorMsg: "" };
-      }
-
-      const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || "Suche fehlgeschlagen";
-
-      return { success: false, errorMsg };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
   }
 
   async TrySearchAnfrage(
@@ -247,25 +133,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify(anfrageToSearch),
       "Suche fehlgeschlagen",
     );
-
-    try {
-      const response = await this.request("/api/data/anfrage/search", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(anfrageToSearch),
-      });
-
-      if (response.ok) {
-        return { success: true, errorMsg: "" };
-      }
-
-      const error = await response.json().catch(() => ({}));
-      const errorMsg = error.detail || "Suche fehlgeschlagen";
-
-      return { success: false, errorMsg };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
   }
 
   async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
@@ -276,7 +143,7 @@ export class ApiCaller implements IApiCaller {
     throw new Error("Method not implemented.");
   }
 
-  async SendApiCall(
+  private async SendApiCall(
     url: string,
     method: "GET" | "POST" | "PUT",
     includeCredentials: boolean,
@@ -305,38 +172,45 @@ export class ApiCaller implements IApiCaller {
     }
   }
 
-  async GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any }> {
-  let result: any = null;
+  async GetAnfrageJson(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    let result: any = null;
 
-  const res = await this.SendApiCall(
-    "/api/data/data_record?id=3",
-    "GET",
-    true,
-    undefined, 
-    "Seite konnte nicht geladen werden.",
-    async (response) => {
-      result = await response.json();
-    }
-  );
+    const res = await this.SendApiCall(
+      "/api/data/data_record?id=3",
+      "GET",
+      true,
+      undefined,
+      "Seite konnte nicht geladen werden.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
 
-  return { ...res, json: result };
+    return { ...res, json: result };
   }
 
+  async GetFallJson(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    let result: any = null;
 
-  async GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any}> {
-  let result: any = null;
+    const res = await this.SendApiCall(
+      "/api/data/data_record?id=2",
+      "GET",
+      true,
+      undefined,
+      "Seite konnte nicht geladen werden.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
 
-  const res = await this.SendApiCall(
-    "/api/data/data_record?id=2",
-    "GET",
-    true,
-    undefined, 
-    "Seite konnte nicht geladen werden.",
-    async (response) => {
-      result = await response.json();
-    }
-  );
-
-  return { ...res, json: result };
+    return { ...res, json: result };
   }
 }
