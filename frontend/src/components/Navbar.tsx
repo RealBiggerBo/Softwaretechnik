@@ -1,6 +1,7 @@
 import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
+import SessionTimer from "./SessionTimer";
 
 
 
@@ -26,6 +27,10 @@ function Navbar({ caller }: Props) {
 
         {/* Rechte Seite */}
         {!isLoginPage && (
+          <>
+          {/* Timer sichtbar, solange man eingeloggt ist */}
+          <SessionTimer />
+
         <Button
           color="inherit"
           onClick={() => {
@@ -35,12 +40,22 @@ function Navbar({ caller }: Props) {
         >
           Logout
         </Button>
+        </>
         )}
         
-        <Button color="inherit" disabled={isLoginPage} onClick={() => navigate("/main")}>
+        <Button 
+          color="inherit" 
+          disabled={isLoginPage} 
+          onClick={() => navigate("/main")}
+          >
           Home
         </Button>
-        <Button color="inherit" disabled={isLoginPage} onClick={() => navigate("/settings")}>
+
+        <Button 
+          color="inherit" 
+          disabled={isLoginPage} 
+          onClick={() => navigate("/settings")}
+          >
           Settings
         </Button>
       </Toolbar>

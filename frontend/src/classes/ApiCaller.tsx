@@ -276,6 +276,21 @@ export class ApiCaller implements IApiCaller {
     throw new Error("Method not implemented.");
   }
 
+  async PingSession(): Promise<boolean> {
+  const response = await this.request("/api/auth/ping/", {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (response.status === 401) {
+    this.Logout();
+    window.location.href = "/login";
+    return false;
+  }
+
+  return true;
+}
+
   async SendApiCall(
     url: string,
     method: "GET" | "POST" | "PUT",
