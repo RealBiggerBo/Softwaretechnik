@@ -280,7 +280,7 @@ export class ApiCaller implements IApiCaller {
     url: string,
     method: "GET" | "POST" | "PUT",
     includeCredentials: boolean,
-    body: string,
+    body: any,
     fallbackErrorMsg: string,
     successAction?: (response: Response) => void,
   ): Promise<{ success: boolean; errorMsg: string }> {
@@ -303,5 +303,40 @@ export class ApiCaller implements IApiCaller {
     } catch {
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
+  }
+
+  async GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any }> {
+  let result: any = null;
+
+  const res = await this.SendApiCall(
+    "/api/data/data_record?id=3",
+    "GET",
+    true,
+    undefined, 
+    "Seite konnte nicht geladen werden.",
+    async (response) => {
+      result = await response.json();
+    }
+  );
+
+  return { ...res, json: result };
+  }
+
+
+  async GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any}> {
+  let result: any = null;
+
+  const res = await this.SendApiCall(
+    "/api/data/data_record?id=2",
+    "GET",
+    true,
+    undefined, 
+    "Seite konnte nicht geladen werden.",
+    async (response) => {
+      result = await response.json();
+    }
+  );
+
+  return { ...res, json: result };
   }
 }
