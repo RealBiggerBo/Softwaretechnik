@@ -97,10 +97,11 @@ class DataRecordAPI(APIView):
         """
         Gibt die Struktur eines DataRecords zurück.
         """
+        id = request.GET.get("id", None)
 
         try:
             data_record = Anfrage if type == "anfrage" else Fall
-            objekt = data_record.objects.get(pk=request.GET.get("id", None))
+            objekt = data_record.objects.get(pk=id) if id != None else data_record.objects.last()
         except data_record.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
