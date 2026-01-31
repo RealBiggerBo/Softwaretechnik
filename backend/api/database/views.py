@@ -15,7 +15,7 @@ class DataAPI(APIView):
     
     def get_data(self, type, pk):
         if not self.type_is_valid(type):
-            return Response({"Error": "ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             data = DataSet.objects.get(pk=pk)
@@ -60,7 +60,7 @@ class DataAPI(APIView):
         """
 
         if not self.type_is_valid(type):
-            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
         
         print(request.data)
 
@@ -132,7 +132,7 @@ class ListAPI(APIView):
             data_record_list = Taeter.objects.all()
             serializer = TaeterSerializer(data_record_list, many=True)
         else:
-            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data)
 
