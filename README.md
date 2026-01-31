@@ -115,17 +115,43 @@ Zugriffsrecht: Standard
 Rückgabewert (Format II):
 
 ```json
-{
-    "Name": {
-        "id": Integer,
-        "type": String,
-        "required": Boolean,
-        ...
-        "maxLength": Integer (für "type"="String"),
-        "possibleValues": [Typ äquivalent zu Feldtyp]
-    },
+{   "structure": {
+        "Name": {
+            "id": Integer,
+            "type": String,
+            "required": Boolean,
+            ...
+            "maxLength": Integer (für "type"="String"),
+            "possibleValues": [Typ äquivalent zu Feldtyp]
+        },
 
-    ...
+        ...
+    }
+}
+```
+### POST
+
+Erstellt eine neue Version eines DataRecords.
+
+URL: [/api/data/data_record/%T](http://127.0.0.1:8000/api/data/data_record)
+
+Zugriffsrecht: Standard
+
+Rückgabewert (Format II):
+
+```json
+{   "structure": {
+        "Name": {
+            "id": Integer,
+            "type": String,
+            "required": Boolean,
+            ...
+            "maxLength": Integer (für "type"="String"),
+            "possibleValues": [Typ äquivalent zu Feldtyp]
+        },
+
+        ...
+    }
 }
 ```
 

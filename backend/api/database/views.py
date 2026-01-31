@@ -9,12 +9,9 @@ from .serializers import *
 
 class DataAPI(APIView):
     permission_classes = [AllowAny]
-
-    def type_is_valid(self, type):
-        return type in ["anfrage", "fall"]
     
     def get_data(self, type, pk):
-        if not self.type_is_valid(type):
+        if not type_is_valid(type):
             return Response({"error": "ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -59,7 +56,7 @@ class DataAPI(APIView):
         Erstellt einen neuen Datensatz.
         """
 
-        if not self.type_is_valid(type):
+        if not type_is_valid(type):
             return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
         
         print(request.data)
@@ -109,6 +106,22 @@ class DataRecordAPI(APIView):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    def post(self, request, type):
+        """
+        Erstellt eine neue Version eines DataRecords.
+        """
+
+        if not type_is_valid(type):
+            return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = AnfrageSerializer(data=request.data) if type == "anfrage" else FallSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 class ListAPI(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -141,3 +154,6 @@ class SearchAPI(APIView):
 
     def get(request):
         return Response({"message": "Hello from Django API"})
+
+def type_is_valid(type):
+    return type in ["anfrage", "fall"]
