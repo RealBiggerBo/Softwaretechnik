@@ -61,6 +61,8 @@ class DataAPI(APIView):
 
         if not self.type_is_valid(type):
             return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(request.data)
 
         serializer = DataSetSerializer(data=request.data)
 
@@ -91,17 +93,18 @@ class DataAPI(APIView):
 class DataRecordAPI(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, type):
         """
         Gibt die Struktur eines DataRecords zurück.
         """
 
         try:
-            data_record = DataRecord.objects.get(pk=request.GET.get("id", None))
-        except DataRecord.DoesNotExist:
+            data_record = Anfrage if type == "anfrage" else Fall
+            objekt = data_record.objects.get(pk=request.GET.get("id", None))
+        except data_record.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = DataRecordSerializer(data_record)
+        serializer = AnfrageSerializer(objekt) if type == "anfrage" else FallSerializer(objekt)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
