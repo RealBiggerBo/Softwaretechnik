@@ -8,77 +8,85 @@ import { Button } from "@mui/material";
 import { DataRecord } from "../classes/DataRecord";
 import type { DataField } from "../classes/DataField";
 
-
-interface Props{
-    caller: IApiCaller;
+interface Props {
+  caller: IApiCaller;
 }
 
-function AnfragenGenerator({ caller }: Props){
+function AnfragenGenerator({ caller }: Props) {
+  console.log("AnfragenGenerator gerendert");
 
-    console.log("AnfragenGenerator gerendert");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [record, setRecord] = useState<DataRecord | null>(null);
 
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [record, setRecord] = useState<DataRecord | null>(null);
+  useEffect(() => {
+    async function loadData() {
+      const res = await caller.GetAnfrageJson();
 
+      console.log("Success:", res.success);
+      console.log("Error:", res.errorMsg);
+      console.log("Backend-Daten:", res.json);
 
-    useEffect(() => {
-        async function loadData() {
-            const res = await caller.GetAnfrageJson();
+      if (res.success) {
+        const datarecord = DataRecordConverter.ConvertFormatToDataRecord(
+          res.json,
+        );
 
-            console.log("Backend-Daten:", res.json);
+        console.log("DataRecord:", datarecord);
 
-            if (res.success) {
-                const datarecord = DataRecordConverter.ConvertFormatToDataRecord(res.json);
-
-                console.log("DataRecord:", datarecord);
-
-                setRecord(datarecord);
-            } else {
-                console.error(res.errorMsg);
-            }
-        }
-        loadData();
-        }, [caller]);
-    
-
-    async function Save(){
-        await caller.TryUpdateAnfrage();
+        setRecord(datarecord);
+      } else {
+        console.error(res.errorMsg);
+      }
     }
-    
+    loadData();
+  }, [caller]);
 
-    function handleFieldChange(updatedField: DataField) {
+  async function Save() {
+    await caller.TryUpdateAnfrage();
+  }
+
+  function handleFieldChange(updatedField: DataField) {
     if (!record) return;
 
-    setRecord(new DataRecord(
+    setRecord(
+      new DataRecord(
         record.id,
-        record.dataFields.map(f =>
-            f.id === updatedField.id ? updatedField : f
-        )
-    ));
-}
-
-
-    return (
-        <div>
-            <h1>Hallo ich bin eine Anfrage</h1>
-            <FormControlLabel control={
-                <Checkbox
-                    checked={isEditMode}
-                    onChange={(e) => setIsEditMode(e.target.checked)}
-                />
-            }
-            label={"Bearbeitungsmodus"}
-            />
-            <br/>
-            {record?.dataFields.map((field) => (
-                <>
-                <FieldRenderer key={field.id} field={field} isEditMode={isEditMode} onChange={handleFieldChange}/>
-                <br/>
-                </>
-            ))}
-            <Button variant="contained" onClick={Save}>Speichern</Button>
-        </div>
+        record.dataFields.map((f) =>
+          f.id === updatedField.id ? updatedField : f,
+        ),
+      ),
     );
+  }
+
+  return (
+    <div>
+      <h1>Hallo ich bin eine Anfrage</h1>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={isEditMode}
+            onChange={(e) => setIsEditMode(e.target.checked)}
+          />
+        }
+        label={"Bearbeitungsmodus"}
+      />
+      <br />
+      {record?.dataFields.map((field) => (
+        <>
+          <FieldRenderer
+            key={field.id}
+            field={field}
+            isEditMode={isEditMode}
+            onChange={handleFieldChange}
+          />
+          <br />
+        </>
+      ))}
+      <Button variant="contained" onClick={Save}>
+        Speichern
+      </Button>
+    </div>
+  );
 }
 
 export default AnfragenGenerator;

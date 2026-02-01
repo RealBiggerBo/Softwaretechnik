@@ -180,7 +180,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      "/api/data/data_record?id=3",
+      "/api/data/data_record/anfrage?id=2",
       "GET",
       true,
       undefined,
@@ -201,7 +201,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      "/api/data/data_record?id=2",
+      "/api/data/data_record/fall?id=1",
       "GET",
       true,
       undefined,
