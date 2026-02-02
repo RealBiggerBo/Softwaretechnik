@@ -1,4 +1,4 @@
-import type { IntegerField } from "../classes/DataField";
+import { IntegerField } from "../classes/DataField";
 import { TextField as Tf} from "@mui/material";
 
 
@@ -16,8 +16,15 @@ function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
                 <Tf
                     type="text"
                     onChange={(e) => {
-                        integerField.name = e.target.value;
-                        onChange(integerField);
+                        const updatedintegerField = new IntegerField(
+                            e.target.value,
+                            integerField.id,
+                            integerField.required,
+                            integerField.value,
+                            integerField.minValue,
+                            integerField.maxValue
+                        );
+                        onChange(updatedintegerField);
                     }}
                     defaultValue={integerField.name}
                 ></Tf>
@@ -29,8 +36,15 @@ function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
                     label={integerField.name}
                     disabled={isEditMode}
                     onChange={(e) => {
-                        integerField.value = parseInt(e.target.value, 10) || 0;
-                        onChange(integerField);
+                        const updatedintegerField = new IntegerField(
+                            integerField.name,
+                            integerField.id,
+                            integerField.required,
+                            parseInt(e.target.value),
+                            integerField.minValue,
+                            integerField.maxValue
+                        );
+                        onChange(updatedintegerField);
                     }}
                     defaultValue={integerField.value}
                     size="small"

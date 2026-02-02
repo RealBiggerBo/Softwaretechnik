@@ -1,4 +1,4 @@
-import type { EnumField } from "../classes/DataField";
+import { EnumField } from "../classes/DataField";
 import { TextField as Tf, Autocomplete} from "@mui/material";
 
 interface Props {
@@ -15,8 +15,15 @@ function EnumDataField({ enumField, isEditMode, onChange }: Props) {
         <Tf
           type="text"
           onChange={(e) => {
-            enumField.name = e.target.value;
-            onChange(enumField);
+            const updatedEnumField = new EnumField(
+              e.target.value,
+              enumField.id,
+              enumField.required,
+              enumField.possibleValues
+            );
+            updatedEnumField.SetPossibleValues(enumField.GetPossibleValues());
+            updatedEnumField.selectedValue = enumField.selectedValue;
+            onChange(updatedEnumField);
           }}
           defaultValue={enumField.name}
         ></Tf>
@@ -28,8 +35,15 @@ function EnumDataField({ enumField, isEditMode, onChange }: Props) {
             options={enumField.GetPossibleValues()}
             disabled={isEditMode}
             onChange={(_, newValue) => {
-                enumField.selectedValue = newValue || "";
-                onChange(enumField);
+                const updatedEnumField = new EnumField(
+                  enumField.name,
+                  enumField.id,
+                  enumField.required,
+                  enumField.possibleValues
+                );
+                updatedEnumField.SetPossibleValues(enumField.GetPossibleValues());
+                updatedEnumField.selectedValue = newValue || "";
+                onChange(updatedEnumField);
             }}
             defaultValue={enumField.selectedValue}
             renderInput={(params) => <Tf {...params} label={enumField.name} />}
