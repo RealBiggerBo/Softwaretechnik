@@ -101,18 +101,16 @@ export class IntegerField extends DataField {
 export class EnumField extends DataField {
   readonly type: string = "enum";
   selectedValue: string = "";
-  enumType: string = "";
-  private possibleValues: string[] = [];
+  possibleValues: string[] = [];
 
   constructor(
     name: string,
     id: number,
     required: boolean = true,
-    enumType: string,
+    possibleValues: string[],
   ) {
     super(name, id, required);
-    this.enumType = enumType;
-    //Maybe fill possible values here based on enumType (maybe get possible values from backend?)
+    this.possibleValues = possibleValues;
   }
 
   GetPossibleValues(): string[] {
