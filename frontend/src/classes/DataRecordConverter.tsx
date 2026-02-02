@@ -87,6 +87,12 @@ export class DataRecordConverter {
         return new DateField(fieldName, id, required, "0000-00-00");
       case "Boolean":
         return new ToggleField(fieldName, id, required, false);
+      case "Integer":
+        return new IntegerField(fieldName, id, required,
+          this.GetValueFromRecord(fieldValues, "value") as number,
+          this.GetValueFromRecord(fieldValues, "minValue") as number,
+          this.GetValueFromRecord(fieldValues, "maxValue") as number,
+        );
       default:
         throw new Error(`Unknown DataField type: ${type}`);
     }
