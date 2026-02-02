@@ -13,25 +13,18 @@ interface Props {
 }
 
 function AnfragenGenerator({ caller }: Props) {
-  console.log("AnfragenGenerator gerendert");
-
   const [isEditMode, setIsEditMode] = useState(false);
   const [record, setRecord] = useState<DataRecord | null>(null);
+
 
   useEffect(() => {
     async function loadData() {
       const res = await caller.GetAnfrageJson();
 
-      console.log("Success:", res.success);
-      console.log("Error:", res.errorMsg);
-      console.log("Backend-Daten:", res.json);
-
       if (res.success) {
         const datarecord = DataRecordConverter.ConvertFormatToDataRecord(
           res.json,
         );
-
-        console.log("DataRecord:", datarecord);
 
         setRecord(datarecord);
       } else {
@@ -72,15 +65,14 @@ function AnfragenGenerator({ caller }: Props) {
       />
       <br />
       {record?.dataFields.map((field) => (
-        <>
+        <div key={field.id}>
           <FieldRenderer
-            key={field.id}
             field={field}
             isEditMode={isEditMode}
             onChange={handleFieldChange}
           />
           <br />
-        </>
+        </div>
       ))}
       <Button variant="contained" onClick={Save}>
         Speichern
