@@ -149,7 +149,7 @@ export class ApiCaller implements IApiCaller {
     includeCredentials: boolean,
     body: any,
     fallbackErrorMsg: string,
-    successAction?: (response: Response) => void,
+    successAction?: (response: Response) => void | Promise<void>,
   ): Promise<{ success: boolean; errorMsg: string }> {
     try {
       const response = await this.request(url, {
@@ -159,7 +159,7 @@ export class ApiCaller implements IApiCaller {
       });
 
       if (response.ok) {
-        if (successAction != undefined) successAction(response);
+        if (successAction != undefined) await successAction(response);
         return { success: true, errorMsg: "" };
       }
 
