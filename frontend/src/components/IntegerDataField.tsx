@@ -1,5 +1,5 @@
 import { IntegerField } from "../classes/DataField";
-import { TextField as Tf} from "@mui/material";
+import { Stack, TextField as Tf} from "@mui/material";
 
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
     return (
-        <>
+        <Stack direction="row" spacing={2} alignItems="center">
             {!isEditMode && <label>{integerField.name}</label>}
             {isEditMode && (
                 <Tf
@@ -33,8 +33,8 @@ function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
             {
                 <Tf
                     type="number"
-                    label={integerField.name}
                     disabled={isEditMode}
+                    value={integerField.value ?? 0}
                     onChange={(e) => {
                         const updatedintegerField = new IntegerField(
                             integerField.name,
@@ -46,11 +46,11 @@ function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
                         );
                         onChange(updatedintegerField);
                     }}
-                    defaultValue={integerField.value}
                     size="small"
+                    sx={{width: 100}}
                 ></Tf>
             }
-        </>
+        </Stack>
     );
 }
 

@@ -1,5 +1,5 @@
 import { DateField} from "../classes/DataField";
-import { TextField as Tf} from "@mui/material";
+import { Stack, TextField as Tf} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 
@@ -12,7 +12,7 @@ interface Props {
 
 function DateDataField({ dateField, isEditMode, onChange }: Props) {
   return (
-    <>
+    <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{dateField.name}</label>}
       {isEditMode && (
         <Tf
@@ -46,7 +46,7 @@ function DateDataField({ dateField, isEditMode, onChange }: Props) {
           }}
         ></DatePicker>
       }
-    </>
+    </Stack>
   );
 }
 

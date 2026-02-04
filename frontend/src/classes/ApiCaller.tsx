@@ -88,7 +88,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryCreateCase(
-    caseToCreate: Case,
+    caseToCreate: any
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/save/fall",
@@ -100,7 +100,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryCreateAnfrage(
-    anfrageToCreate: Anfrage,
+    anfrageToCreate: any
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/save/anfrage",
@@ -112,7 +112,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TrySearchFall(
-    caseToSearch: Case,
+    caseToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/fall/search",
@@ -124,7 +124,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TrySearchAnfrage(
-    anfrageToSearch: Anfrage,
+    anfrageToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/anfrage/search",
@@ -135,12 +135,63 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-  async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+  async TrySearchAnfrageByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any }> {
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/data/anfrage/search?id=${id}`,
+      "GET",
+      true,
+      undefined,
+      "Suche fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
   }
 
-  async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+
+  async TrySearchFallByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any }> {
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/data/fall/search?id=${id}`,
+      "GET",
+      true,
+      undefined,
+      "Suche fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
+  }
+
+  async TryUpdateFall(
+    fallToUpdate: any
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/update/fall",
+      "PUT",
+      true,
+      JSON.stringify(fallToUpdate),
+      "Aktualisierung fehlgeschlagen",
+    );
+  }
+
+  async TryUpdateAnfrage(
+    anfrageToUpdate: any
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/update/anfrage",
+      "PUT",
+      true,
+      JSON.stringify(anfrageToUpdate),
+      "Aktualisierung fehlgeschlagen",
+    );
   }
 
   private async SendApiCall(

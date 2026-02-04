@@ -1,5 +1,5 @@
 import { EnumField } from "../classes/DataField";
-import { TextField as Tf, Autocomplete} from "@mui/material";
+import { TextField as Tf, Autocomplete, Stack} from "@mui/material";
 
 interface Props {
   enumField: EnumField;
@@ -9,7 +9,7 @@ interface Props {
 
 function EnumDataField({ enumField, isEditMode, onChange }: Props) {
   return (
-    <>
+    <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{enumField.name}</label>}
       {isEditMode && (
         <Tf
@@ -47,9 +47,11 @@ function EnumDataField({ enumField, isEditMode, onChange }: Props) {
             }}
             defaultValue={enumField.selectedValue}
             renderInput={(params) => <Tf {...params} label={enumField.name} />}
+            size="small"
+            sx={{ width: 300 }}
         />
       }
-    </>
+    </Stack>
   );
 }
 

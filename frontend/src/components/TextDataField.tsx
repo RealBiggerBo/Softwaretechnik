@@ -1,5 +1,5 @@
 import { TextField } from "../classes/DataField";
-import { TextField as Tf } from "@mui/material";
+import { Stack, TextField as Tf } from "@mui/material";
 
 interface Props {
   textField: TextField;
@@ -9,7 +9,7 @@ interface Props {
 
 function TextDataField({ textField, isEditMode, onChange }: Props) {
   return (
-    <>
+    <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{textField.name}</label>}
       {isEditMode && (
         <Tf
@@ -47,7 +47,7 @@ function TextDataField({ textField, isEditMode, onChange }: Props) {
           size="small"
         ></Tf>
       }
-    </>
+    </Stack>
   );
 }
 
