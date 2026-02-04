@@ -16,6 +16,11 @@ export abstract class DataField {
   IsValid(): boolean {
     return true;
   }
+  SetValue(value: any){
+  }
+  GetValue(): any{
+    return null;
+  }
 }
 
 export class TextField extends DataField {
@@ -41,6 +46,12 @@ export class TextField extends DataField {
   override IsValid(): boolean {
     return this.maxLength < 0 || this.text.length <= this.maxLength;
   }
+  override SetValue(value: any){
+    this.text = value;
+  }
+  override GetValue(): any{
+    return this.text;
+  }
 }
 
 export class DateField extends DataField {
@@ -64,6 +75,12 @@ export class DateField extends DataField {
     const datePattern = /dddd-dd-dd/;
     //TODO: check for valid date: eg. 2026-02-31 -> invalid
     return datePattern.test(this.date);
+  }
+  override SetValue(value: any){
+    this.date = value;
+  }
+  override GetValue(): any{
+    return this.date;
   }
 }
 
@@ -96,6 +113,12 @@ export class IntegerField extends DataField {
       (this.value >= this.minValue && this.value <= this.maxValue)
     );
   }
+  override SetValue(value: any){
+    this.value = value;
+  }
+  override GetValue(): any{
+    return this.value;
+  }
 }
 
 export class EnumField extends DataField {
@@ -126,6 +149,12 @@ export class EnumField extends DataField {
   override IsValid(): boolean {
     return this.possibleValues.includes(this.selectedValue);
   }
+  override SetValue(value: any){
+    this.selectedValue = value;
+  }
+  override GetValue(): any{
+    return this.selectedValue;
+  }
 }
 
 export class ToggleField extends DataField {
@@ -144,5 +173,11 @@ export class ToggleField extends DataField {
 
   override Display(): string {
     return this.name + ": " + this.isSelected;
+  }
+  override SetValue(value: any){
+    this.isSelected = value;
+  }
+  override GetValue(): any{
+    return this.isSelected;
   }
 }

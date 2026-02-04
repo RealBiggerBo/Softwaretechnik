@@ -39,6 +39,27 @@ export class DataRecordConverter {
     return dataRecord;
   }
 
+  public static ConvertDataRecordToFormat(dataRecord: DataRecord): Record<string, any> {
+    const obj: Record<string, any> = {};
+    dataRecord.dataFields.forEach((field) => {
+      obj[field.name] = field.GetValue(); 
+    });
+    return obj;
+  }
+
+  public static MergeDataRecordWithData(dataRecord: DataRecord, raw: any): DataRecord {
+    let rawkey = Object.keys(raw);
+    let i = 0;
+    while( i < rawkey.length ){
+      let fieldName = rawkey[i];
+      let fieldValues = raw[fieldName];
+      dataRecord.dataFields[i].SetValue(fieldValues);
+      i++;
+    }
+    
+    return dataRecord;
+  }
+
   private static GetFields(
     raw: unknown,
   ): Record<string, Record<string, unknown>> {
@@ -77,7 +98,7 @@ export class DataRecordConverter {
             fieldName,
             id,
             required,
-            "FORMAT ONLY",
+            "",
             this.GetValueFromRecord(fieldValues, "maxLength") as number,
           );
         } else {
