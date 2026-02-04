@@ -1,25 +1,26 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import type { DataRecord } from "../classes/DataRecord";
-import { Button, TextField } from "@mui/material";
-import { type DisplayAction } from "../classes/FilterOption";
+import { TextField } from "@mui/material";
+import { type DisplayAction } from "../classes/DisplayAction";
 import type { DataField } from "../classes/DataField";
+import { ToUiItem, type UiItem } from "../classes/UiItems";
 
 interface Props {
-  action: DisplayAction;
+  action: UiItem<DisplayAction>;
   format: DataRecord;
-  onChange: (action: DisplayAction) => void;
+  onChange: (action: UiItem<DisplayAction>) => void;
 }
 
-function GetAvailableActions(dataField?: DataField): DisplayAction[] {
+function GetAvailableActions(dataField?: DataField): UiItem<DisplayAction>[] {
   if (dataField == undefined) return [];
   else {
     switch (dataField.type) {
       case "date":
       case "integer":
         return [
-          { type: "Max", fieldId: dataField.id },
-          { type: "Min", fieldId: dataField.id },
-          { type: "Average", fieldId: dataField.id },
+          ToUiItem({ type: "Max", fieldId: dataField.id }),
+          ToUiItem({ type: "Min", fieldId: dataField.id }),
+          ToUiItem({ type: "Average", fieldId: dataField.id }),
         ];
       case "enum":
       case "boolean":
@@ -30,43 +31,51 @@ function GetAvailableActions(dataField?: DataField): DisplayAction[] {
   }
 }
 
-function GetOptionFromDisplayAction(
-  displayAction: DisplayAction,
-  index: number,
-) {
+function GetOptionFromDisplayAction(displayAction: UiItem<DisplayAction>): {
+  label: string;
+  action: UiItem<DisplayAction>;
+} {
   //only use primes as id. This ensures together with the id that each generated option has a unique id
-  switch (displayAction.type) {
+  switch (displayAction.value.type) {
     case "Max":
-      return { label: "Maximum", id: 3 * index, action: displayAction };
+      return { label: "Maximum", action: displayAction };
     case "Min":
-      return { label: "Minimum", id: 5 * index, action: displayAction };
+      return { label: "Minimum", action: displayAction };
     case "Average":
-      return { label: "Durchschnitt", id: 7 * index, action: displayAction };
+      return { label: "Durchschnitt", action: displayAction };
     default:
-      return { label: "", id: 2 * index, action: undefined };
+      return {
+        label: "",
+        action: ToUiItem({ type: "Empty", fieldId: -1 }),
+      };
   }
 }
 
 function GenerateAutoCompleteOptions(dataField?: DataField) {
-  return GetAvailableActions(dataField).map((dataField, index) =>
-    GetOptionFromDisplayAction(dataField, index),
+  return GetAvailableActions(dataField).map((dataField) =>
+    GetOptionFromDisplayAction(dataField),
   );
 }
 
-function GetSelectedFieldOption(action: DisplayAction, fields: DataField[]) {
-  return fields.find((f) => f.id === action.fieldId) ?? null;
+function GetSelectedFieldOption(
+  action: UiItem<DisplayAction>,
+  fields: DataField[],
+) {
+  return fields.find((f) => f.id === action.value.fieldId) ?? null;
 }
 
 function GetSelectedActionOption(
-  action: DisplayAction,
+  action: UiItem<DisplayAction>,
   options: ReturnType<typeof GenerateAutoCompleteOptions>,
 ) {
-  return options.find((o) => o.action?.type === action.type) ?? null;
+  return (
+    options.find((o) => o.action?.value.type === action.value.type) ?? null
+  );
 }
 
 function DisplayActionDisplay({ action, format, onChange }: Props) {
   const selectedDataField = format.dataFields.find(
-    (f) => f.id === action.fieldId,
+    (f) => f.id === action.value.fieldId,
   );
   const actionOptions = GenerateAutoCompleteOptions(selectedDataField);
   const selectedActionOption = GetSelectedActionOption(action, actionOptions);
@@ -81,8 +90,8 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
         onChange={(_, field) => {
           onChange(
             field
-              ? { type: "Empty", fieldId: field.id }
-              : { type: "Empty", fieldId: -1 },
+              ? ToUiItem({ type: "Empty", fieldId: field.id })
+              : ToUiItem({ type: "Empty", fieldId: -1 }),
           );
         }}
         renderInput={(params) => (
@@ -96,9 +105,15 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
           renderInput={(params) => (
             <TextField {...params} label="Operation auswählen" />
           )}
-          getOptionKey={(option) => option.id}
+          getOptionKey={(option) => option.action?.id}
           onChange={(_, selectedOption) => {
-            onChange(selectedOption?.action ?? { type: "Empty", fieldId: -1 });
+            onChange(
+              selectedOption?.action ??
+                ToUiItem({
+                  type: "Empty",
+                  fieldId: -1,
+                }),
+            );
           }}
         />
       )}

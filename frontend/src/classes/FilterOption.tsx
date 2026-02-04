@@ -42,7 +42,6 @@ export type DateRangeFilter = {
   maxValue: string;
 };
 
-// 2. The Discriminated Union
 export type FilterOption =
   | EmptyFilter
   | IntegerValueFilter
@@ -51,30 +50,3 @@ export type FilterOption =
   | EnumValueFilter
   | IntegerRangeFilter
   | DateRangeFilter;
-
-export type EmptyFilterAction = {
-  type: "Empty";
-  fieldId: number;
-};
-
-export type MaxFilterAction = {
-  type: "Max";
-  fieldId: number;
-};
-
-export type MinFilterAction = {
-  type: "Min";
-  fieldId: number;
-};
-
-export type AverageFilterAction = {
-  type: "Average";
-  fieldId: number;
-};
-
-// 2. The Discriminated Union
-export type DisplayAction =
-  | EmptyFilterAction
-  | MaxFilterAction
-  | MinFilterAction
-  | AverageFilterAction;
