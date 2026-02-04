@@ -1,5 +1,5 @@
 //import { useEffect, useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -25,6 +25,7 @@ function App({ caller }: Props) {
       <Container fixed>
         <Box>
           <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<LoginPage caller={caller} />} />
             <Route path="/main" element={<MainPage caller={caller} />} />
             <Route
