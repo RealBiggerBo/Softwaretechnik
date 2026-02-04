@@ -10,17 +10,17 @@ export abstract class DataField {
     this.required = required;
   }
 
-  Display(): string {
-    return "";
-  }
-  IsValid(): boolean {
-    return true;
-  }
-  SetValue(value: any){
-  }
-  GetValue(): any{
-    return null;
-  }
+  // Display(): string {
+  //   return "";
+  // }
+  // IsValid(): boolean {
+  //   return true;
+  // }
+  // SetValue(value: any){
+  // }
+  // GetValue(): any{
+  //   return null;
+  // }
 }
 
 export class TextField extends DataField {
@@ -40,18 +40,18 @@ export class TextField extends DataField {
     this.maxLength = maxLength;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.text;
-  }
-  override IsValid(): boolean {
-    return this.maxLength < 0 || this.text.length <= this.maxLength;
-  }
-  override SetValue(value: any){
-    this.text = value;
-  }
-  override GetValue(): any{
-    return this.text;
-  }
+  // override Display(): string {
+  //   return this.name + ": " + this.text;
+  // }
+  // override IsValid(): boolean {
+  //   return this.maxLength < 0 || this.text.length <= this.maxLength;
+  // }
+  // override SetValue(value: any){
+  //   this.text = value;
+  // }
+  // override GetValue(): any{
+  //   return this.text;
+  // }
 }
 
 export class DateField extends DataField {
@@ -68,20 +68,20 @@ export class DateField extends DataField {
     this.date = date;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.date;
-  }
-  override IsValid(): boolean {
-    const datePattern = /dddd-dd-dd/;
-    //TODO: check for valid date: eg. 2026-02-31 -> invalid
-    return datePattern.test(this.date);
-  }
-  override SetValue(value: any){
-    this.date = value;
-  }
-  override GetValue(): any{
-    return this.date;
-  }
+  // override Display(): string {
+  //   return this.name + ": " + this.date;
+  // }
+  // override IsValid(): boolean {
+  //   const datePattern = /dddd-dd-dd/;
+  //   //TODO: check for valid date: eg. 2026-02-31 -> invalid
+  //   return datePattern.test(this.date);
+  // }
+  // override SetValue(value: any){
+  //   this.date = value;
+  // }
+  // override GetValue(): any{
+  //   return this.date;
+  // }
 }
 
 export class IntegerField extends DataField {
@@ -104,21 +104,21 @@ export class IntegerField extends DataField {
     this.maxValue = maxValue;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.value.toString();
-  }
-  override IsValid(): boolean {
-    return (
-      this.minValue > this.maxValue ||
-      (this.value >= this.minValue && this.value <= this.maxValue)
-    );
-  }
-  override SetValue(value: any){
-    this.value = value;
-  }
-  override GetValue(): any{
-    return this.value;
-  }
+  // override Display(): string {
+  //   return this.name + ": " + this.value.toString();
+  // }
+  // override IsValid(): boolean {
+  //   return (
+  //     this.minValue > this.maxValue ||
+  //     (this.value >= this.minValue && this.value <= this.maxValue)
+  //   );
+  // }
+  // override SetValue(value: any){
+  //   this.value = value;
+  // }
+  // override GetValue(): any{
+  //   return this.value;
+  // }
 }
 
 export class EnumField extends DataField {
@@ -136,25 +136,25 @@ export class EnumField extends DataField {
     this.possibleValues = possibleValues;
   }
 
-  GetPossibleValues(): string[] {
-    return this.possibleValues;
-  }
-  SetPossibleValues(newValues: string[]): void {
-    this.possibleValues = newValues;
-  }
+  // GetPossibleValues(): string[] {
+  //   return this.possibleValues;
+  // }
+  // SetPossibleValues(newValues: string[]): void {
+  //   this.possibleValues = newValues;
+  // }
 
-  override Display(): string {
-    return this.name + ": " + this.selectedValue;
-  }
-  override IsValid(): boolean {
-    return this.possibleValues.includes(this.selectedValue);
-  }
-  override SetValue(value: any){
-    this.selectedValue = value;
-  }
-  override GetValue(): any{
-    return this.selectedValue;
-  }
+  // override Display(): string {
+  //   return this.name + ": " + this.selectedValue;
+  // }
+  // override IsValid(): boolean {
+  //   return this.possibleValues.includes(this.selectedValue);
+  // }
+  // override SetValue(value: any){
+  //   this.selectedValue = value;
+  // }
+  // override GetValue(): any{
+  //   return this.selectedValue;
+  // }
 }
 
 export class ToggleField extends DataField {
@@ -171,13 +171,13 @@ export class ToggleField extends DataField {
     this.isSelected = isSelected;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.isSelected;
-  }
-  override SetValue(value: any){
-    this.isSelected = value;
-  }
-  override GetValue(): any{
-    return this.isSelected;
-  }
+  // override Display(): string {
+  //   return this.name + ": " + this.isSelected;
+  // }
+  // override SetValue(value: any){
+  //   this.isSelected = value;
+  // }
+  // override GetValue(): any{
+  //   return this.isSelected;
+  // }
 }

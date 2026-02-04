@@ -1,5 +1,5 @@
 import { EnumField } from "../classes/DataField";
-import { TextField as Tf, Autocomplete, Stack} from "@mui/material";
+import { TextField as Tf, Autocomplete, Stack } from "@mui/material";
 
 interface Props {
   enumField: EnumField;
@@ -15,13 +15,15 @@ function EnumDataField({ enumField, isEditMode, onChange }: Props) {
         <Tf
           type="text"
           onChange={(e) => {
+            //TODO: extract in seperate method ||
+            //(l. 39...)                       \/
             const updatedEnumField = new EnumField(
               e.target.value,
               enumField.id,
               enumField.required,
-              enumField.possibleValues
+              enumField.possibleValues,
             );
-            updatedEnumField.SetPossibleValues(enumField.GetPossibleValues());
+            updatedEnumField.possibleValues = enumField.possibleValues;
             updatedEnumField.selectedValue = enumField.selectedValue;
             onChange(updatedEnumField);
           }}
@@ -31,24 +33,26 @@ function EnumDataField({ enumField, isEditMode, onChange }: Props) {
 
       {
         <Autocomplete
-            disablePortal
-            options={enumField.GetPossibleValues()}
-            disabled={isEditMode}
-            onChange={(_, newValue) => {
-                const updatedEnumField = new EnumField(
-                  enumField.name,
-                  enumField.id,
-                  enumField.required,
-                  enumField.possibleValues
-                );
-                updatedEnumField.SetPossibleValues(enumField.GetPossibleValues());
-                updatedEnumField.selectedValue = newValue || "";
-                onChange(updatedEnumField);
-            }}
-            defaultValue={enumField.selectedValue}
-            renderInput={(params) => <Tf {...params} label={enumField.name} />}
-            size="small"
-            sx={{ width: 300 }}
+          disablePortal
+          options={enumField.possibleValues}
+          disabled={isEditMode}
+          onChange={(_, newValue) => {
+            //TODO: extract in seperate method ||
+            //(l. 20...)                       \/
+            const updatedEnumField = new EnumField(
+              enumField.name,
+              enumField.id,
+              enumField.required,
+              enumField.possibleValues,
+            );
+            updatedEnumField.possibleValues = enumField.possibleValues;
+            updatedEnumField.selectedValue = newValue || "";
+            onChange(updatedEnumField);
+          }}
+          defaultValue={enumField.selectedValue}
+          renderInput={(params) => <Tf {...params} label={enumField.name} />}
+          size="small"
+          sx={{ width: 300 }}
         />
       }
     </Stack>

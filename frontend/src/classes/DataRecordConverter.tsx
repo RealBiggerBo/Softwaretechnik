@@ -8,56 +8,89 @@ import {
 } from "./DataField";
 import { DataRecord } from "./DataRecord";
 
-type RawField = {
-  id: number;
-  type: string;
-  required: boolean;
-  maxLength?: number;
-  possibleValues?: string[];
-  minValue?: number;
-  maxValue?: number;
-  value?: number;
-  text?: string;
-  date?: string;
-  isSelected?: boolean;
-  enumType?: string;
-  selectedValue?: string;
-};
-
 export class DataRecordConverter {
   public static ConvertFormatToDataRecord(raw: unknown) {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 
-    let dataRecordID = -1; //currently unused
     const dataFields: DataField[] = Object.entries(fields).map(
       ([fieldName, fieldValues]) =>
         this.CreateDataField(fieldName, fieldValues),
     );
 
-    const dataRecord = new DataRecord(dataRecordID, dataFields);
+    const dataRecord = new DataRecord(dataFields);
 
     return dataRecord;
   }
 
-  public static ConvertDataRecordToFormat(dataRecord: DataRecord): Record<string, any> {
+  public static ConvertDataRecordToFormat(
+    dataRecord: DataRecord,
+  ): Record<string, any> {
     const obj: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
-      obj[field.name] = field.GetValue(); 
+      this.GetValue(obj[field.name]);
     });
     return obj;
   }
 
-  public static MergeDataRecordWithData(dataRecord: DataRecord, raw: any): DataRecord {
+  public static MergeDataRecordWithData(
+    dataRecord: DataRecord,
+    raw: any,
+  ): DataRecord {
     let rawkey = Object.keys(raw);
     let i = 0;
-    while( i < rawkey.length ){
+    while (i < rawkey.length) {
       let fieldName = rawkey[i];
       let fieldValues = raw[fieldName];
-      dataRecord.dataFields[i].SetValue(fieldValues);
+      dataRecord.dataFields[i] = this.SetValue(
+        dataRecord.dataFields[i],
+        fieldValues,
+      );
       i++;
     }
-    
+
     return dataRecord;
+  }
+
+  private static SetValue(field: DataField, value: unknown) {
+    if (value == null) return field;
+
+    switch (field.type) {
+      case "String":
+        if (typeof value === "string") {
+          if ("text" in field) (field as TextField).text = value;
+          else (field as EnumField).selectedValue = value;
+        }
+        break;
+      case "Date":
+        if (typeof value === "string") (field as DateField).date = value;
+        break;
+      case "Boolean":
+        if (typeof value === "boolean")
+          (field as ToggleField).isSelected = value;
+        break;
+      case "Integer":
+        if (typeof value === "number") (field as IntegerField).value = value;
+        break;
+      default:
+        return field;
+    }
+
+    return field;
+  }
+  private static GetValue(field: DataField) {
+    switch (field.type) {
+      case "String":
+        if ("text" in field) return (field as TextField).text;
+        else return (field as EnumField).selectedValue;
+      case "Date":
+        return (field as DateField).date;
+      case "Boolean":
+        return (field as ToggleField).isSelected;
+      case "Integer":
+        return (field as IntegerField).value;
+      default:
+        return null;
+    }
   }
 
   private static GetFields(
@@ -109,7 +142,10 @@ export class DataRecordConverter {
       case "Boolean":
         return new ToggleField(fieldName, id, required, false);
       case "Integer":
-        return new IntegerField(fieldName, id, required,
+        return new IntegerField(
+          fieldName,
+          id,
+          required,
           this.GetValueFromRecord(fieldValues, "value") as number,
           this.GetValueFromRecord(fieldValues, "minValue") as number,
           this.GetValueFromRecord(fieldValues, "maxValue") as number,

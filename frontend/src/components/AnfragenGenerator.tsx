@@ -8,7 +8,6 @@ import { DataRecord } from "../classes/DataRecord";
 import type { DataField } from "../classes/DataField";
 import { useSearchParams } from "react-router-dom";
 
-
 interface Props {
   caller: IApiCaller;
 }
@@ -18,7 +17,6 @@ function AnfragenGenerator({ caller }: Props) {
   const [record, setRecord] = useState<DataRecord | null>(null);
   const [searchParams] = useSearchParams();
 
-
   useEffect(() => {
     async function loadData() {
       const res = await caller.GetAnfrageJson();
@@ -26,24 +24,23 @@ function AnfragenGenerator({ caller }: Props) {
       if (!res.success) {
         return;
       }
-      let datarecord = DataRecordConverter.ConvertFormatToDataRecord(
-        res.json,
-      );
+      let datarecord = DataRecordConverter.ConvertFormatToDataRecord(res.json);
 
       let id = parseInt(searchParams.get("id") ?? "", 10);
 
       if (!isNaN(id)) {
-
         const res2 = await caller.TrySearchAnfrageByID(id);
 
-        if(!res2.success){
+        if (!res2.success) {
           return;
         }
 
-        datarecord = DataRecordConverter.MergeDataRecordWithData(datarecord, res2.json);
+        datarecord = DataRecordConverter.MergeDataRecordWithData(
+          datarecord,
+          res2.json,
+        );
       }
       setRecord(datarecord);
-
     }
     loadData();
   }, [caller]);
@@ -64,17 +61,14 @@ function AnfragenGenerator({ caller }: Props) {
 
   function handleFieldChange(updatedField: DataField) {
     if (!record) return;
-
     setRecord(
       new DataRecord(
-        record.id,
         record.dataFields.map((f) =>
           f.id === updatedField.id ? updatedField : f,
         ),
       ),
     );
   }
-
 
   return (
     <div>
