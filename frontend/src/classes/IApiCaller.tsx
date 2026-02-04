@@ -32,10 +32,10 @@ export interface IApiCaller {
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TryCreateCase(newCase: Case): Promise<{ success: boolean; errorMsg: string }>;
+  TryCreateCase(newCase: any): Promise<{ success: boolean; errorMsg: string }>;
 
   TryCreateAnfrage(
-    newAnfrage: Anfrage,
+    newAnfrage: any
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TrySearchFall(
@@ -46,9 +46,13 @@ export interface IApiCaller {
     anfrageToSearch: Anfrage,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }>;
+  TrySearchAnfrageByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}>;
 
-  TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }>;
+  TrySearchFallByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}>;
+
+  TryUpdateFall(fallToUpdate: any): Promise<{ success: boolean; errorMsg: string }>;
+
+  TryUpdateAnfrage(anfrageToUpdate: any): Promise<{ success: boolean; errorMsg: string }>;
 
   GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any}>;
 
@@ -182,5 +186,15 @@ export class MockApiCaller implements IApiCaller {
 
   async GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any }> {
     return { success: false, errorMsg: "Not implemented in mock!", json: "" };
+  }
+
+  async TrySearchAnfrageByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}> {
+    void id;
+    return { success: false, errorMsg: "Not implemented in mock!", json: null};
+  }
+
+  async TrySearchFallByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}> {
+    void id;
+    return { success: false, errorMsg: "Not implemented in mock!", json: null};
   }
 }
