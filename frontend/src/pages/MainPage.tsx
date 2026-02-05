@@ -34,7 +34,7 @@ function MainPage({ caller }: Props) {
           body="Hier können der zuletzt bearbeitete Fall und die zuletzt bearbeitete Anfrage aufgerufen werden."
           color="lastUsed"
           buttons={["Letzter Fall", "Letzte Anfrage"]}
-          links={["/"]}
+          links={["/dataview?type=letzter-fall", "/dataview?type=letzte-anfrage"]}
         />
         <MainPageContainer
           heading="Neu erstellen"
