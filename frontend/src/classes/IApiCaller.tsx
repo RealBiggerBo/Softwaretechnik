@@ -1,5 +1,3 @@
-import { Case } from "./Case";
-import { Anfrage } from "./Anfrage";
 
 export interface IApiCaller {
   GetUsers(): Promise<string[]>;
@@ -39,11 +37,11 @@ export interface IApiCaller {
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TrySearchFall(
-    caseToSearch: Case,
+    caseToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TrySearchAnfrage(
-    anfrageToSearch: Anfrage,
+    anfrageToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TrySearchAnfrageByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}>;
@@ -57,6 +55,10 @@ export interface IApiCaller {
   GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any}>;
 
   GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any }>;
+
+  GetLastAnfrage(): Promise<{ success: boolean; errorMsg: string; json: any }>;
+
+  GetLastFall(): Promise<{ success: boolean; errorMsg: string; json: any }>;
 }
 
 export class MockApiCaller implements IApiCaller {
@@ -195,6 +197,14 @@ export class MockApiCaller implements IApiCaller {
 
   async TrySearchFallByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}> {
     void id;
+    return { success: false, errorMsg: "Not implemented in mock!", json: null};
+  }
+
+  async GetLastAnfrage(): Promise<{ success: boolean; errorMsg: string; json: any}> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: null};
+  }
+
+  async GetLastFall(): Promise<{ success: boolean; errorMsg: string; json: any}> {
     return { success: false, errorMsg: "Not implemented in mock!", json: null};
   }
 }

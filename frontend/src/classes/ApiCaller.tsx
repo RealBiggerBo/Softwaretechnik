@@ -1,6 +1,4 @@
 import type { IApiCaller } from "./IApiCaller";
-import { Anfrage } from "./Anfrage";
-import { Case } from "./Case";
 
 const baseurl = "http://127.0.0.1:8000";
 const headers = new Headers();
@@ -263,5 +261,21 @@ export class ApiCaller implements IApiCaller {
     );
 
     return { ...res, json: result };
+  }
+
+  async GetLastAnfrage(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    return { success: false, errorMsg: "Not implemented!", json: null};
+  }
+
+  async GetLastFall(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    return { success: false, errorMsg: "Not implemented", json: null};
   }
 }
