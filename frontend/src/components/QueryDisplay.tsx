@@ -128,9 +128,6 @@ function QueryDisplay({ query, format, onChange }: Props) {
             action={option}
             format={format}
             onChange={(newOption) => {
-              alert(
-                JSON.stringify(UpdateFilterOption(query, option, newOption)),
-              );
               onChange(UpdateFilterOption(query, option, newOption));
             }}
           ></FilterOptionDisplay>

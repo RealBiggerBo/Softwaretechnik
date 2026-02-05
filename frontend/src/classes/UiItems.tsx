@@ -31,3 +31,14 @@ export function ToUiQuery(
 
   return ToUiItem(uiQuery, existing);
 }
+
+export function ToNormalQuery(uiQuery: UiItem<UiQuery>): Query {
+  return {
+    displayActions: uiQuery.value.displayActions.map(
+      (uiDisplayAction) => uiDisplayAction.value,
+    ),
+    filterOptions: uiQuery.value.filterOptions.map(
+      (uiFilterOption) => uiFilterOption.value,
+    ),
+  };
+}

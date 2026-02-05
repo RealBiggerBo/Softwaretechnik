@@ -1,12 +1,18 @@
 import Autocomplete from "@mui/material/Autocomplete";
-import type { DataRecord } from "../classes/DataRecord";
 import { TextField } from "@mui/material";
-import type { DataField, EnumField } from "../classes/DataField";
-import { ToUiItem, type UiItem } from "../classes/UiItems";
-import type { DateRangeFilter, FilterOption } from "../classes/FilterOption";
+import { type UiItem } from "../classes/UiItems";
+import type {
+  DateRangeFilter,
+  DateValueFilter,
+  EnumValueFilter,
+  FilterOption,
+  IntegerRangeFilter,
+  IntegerValueFilter,
+  StringValueFilter,
+} from "../classes/FilterOption";
 import { DatePicker } from "@mui/x-date-pickers";
-import type { PickerValue } from "@mui/x-date-pickers/internals";
 import dayjs from "dayjs";
+import NumberField from "./NumberField";
 
 interface Props {
   filterOption: UiItem<FilterOption>;
@@ -49,30 +55,96 @@ function FilterOptionEditor({ filterOption, onChange }: Props) {
         </>
       )}
       {filterOption.value.type === "DateValueFilter" && (
-        <>
-          <DatePicker></DatePicker>
-        </>
+        <DatePicker
+          value={dayjs(filterOption.value.value)}
+          onChange={(pickerVal) => {
+            onChange({
+              ...filterOption,
+              value: {
+                ...(filterOption.value as DateValueFilter),
+                value: pickerVal
+                  ? pickerVal.format("YYYY-MM-DD")
+                  : "0000-00-00",
+              },
+            });
+          }}
+        ></DatePicker>
       )}
       {filterOption.value.type === "EnumValueFilter" && (
-        <>
-          <label>Autocomplete here</label>
-        </>
+        <Autocomplete
+          multiple={true}
+          options={filterOption.value.possibleValues}
+          value={filterOption.value.value}
+          getOptionLabel={(f) => f}
+          onChange={(_, selectedOptions) => {
+            onChange({
+              ...filterOption,
+              value: {
+                ...(filterOption.value as EnumValueFilter),
+                value: selectedOptions,
+              },
+            });
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Felder auswählen" />
+          )}
+        ></Autocomplete>
       )}
       {filterOption.value.type === "StringValueFilter" && (
-        <>
-          <input type="text"></input>
-        </>
+        <TextField
+          value={filterOption.value.value}
+          onChange={(e) =>
+            onChange({
+              ...filterOption,
+              value: {
+                ...(filterOption.value as StringValueFilter),
+                value: e.target.value,
+              },
+            })
+          }
+        ></TextField>
       )}
       {filterOption.value.type === "IntegerRangeFilter" && (
         <>
-          <input type="number"></input>
-          <input type="number"></input>
+          <NumberField
+            label={"Von"}
+            onValueChange={(newVale) =>
+              onChange({
+                ...filterOption,
+                value: {
+                  ...(filterOption.value as IntegerRangeFilter),
+                  minValue: newVale ? newVale : 0,
+                },
+              })
+            }
+          ></NumberField>
+          <NumberField
+            label={"Bis"}
+            onValueChange={(newVale) =>
+              onChange({
+                ...filterOption,
+                value: {
+                  ...(filterOption.value as IntegerRangeFilter),
+                  maxValue: newVale ? newVale : 0,
+                },
+              })
+            }
+          ></NumberField>
         </>
       )}
       {filterOption.value.type === "IntegerValueFilter" && (
-        <>
-          <input type="number"></input>
-        </>
+        <NumberField
+          label={"Wert"}
+          onValueChange={(newVale) =>
+            onChange({
+              ...filterOption,
+              value: {
+                ...(filterOption.value as IntegerValueFilter),
+                value: newVale ? newVale : 0,
+              },
+            })
+          }
+        ></NumberField>
       )}
     </>
   );

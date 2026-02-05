@@ -49,7 +49,7 @@ function GetAvailableOptions(dataField?: DataField): UiItem<FilterOption>[] {
           ToUiItem({
             type: "EnumValueFilter",
             fieldId: dataField.id,
-            value: "",
+            value: [],
             possibleValues: (dataField as EnumField).possibleValues,
           }),
         ];

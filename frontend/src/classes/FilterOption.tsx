@@ -24,7 +24,7 @@ export type StringValueFilter = {
 export type EnumValueFilter = {
   type: "EnumValueFilter";
   fieldId: number;
-  value: string;
+  value: string[];
   possibleValues: string[];
 };
 
