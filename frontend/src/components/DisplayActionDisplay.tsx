@@ -18,9 +18,9 @@ function GetAvailableActions(dataField?: DataField): UiItem<DisplayAction>[] {
       case "date":
       case "integer":
         return [
-          ToUiItem({ type: "Max", fieldId: dataField.id }),
-          ToUiItem({ type: "Min", fieldId: dataField.id }),
-          ToUiItem({ type: "Average", fieldId: dataField.id }),
+          ToUiItem({ type: "Max", fieldId: dataField.id, title: "" }),
+          ToUiItem({ type: "Min", fieldId: dataField.id, title: "" }),
+          ToUiItem({ type: "Average", fieldId: dataField.id, title: "" }),
         ];
       case "enum":
       case "boolean":
@@ -46,7 +46,7 @@ function GetOptionFromDisplayAction(displayAction: UiItem<DisplayAction>): {
     default:
       return {
         label: "",
-        action: ToUiItem({ type: "Empty", fieldId: -1 }),
+        action: ToUiItem({ type: "Empty", fieldId: -1, title: "" }),
       };
   }
 }
@@ -83,6 +83,18 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
 
   return (
     <>
+      <TextField
+        value={action.value.title}
+        onChange={(e) =>
+          onChange({
+            ...action,
+            value: {
+              ...action.value,
+              title: e.target.value,
+            },
+          })
+        }
+      ></TextField>
       <Autocomplete
         options={format.dataFields}
         value={selectedFieldOption}
@@ -90,8 +102,16 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
         onChange={(_, field) => {
           onChange(
             field
-              ? ToUiItem({ type: "Empty", fieldId: field.id })
-              : ToUiItem({ type: "Empty", fieldId: -1 }),
+              ? ToUiItem({
+                  type: "Empty",
+                  fieldId: field.id,
+                  title: action.value.title,
+                })
+              : ToUiItem({
+                  type: "Empty",
+                  fieldId: -1,
+                  title: action.value.title,
+                }),
           );
         }}
         renderInput={(params) => (
@@ -107,12 +127,23 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
           )}
           getOptionKey={(option) => option.action?.id}
           onChange={(_, selectedOption) => {
+            const i = selectedOption && selectedOption.action ? 0 : 1;
+
+            alert("change " + action.value.title);
             onChange(
-              selectedOption?.action ??
-                ToUiItem({
-                  type: "Empty",
-                  fieldId: -1,
-                }),
+              selectedOption && selectedOption.action
+                ? {
+                    ...action,
+                    value: {
+                      ...action.value,
+                      type: selectedOption?.action.value.type,
+                    },
+                  }
+                : ToUiItem({
+                    type: "Empty",
+                    fieldId: -1,
+                    title: action.value.title,
+                  }),
             );
           }}
         />

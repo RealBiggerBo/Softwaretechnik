@@ -51,7 +51,7 @@ function AddDisplayAction(oldQuery: UiItem<UiQuery>): UiItem<UiQuery> {
       ...oldQuery.value,
       displayActions: [
         ...oldQuery.value.displayActions,
-        ToUiItem({ type: "Empty", fieldId: -1 }),
+        ToUiItem({ type: "Empty", fieldId: -1, title: "" }),
       ],
     },
   };
