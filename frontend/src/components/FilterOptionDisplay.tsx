@@ -29,6 +29,11 @@ function GetAvailableOptions(dataField?: DataField): UiItem<FilterOption>[] {
             fieldId: dataField.id,
             value: "0000-00-00",
           }),
+          ToUiItem({
+            type: "DateImplicitFilter",
+            fieldId: dataField.id,
+            monthSpan: 0,
+          }),
         ];
       case "integer":
         return [
@@ -81,6 +86,8 @@ function GetOptionFromDisplayAction(filterOption: UiItem<FilterOption>): {
     case "EnumValueFilter":
     case "StringValueFilter":
       return { label: "Exakt", filter: filterOption };
+    case "DateImplicitFilter":
+      return { label: "Letzte Monate", filter: filterOption };
     default:
       return {
         label: "",

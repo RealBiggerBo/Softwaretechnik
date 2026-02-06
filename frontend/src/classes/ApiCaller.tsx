@@ -86,7 +86,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryCreateCase(
-    caseToCreate: any
+    caseToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/save/fall",
@@ -98,7 +98,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryCreateAnfrage(
-    anfrageToCreate: any
+    anfrageToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/save/anfrage",
@@ -133,7 +133,9 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-  async TrySearchAnfrageByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any }> {
+  async TrySearchAnfrageByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
     let result: any = null;
 
     const res = await this.SendApiCall(
@@ -150,8 +152,9 @@ export class ApiCaller implements IApiCaller {
     return { ...res, json: result };
   }
 
-
-  async TrySearchFallByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any }> {
+  async TrySearchFallByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
     let result: any = null;
 
     const res = await this.SendApiCall(
@@ -169,7 +172,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryUpdateFall(
-    fallToUpdate: any
+    fallToUpdate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/update/fall",
@@ -181,7 +184,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryUpdateAnfrage(
-    anfrageToUpdate: any
+    anfrageToUpdate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/update/anfrage",
@@ -268,7 +271,7 @@ export class ApiCaller implements IApiCaller {
     errorMsg: string;
     json: any;
   }> {
-    return { success: false, errorMsg: "Not implemented!", json: null};
+    return { success: false, errorMsg: "Not implemented!", json: null };
   }
 
   async GetLastFall(): Promise<{
@@ -276,6 +279,6 @@ export class ApiCaller implements IApiCaller {
     errorMsg: string;
     json: any;
   }> {
-    return { success: false, errorMsg: "Not implemented", json: null};
+    return { success: false, errorMsg: "Not implemented", json: null };
   }
 }

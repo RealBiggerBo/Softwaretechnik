@@ -18,7 +18,7 @@ function SearchPage({ caller }: Props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await caller.GetFallJson();
+      const result = await caller.GetAnfrageJson();
 
       setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
     };

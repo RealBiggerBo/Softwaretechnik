@@ -42,6 +42,12 @@ export type DateRangeFilter = {
   maxValue: string;
 };
 
+export type DateImplicitFilter = {
+  type: "DateImplicitFilter";
+  fieldId: number;
+  monthSpan: number;
+};
+
 export type FilterOption =
   | EmptyFilter
   | IntegerValueFilter
@@ -49,4 +55,5 @@ export type FilterOption =
   | StringValueFilter
   | EnumValueFilter
   | IntegerRangeFilter
-  | DateRangeFilter;
+  | DateRangeFilter
+  | DateImplicitFilter;

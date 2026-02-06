@@ -2,6 +2,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { TextField } from "@mui/material";
 import { type UiItem } from "../classes/UiItems";
 import type {
+  DateImplicitFilter,
   DateRangeFilter,
   DateValueFilter,
   EnumValueFilter,
@@ -69,6 +70,20 @@ function FilterOptionEditor({ filterOption, onChange }: Props) {
             });
           }}
         ></DatePicker>
+      )}
+      {filterOption.value.type === "DateImplicitFilter" && (
+        <NumberField
+          label={"Letzte Monate"}
+          onValueChange={(newVale) =>
+            onChange({
+              ...filterOption,
+              value: {
+                ...(filterOption.value as DateImplicitFilter),
+                monthSpan: newVale ? newVale : 0,
+              },
+            })
+          }
+        ></NumberField>
       )}
       {filterOption.value.type === "EnumValueFilter" && (
         <Autocomplete
