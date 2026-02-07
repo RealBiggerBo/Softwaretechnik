@@ -17,8 +17,8 @@ class Fall(models.Model):
     structure = models.JSONField()
 
 class DataRecord(models.TextChoices):
-    "Anfrage"
-    "Fall"
+    ANFRAGE = "Anfrage", "Anfrage"
+    FALL = "Fall", "Fall"
 
 class DataSet(models.Model):
     """

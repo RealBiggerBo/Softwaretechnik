@@ -1,0 +1,34 @@
+{
+  "PresetTitle": "TestPreset_Fall",
+  "globalRecordType": "Fall",
+  "GlobalFilterOptions": [],
+  "Queries": [
+    {
+      "QueryTitle": "Anzahl je Geschlechtsidentität (Alter 20-30)",
+      "displayActions": [
+        { "DisplayActionTitle": "Anzahl Geschlechtsidentitäten", "type": "CountCategorized", "fieldId": 4 }
+      ],
+      "filterOptions": [
+        { "type": "IntegerRangeFilter", "fieldId": 3, "minValue": 20, "maxValue": 30 }
+      ]
+    },
+    {
+      "QueryTitle": "Durchschnittsalter in Stadt Leipzig",
+      "displayActions": [
+        { "DisplayActionTitle": "Durchschnittsalter", "type": "Average", "fieldId": 3 }
+      ],
+      "filterOptions": [
+        { "type": "EnumValueFilter", "fieldId": 6, "value": ["Stadt Leipzig"] }
+      ]
+    },
+    {
+      "QueryTitle": "Maximales Alter in Stadt Leipzig",
+      "displayActions": [
+        { "DisplayActionTitle": "Max Alter", "type": "Max", "fieldId": 3 }
+      ],
+      "filterOptions": [
+        { "type": "EnumValueFilter", "fieldId": 6, "value": ["Stadt Leipzig"] }
+      ]
+    }
+  ]
+}
