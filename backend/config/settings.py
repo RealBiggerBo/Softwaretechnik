@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'api.apps.ApiConfig',
     'api.database',
-    "api.stats.apps.StatsConfig",
 ]
 
 PASSWORD_HASHERS = [
