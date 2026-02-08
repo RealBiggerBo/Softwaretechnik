@@ -14,6 +14,7 @@ class StatsPreset(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = "api"
         ordering = ["-updated_at", "title"]
 
     def __str__(self):
