@@ -5,13 +5,13 @@ from .views import (
     LogoutAPIView, 
     MeAPIView, 
     ChangePasswordAPI,
-    CreateDatasetAPI,
-    UpdateDatasetAPI,
-    StatisticsAPI,
-    UserPresetAPI,
-    SharedPresetCreateAPI,
-    SharedPresetDeleteAPI,
-    CreateFormFieldAPI,
+    # CreateDatasetAPI,
+    # UpdateDatasetAPI,
+    # StatisticsAPI,
+    # UserPresetAPI,
+    # SharedPresetCreateAPI,
+    # SharedPresetDeleteAPI,
+    # CreateFormFieldAPI,
 )
 from .admin_api import (
     AdminUserRegisterAPI,
@@ -30,13 +30,13 @@ urlpatterns = [
     path('change-password/', ChangePasswordAPI.as_view()),
 
     # Rollen und was sie dürfen
-    path("datasets/", CreateDatasetAPI.as_view()),
-    path("datasets/<int:dataset_id>/", UpdateDatasetAPI.as_view()),
-    path("statistics/", StatisticsAPI.as_view()),
-    path("presets/", UserPresetAPI.as_view()),
-    path("presets/shared/", SharedPresetCreateAPI.as_view()),
-    path("presets/shared/<int:preset_id>/", SharedPresetDeleteAPI.as_view()),
-    path("form-fields/", CreateFormFieldAPI.as_view()),
+    # path("datasets/", CreateDatasetAPI.as_view()),
+    # path("datasets/<int:dataset_id>/", UpdateDatasetAPI.as_view()),
+    # path("statistics/", StatisticsAPI.as_view()),
+    # path("presets/", UserPresetAPI.as_view()),
+    # path("presets/shared/", SharedPresetCreateAPI.as_view()),
+    # path("presets/shared/<int:preset_id>/", SharedPresetDeleteAPI.as_view()),
+    # path("form-fields/", CreateFormFieldAPI.as_view()),
 
     # Admin
     path('admin/users/register/', AdminUserRegisterAPI.as_view()),
