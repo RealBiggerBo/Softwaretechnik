@@ -29,7 +29,7 @@ function Navbar({ caller }: Props) {
         {!isLoginPage && (
           <>
           {/* Timer sichtbar, solange man eingeloggt ist */}
-          <SessionTimer />
+          <SessionTimer caller={caller} />
 
         <Button
           color="inherit"

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Chip from "@mui/material/Chip";
+import type { IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
-  caller: any; // oder: caller: IApiCaller
+  caller: IApiCaller; // oder: caller: IApiCaller
 }
 
 export default function SessionTimer({ caller }: Props) {

@@ -33,6 +33,20 @@ function SearchPage({ caller }: Props) {
 
   return (
     <div>
+      <Button
+        onClick={async () =>
+          alert(
+            JSON.stringify(await caller.GetAnfrageJson()),
+            // JSON.stringify(
+            //   DataRecordConverter.ConvertFormatToDataRecord(
+            //     caller.GetAnfrageJson(),
+            //   ),
+            // ),
+          )
+        }
+      >
+        TEST
+      </Button>
       <QueryDisplay
         query={query}
         onChange={setQuery}

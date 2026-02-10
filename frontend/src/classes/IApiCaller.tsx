@@ -24,6 +24,8 @@ export interface IApiCaller {
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
+  PingSession(): Promise<boolean>;
+
   Logout(): void;
 
   TryRegister(
@@ -49,6 +51,10 @@ export interface IApiCaller {
   TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }>;
 
   TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }>;
+
+  GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any}>;
+
+  GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any }>;
 }
 
 export class MockApiCaller implements IApiCaller {
@@ -78,6 +84,11 @@ export class MockApiCaller implements IApiCaller {
   }
   private users: string[] = ["Alf", "Horst", "James"];
   private storedPassword: string = "secret123";
+
+async PingSession(): Promise<boolean> {
+  return true; // Mock: Session ist immer aktiv
+}
+
 
   async GetUsers(): Promise<string[]> {
     //check current user rights -> done in backend
@@ -170,5 +181,13 @@ export class MockApiCaller implements IApiCaller {
 
   async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
     return { success: false, errorMsg: "Not implemented in mock!" };
+  }
+
+  async GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any}> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: ""};
+  }
+
+  async GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: "" };
   }
 }
