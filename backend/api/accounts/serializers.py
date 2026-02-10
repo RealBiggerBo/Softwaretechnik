@@ -53,5 +53,5 @@ class ChangePasswordSerializer(serializers.Serializer):
     def validate(self, data):
         # Wenn die PW's nicht übereinstimmen, gibt es eine Fehlermeldung.
         if data['new_password'] != data['new_password2']:
-            raise serializers.ValidationError("Neue Passwörter stimmen nicht überein.")
+            raise serializers.ValidationError("Passwörter stimmen nicht überein.")
         return data

@@ -1,7 +1,23 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from api.accounts.permissions import IsAdminUser
 from django.contrib.auth.models import User, Group
+from .serializers import RegisterSerializer
+
+# API für die Registrierung.
+class AdminUserRegisterAPI(APIView):
+    permission_classes = [IsAdminUser]
+    def post(self, request):
+        # Die Angefragten Daten werden an den Serializer übergeben.
+        serializer = RegisterSerializer(data=request.data)
+        
+        # Prüfen ob die Daten stimmen, falls nicht gibt es eine Fehlermeldung.
+        if serializer.is_valid():
+            # Der Benutzer wird erstellt und es gibt eine Erfolgsmeldung.
+            serializer.save()
+            return Response({"debug": "Benutzer erfolgreich angelegt"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Liste aller Benutzer:
 class AdminUserListAPI(APIView):
