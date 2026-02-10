@@ -8,3 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 def hello_world(request):
     return Response({"message": "Hello from Django API"})
 
+@api_view(['GET']) 
+def ping(request): 
+    return Response({"status": "ok"})
