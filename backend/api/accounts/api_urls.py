@@ -1,19 +1,20 @@
 from django.urls import path
 from .views import (
-    RegisterAPIView, 
+    #RegisterAPIView, 
     LoginAPIView, 
     LogoutAPIView, 
     MeAPIView, 
     ChangePasswordAPI,
-    CreateDatasetAPI,
-    UpdateDatasetAPI,
-    StatisticsAPI,
-    UserPresetAPI,
-    SharedPresetCreateAPI,
-    SharedPresetDeleteAPI,
-    CreateFormFieldAPI,
+    # CreateDatasetAPI,
+    # UpdateDatasetAPI,
+    # StatisticsAPI,
+    # UserPresetAPI,
+    # SharedPresetCreateAPI,
+    # SharedPresetDeleteAPI,
+    # CreateFormFieldAPI,
 )
 from .admin_api import (
+    AdminUserRegisterAPI,
     AdminUserListAPI, 
     AdminUserDeleteAPI, 
     AdminResetPasswordAPI, 
@@ -22,7 +23,7 @@ from .admin_api import (
 
 urlpatterns = [
     # Authentication
-    path('register/', RegisterAPIView.as_view()),
+    #path('register/', RegisterAPIView.as_view()),
     path('login/', LoginAPIView.as_view()),
     path('logout/', LogoutAPIView.as_view()),
     path('me/', MeAPIView.as_view()),
@@ -38,8 +39,9 @@ urlpatterns = [
     path("form-fields/", CreateFormFieldAPI.as_view()),
 
     # Admin
+    path('admin/users/register/', AdminUserRegisterAPI.as_view()),
     path('admin/users/', AdminUserListAPI.as_view()),
     path('admin/users/<int:user_id>/', AdminUserDeleteAPI.as_view()),
     path('admin/users/<int:user_id>/reset-password/', AdminResetPasswordAPI.as_view()),
-    path("admin/users/<int:user_id>/role/", AdminChangeRoleAPI.as_view()),
+    path('admin/users/<int:user_id>/role/', AdminChangeRoleAPI.as_view()),
 ]
