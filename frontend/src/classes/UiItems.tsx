@@ -1,5 +1,6 @@
 import type { DisplayAction } from "./DisplayAction";
 import type { FilterOption } from "./FilterOption";
+import type { Preset } from "./Preset";
 import type { Query } from "./Query";
 
 export type UiItem<T> = {
@@ -10,6 +11,11 @@ export type UiItem<T> = {
 export type UiQuery = {
   displayActions: UiItem<DisplayAction>[];
   filterOptions: UiItem<FilterOption>[];
+};
+
+export type UiPreset = {
+  globalFilterOptions: UiItem<FilterOption>[];
+  queries: UiItem<UiQuery>[];
 };
 
 export function GenUiString() {
@@ -32,6 +38,15 @@ export function ToUiQuery(
   return ToUiItem(uiQuery, existing);
 }
 
+export function ToUiPreset(preset: Preset, existing?: UiItem<UiPreset>) {
+  const uiPreset: UiPreset = {
+    globalFilterOptions: preset.globalFilterOptions.map((fo) => ToUiItem(fo)),
+    queries: preset.queries.map((q) => ToUiQuery(q)),
+  };
+
+  return ToUiItem(uiPreset, existing);
+}
+
 export function ToNormalQuery(uiQuery: UiItem<UiQuery>): Query {
   return {
     displayActions: uiQuery.value.displayActions.map(
@@ -40,5 +55,14 @@ export function ToNormalQuery(uiQuery: UiItem<UiQuery>): Query {
     filterOptions: uiQuery.value.filterOptions.map(
       (uiFilterOption) => uiFilterOption.value,
     ),
+  };
+}
+
+export function ToNormalPreset(uiPreset: UiItem<UiPreset>): Preset {
+  return {
+    globalFilterOptions: uiPreset.value.globalFilterOptions.map(
+      (uiFilterOption) => uiFilterOption.value,
+    ),
+    queries: uiPreset.value.queries.map((uiQuery) => ToNormalQuery(uiQuery)),
   };
 }

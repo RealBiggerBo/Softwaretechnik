@@ -5,6 +5,8 @@ import DisplayActionDisplay from "./DisplayActionDisplay";
 import { ToUiItem, type UiItem, type UiQuery } from "../classes/UiItems";
 import type { FilterOption } from "../classes/FilterOption";
 import FilterOptionDisplay from "./FilterOptionDisplay";
+import FilterOptionList from "./FilterOptionList";
+import DisplayActionList from "./DisplayActionList";
 
 interface Props {
   query: UiItem<UiQuery>;
@@ -103,43 +105,33 @@ function RemoveFilterOption(
 function QueryDisplay({ query, format, onChange }: Props) {
   return (
     <>
-      {query.value.displayActions.map((action, i) => (
-        <div key={i}>
-          <DisplayActionDisplay
-            action={action}
-            format={format}
-            onChange={(newAction) =>
-              onChange(UpdateDisplayAction(query, action, newAction))
-            }
-          ></DisplayActionDisplay>
-          <Button onClick={() => onChange(RemoveDisplayAction(query, action))}>
-            Entfernen
-          </Button>
-        </div>
-      ))}
-      <br></br>
-      <Button onClick={() => onChange(AddDisplayAction(query))}>
-        Neues Anzeigeaktion
-      </Button>
+      <DisplayActionList
+        displayActions={query.value.displayActions}
+        format={format}
+        addText="Neue Anzeigeoption"
+        removeText="Entfernen"
+        updateDisplayAction={(actionToUpdate, newAction) =>
+          onChange(UpdateDisplayAction(query, actionToUpdate, newAction))
+        }
+        addNewDisplayAction={() => onChange(AddDisplayAction(query))}
+        removeDisplayAction={(actionToRemove) =>
+          onChange(RemoveDisplayAction(query, actionToRemove))
+        }
+      />
 
-      {query.value.filterOptions.map((option, i) => (
-        <div key={i}>
-          <FilterOptionDisplay
-            action={option}
-            format={format}
-            onChange={(newOption) => {
-              onChange(UpdateFilterOption(query, option, newOption));
-            }}
-          ></FilterOptionDisplay>
-          <Button onClick={() => onChange(RemoveFilterOption(query, option))}>
-            Entfernen
-          </Button>
-        </div>
-      ))}
-      <br></br>
-      <Button onClick={() => onChange(AddFilterOption(query))}>
-        Neue Filteroption
-      </Button>
+      <FilterOptionList
+        filterOptions={query.value.filterOptions}
+        format={format}
+        addText="Neue Filteroption"
+        removeText="Entfernen"
+        updateFilterOption={(optionToUpdate, newOption) =>
+          onChange(UpdateFilterOption(query, optionToUpdate, newOption))
+        }
+        addNewFilterOption={() => onChange(AddFilterOption(query))}
+        removeFilterOption={(optionToRemove) =>
+          onChange(RemoveFilterOption(query, optionToRemove))
+        }
+      />
     </>
   );
 }

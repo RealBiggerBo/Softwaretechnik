@@ -1,7 +1,8 @@
+import type { FilterOption } from "./FilterOption";
 import type { Query } from "./Query";
 
-export class Preset {
+export type Preset = {
   //type: "Anfrage" | "Fall" = "Anfrage";
-  //globalFilterOptions: FilterOption[] = []
-  queries: Query[] = [];
-}
+  globalFilterOptions: FilterOption[];
+  queries: Query[];
+};

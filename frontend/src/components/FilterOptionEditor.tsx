@@ -73,6 +73,7 @@ function FilterOptionEditor({ filterOption, onChange }: Props) {
       )}
       {filterOption.value.type === "DateImplicitFilter" && (
         <NumberField
+          value={filterOption.value.monthSpan}
           label={"Letzte Monate"}
           onValueChange={(newVale) =>
             onChange({

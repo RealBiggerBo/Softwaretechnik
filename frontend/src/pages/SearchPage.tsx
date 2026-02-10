@@ -4,13 +4,22 @@ import QueryDisplay from "../components/QueryDisplay";
 import { DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import { Button } from "@mui/material";
-import { ToNormalQuery, ToUiQuery } from "../classes/UiItems";
+import {
+  ToNormalPreset,
+  ToNormalQuery,
+  ToUiPreset,
+  ToUiQuery,
+} from "../classes/UiItems";
+import PresetDisplay from "../components/PresetDisplay";
 
 interface Props {
   caller: IApiCaller;
 }
 
 function SearchPage({ caller }: Props) {
+  const [preset, setPreset] = useState(
+    ToUiPreset({ globalFilterOptions: [], queries: [] }),
+  );
   const [query, setQuery] = useState(
     ToUiQuery({ filterOptions: [], displayActions: [] }),
   );
@@ -27,9 +36,9 @@ function SearchPage({ caller }: Props) {
 
   return (
     <div>
-      <QueryDisplay query={query} onChange={setQuery} format={format} />
+      <PresetDisplay preset={preset} onChange={setPreset} format={format} />
       <br></br> {/*line break for clarity*/}
-      <Button onClick={() => alert(JSON.stringify(ToNormalQuery(query)))}>
+      <Button onClick={() => alert(JSON.stringify(ToNormalPreset(preset)))}>
         TEST Query json
       </Button>
       <Button onClick={async () => alert(JSON.stringify(format))}>
