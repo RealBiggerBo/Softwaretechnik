@@ -10,11 +10,16 @@ export abstract class DataField {
     this.required = required;
   }
 
-  Display(): string {
-    return "";
+  // Display(): string {
+  //   return "";
+  // }
+  // IsValid(): boolean {
+  //   return true;
+  // }
+  SetValue(value: any){
   }
-  IsValid(): boolean {
-    return true;
+  GetValue(): any{
+    return null;
   }
 }
 
@@ -35,11 +40,17 @@ export class TextField extends DataField {
     this.maxLength = maxLength;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.text;
+  // override Display(): string {
+  //   return this.name + ": " + this.text;
+  // }
+  // override IsValid(): boolean {
+  //   return this.maxLength < 0 || this.text.length <= this.maxLength;
+  // }
+  override SetValue(value: any){
+    this.text = value;
   }
-  override IsValid(): boolean {
-    return this.maxLength < 0 || this.text.length <= this.maxLength;
+  override GetValue(): any{
+    return this.text;
   }
 }
 
@@ -57,13 +68,19 @@ export class DateField extends DataField {
     this.date = date;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.date;
+  // override Display(): string {
+  //   return this.name + ": " + this.date;
+  // }
+  // override IsValid(): boolean {
+  //   const datePattern = /dddd-dd-dd/;
+  //   //TODO: check for valid date: eg. 2026-02-31 -> invalid
+  //   return datePattern.test(this.date);
+  // }
+  override SetValue(value: any){
+    this.date = value;
   }
-  override IsValid(): boolean {
-    const datePattern = /dddd-dd-dd/;
-    //TODO: check for valid date: eg. 2026-02-31 -> invalid
-    return datePattern.test(this.date);
+  override GetValue(): any{
+    return this.date;
   }
 }
 
@@ -87,46 +104,56 @@ export class IntegerField extends DataField {
     this.maxValue = maxValue;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.value.toString();
+  // override Display(): string {
+  //   return this.name + ": " + this.value.toString();
+  // }
+  // override IsValid(): boolean {
+  //   return (
+  //     this.minValue > this.maxValue ||
+  //     (this.value >= this.minValue && this.value <= this.maxValue)
+  //   );
+  // }
+  override SetValue(value: any){
+    this.value = value;
   }
-  override IsValid(): boolean {
-    return (
-      this.minValue > this.maxValue ||
-      (this.value >= this.minValue && this.value <= this.maxValue)
-    );
+  override GetValue(): any{
+    return this.value;
   }
 }
 
 export class EnumField extends DataField {
   readonly type: string = "enum";
   selectedValue: string = "";
-  enumType: string = "";
-  private possibleValues: string[] = [];
+  possibleValues: string[] = [];
 
   constructor(
     name: string,
     id: number,
     required: boolean = true,
-    enumType: string,
+    possibleValues: string[],
   ) {
     super(name, id, required);
-    this.enumType = enumType;
-    //Maybe fill possible values here based on enumType (maybe get possible values from backend?)
+    this.possibleValues = possibleValues;
   }
 
-  GetPossibleValues(): string[] {
-    return this.possibleValues;
-  }
-  SetPossibleValues(newValues: string[]): void {
-    this.possibleValues = newValues;
-  }
+  // GetPossibleValues(): string[] {
+  //   return this.possibleValues;
+  // }
+  // SetPossibleValues(newValues: string[]): void {
+  //   this.possibleValues = newValues;
+  // }
 
-  override Display(): string {
-    return this.name + ": " + this.selectedValue;
+  // override Display(): string {
+  //   return this.name + ": " + this.selectedValue;
+  // }
+  // override IsValid(): boolean {
+  //   return this.possibleValues.includes(this.selectedValue);
+  // }
+  override SetValue(value: any){
+    this.selectedValue = value;
   }
-  override IsValid(): boolean {
-    return this.possibleValues.includes(this.selectedValue);
+  override GetValue(): any{
+    return this.selectedValue;
   }
 }
 
@@ -144,7 +171,13 @@ export class ToggleField extends DataField {
     this.isSelected = isSelected;
   }
 
-  override Display(): string {
-    return this.name + ": " + this.isSelected;
+  // override Display(): string {
+  //   return this.name + ": " + this.isSelected;
+  // }
+  override SetValue(value: any){
+    this.isSelected = value;
+  }
+  override GetValue(): any{
+    return this.isSelected;
   }
 }

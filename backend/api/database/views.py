@@ -9,13 +9,10 @@ from .serializers import *
 
 class DataAPI(APIView):
     permission_classes = [AllowAny]
-
-    def type_is_valid(self, type):
-        return type in ["anfrage", "fall"]
     
     def get_data(self, type, pk):
-        if not self.type_is_valid(type):
-            return Response({"Error": "ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
+        if not type_is_valid(type):
+            return Response({"error": "ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             data = DataSet.objects.get(pk=pk)
@@ -59,8 +56,10 @@ class DataAPI(APIView):
         Erstellt einen neuen Datensatz.
         """
 
-        if not self.type_is_valid(type):
-            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        if not type_is_valid(type):
+            return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(request.data)
 
         serializer = DataSetSerializer(data=request.data)
 
@@ -91,18 +90,36 @@ class DataAPI(APIView):
 class DataRecordAPI(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, type):
         """
         Gibt die Struktur eines DataRecords zurück.
         """
+        id = request.GET.get("id", None)
 
         try:
-            data_record = DataRecord.objects.get(pk=request.GET.get("id", None))
-        except DataRecord.DoesNotExist:
+            data_record = Anfrage if type == "anfrage" else Fall
+            objekt = data_record.objects.get(pk=id) if id != None else data_record.objects.last()
+        except data_record.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = DataRecordSerializer(data_record)
+        serializer = AnfrageSerializer(objekt) if type == "anfrage" else FallSerializer(objekt)
 
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def post(self, request, type):
+        """
+        Erstellt eine neue Version eines DataRecords.
+        """
+
+        if not type_is_valid(type):
+            return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = AnfrageSerializer(data=request.data) if type == "anfrage" else FallSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class ListAPI(APIView):
@@ -128,7 +145,7 @@ class ListAPI(APIView):
             data_record_list = Taeter.objects.all()
             serializer = TaeterSerializer(data_record_list, many=True)
         else:
-            return Response({"Error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data)
 
@@ -137,3 +154,6 @@ class SearchAPI(APIView):
 
     def get(request):
         return Response({"message": "Hello from Django API"})
+
+def type_is_valid(type):
+    return type in ["anfrage", "fall"]

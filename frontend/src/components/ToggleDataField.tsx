@@ -1,5 +1,5 @@
-import type { ToggleField } from "../classes/DataField";
-import { TextField as Tf, Checkbox, FormControlLabel} from "@mui/material";
+import { ToggleField } from "../classes/DataField";
+import { TextField as Tf, Checkbox, FormControlLabel, Stack} from "@mui/material";
 
 interface Props {
   toggleField: ToggleField;
@@ -9,14 +9,19 @@ interface Props {
 
 function ToggleDataField({ toggleField, isEditMode, onChange }: Props) {
   return (
-    <>
+    <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{toggleField.name}</label>}
       {isEditMode && (
         <Tf
           type="text"
           onChange={(e) => {
-            toggleField.name = e.target.value;
-            onChange(toggleField);
+            const updatedToggleField = new ToggleField(
+              e.target.value,
+              toggleField.id,
+              toggleField.required,
+              toggleField.isSelected
+            );
+            onChange(updatedToggleField);
           }}
           defaultValue={toggleField.name}
         ></Tf>
@@ -28,14 +33,21 @@ function ToggleDataField({ toggleField, isEditMode, onChange }: Props) {
             <Checkbox 
                 checked={toggleField.isSelected} 
                 disabled={isEditMode} 
-                onChange={(e) => { toggleField.isSelected = e.target.checked; 
-                    onChange(toggleField);}}
+                onChange={(e) => {
+                  const updatedToggleField = new ToggleField(
+                    toggleField.name,
+                    toggleField.id,
+                    toggleField.required,
+                    e.target.checked
+                  );
+                  onChange(updatedToggleField);
+                }}
             />
         }
-        label={toggleField.name}
+        label=""
         />
       }
-    </>
+    </Stack>
   );
 }
 

@@ -1,5 +1,5 @@
-import type { TextField } from "../classes/DataField";
-import { TextField as Tf } from "@mui/material";
+import { TextField } from "../classes/DataField";
+import { Stack, TextField as Tf } from "@mui/material";
 
 interface Props {
   textField: TextField;
@@ -9,14 +9,20 @@ interface Props {
 
 function TextDataField({ textField, isEditMode, onChange }: Props) {
   return (
-    <>
+    <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{textField.name}</label>}
       {isEditMode && (
         <Tf
           type="text"
           onChange={(e) => {
-            textField.name = e.target.value;
-            onChange(textField);
+            const updatedField = new TextField(
+              e.target.value,
+              textField.id,
+              textField.required,
+              textField.text,
+              textField.maxLength
+            )
+            onChange(updatedField);
           }}
           defaultValue={textField.name}
         ></Tf>
@@ -27,15 +33,21 @@ function TextDataField({ textField, isEditMode, onChange }: Props) {
           type="text"
           disabled={isEditMode}
           onChange={(e) => {
-            textField.text = e.target.value;
-            onChange(textField);
+            const updatedField = new TextField(
+              textField.name,
+              textField.id,
+              textField.required,
+              e.target.value,
+              textField.maxLength
+            )
+            onChange(updatedField);
           }}
           placeholder={textField.name}
           defaultValue={textField.text}
           size="small"
         ></Tf>
       }
-    </>
+    </Stack>
   );
 }
 

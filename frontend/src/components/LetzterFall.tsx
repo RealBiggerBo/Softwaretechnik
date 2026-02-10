@@ -1,49 +1,40 @@
-import { useEffect, useState } from "react";
-import { DataRecordConverter } from "../classes/DataRecordConverter";
+import { Button, Checkbox, FormControlLabel } from "@mui/material";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { FieldRenderer } from "./Fieldrenderer";
-import { Checkbox, Button } from "@mui/material";
-import { FormControlLabel } from "@mui/material";
-import { DataRecord } from "../classes/DataRecord";
 import type { DataField } from "../classes/DataField";
-import { useSearchParams } from "react-router-dom";
+import { DataRecordConverter } from "../classes/DataRecordConverter";
+import { DataRecord } from "../classes/DataRecord";
+import { useEffect, useState } from "react";
 
 
 interface Props {
   caller: IApiCaller;
 }
 
-function FallGenerator({ caller }: Props) {
-  const [isEditMode, setIsEditMode] = useState(false);
+function LetzterFall({ caller }: Props) {
+    const [isEditMode, setIsEditMode] = useState(false);
   const [record, setRecord] = useState<DataRecord | null>(null);
-  const [searchParams] = useSearchParams();
-
 
   useEffect(() => {
     async function loadData() {
-      const res = await caller.GetFallJson();
+        const res = await caller.GetFallJson();
 
-      if (!res.success) {
-        return;
-      }
-      let datarecord = DataRecordConverter.ConvertFormatToDataRecord(
-        res.json,
-      );
+        if (!res.success) {
+            return;
+        }
+        let datarecord = DataRecordConverter.ConvertFormatToDataRecord(res.json);
+        const res2 = await caller.GetLastFall();
 
-      let id = parseInt(searchParams.get("id") ?? "", 10);
-
-      if (!isNaN(id)) {
-
-        const res2 = await caller.TrySearchFallByID(id);
-
-        if(!res2.success){
+        if (!res2.success) {
           return;
         }
 
-        datarecord = DataRecordConverter.MergeDataRecordWithData(datarecord, res2.json);
-      }
-      setRecord(datarecord);
+        datarecord = DataRecordConverter.MergeDataRecordWithData(
+          datarecord,
+          res2.json,
+        );
 
+      setRecord(datarecord);
     }
     loadData();
   }, [caller]);
@@ -51,23 +42,16 @@ function FallGenerator({ caller }: Props) {
   async function Save() {
     if (!record) return;
 
-    let id = parseInt(searchParams.get("id") ?? "", 10);
-    if (!isNaN(id)) {
-      const recordJson = DataRecordConverter.ConvertDataRecordToFormat(record);
-      await caller.TryUpdateFall(recordJson);
-    }
-
     const recordJson = DataRecordConverter.ConvertDataRecordToFormat(record);
-    await caller.TryCreateCase(recordJson);
+    await caller.TryUpdateFall(recordJson);
+    
     return;
   }
 
   function handleFieldChange(updatedField: DataField) {
     if (!record) return;
-
     setRecord(
       new DataRecord(
-        record.id,
         record.dataFields.map((f) =>
           f.id === updatedField.id ? updatedField : f,
         ),
@@ -75,10 +59,9 @@ function FallGenerator({ caller }: Props) {
     );
   }
 
-
   return (
     <div>
-      <h1>Hallo ich bin ein Fall</h1>
+      <h1>Hallo ich bin eine Anfrage</h1>
       <FormControlLabel
         control={
           <Checkbox
@@ -105,5 +88,4 @@ function FallGenerator({ caller }: Props) {
     </div>
   );
 }
-
-export default FallGenerator;
+export default LetzterFall;

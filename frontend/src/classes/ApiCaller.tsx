@@ -1,6 +1,4 @@
 import type { IApiCaller } from "./IApiCaller";
-import { Anfrage } from "./Anfrage";
-import { Case } from "./Case";
 
 const baseurl = "http://127.0.0.1:8000";
 const headers = new Headers();
@@ -88,7 +86,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryCreateCase(
-    caseToCreate: Case,
+    caseToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/save/fall",
@@ -100,7 +98,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TryCreateAnfrage(
-    anfrageToCreate: Anfrage,
+    anfrageToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/save/anfrage",
@@ -112,7 +110,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TrySearchFall(
-    caseToSearch: Case,
+    caseToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/fall/search",
@@ -124,7 +122,7 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TrySearchAnfrage(
-    anfrageToSearch: Anfrage,
+    anfrageToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       "/api/data/anfrage/search",
@@ -135,12 +133,66 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-  async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+  async TrySearchAnfrageByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/data/anfrage/search?id=${id}`,
+      "GET",
+      true,
+      undefined,
+      "Suche fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
   }
 
-  async TryUpdateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    throw new Error("Method not implemented.");
+  async TrySearchFallByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/data/fall/search?id=${id}`,
+      "GET",
+      true,
+      undefined,
+      "Suche fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
+  }
+
+  async TryUpdateFall(
+    fallToUpdate: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/update/fall",
+      "PUT",
+      true,
+      JSON.stringify(fallToUpdate),
+      "Aktualisierung fehlgeschlagen",
+    );
+  }
+
+  async TryUpdateAnfrage(
+    anfrageToUpdate: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/update/anfrage",
+      "PUT",
+      true,
+      JSON.stringify(anfrageToUpdate),
+      "Aktualisierung fehlgeschlagen",
+    );
   }
 
     async PingSession(): Promise<boolean> {
@@ -164,7 +216,7 @@ export class ApiCaller implements IApiCaller {
     includeCredentials: boolean,
     body: any,
     fallbackErrorMsg: string,
-    successAction?: (response: Response) => void,
+    successAction?: (response: Response) => Promise<void>,
   ): Promise<{ success: boolean; errorMsg: string }> {
     try {
       const response = await this.request(url, {
@@ -174,7 +226,7 @@ export class ApiCaller implements IApiCaller {
       });
 
       if (response.ok) {
-        if (successAction != undefined) successAction(response);
+        if (successAction != undefined) await successAction(response);
         return { success: true, errorMsg: "" };
       }
 
@@ -196,7 +248,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      "/api/data/data_record?id=3",
+      "/api/data/data_record/anfrage?id=2",
       "GET",
       true,
       undefined,
@@ -217,7 +269,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      "/api/data/data_record?id=2",
+      "/api/data/data_record/fall?id=1",
       "GET",
       true,
       undefined,
@@ -228,5 +280,21 @@ export class ApiCaller implements IApiCaller {
     );
 
     return { ...res, json: result };
+  }
+
+  async GetLastAnfrage(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    return { success: false, errorMsg: "Not implemented!", json: null };
+  }
+
+  async GetLastFall(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    return { success: false, errorMsg: "Not implemented", json: null };
   }
 }

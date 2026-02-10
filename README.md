@@ -23,7 +23,7 @@ Passwort: 0UsQzBB1
    - Windows PowerShell: `python -m venv venv; .\venv\Scripts\Activate.ps1` (Bei Fehler vorher: `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`(permanent); `powershell -ExecutionPolicy Bypass`(temporär) ausführen)
 3. Abhängigkeiten installieren: `pip install -r requirements.txt`
 4. Datenbank migrieren (legt SQLite-DB an/aktualisiert sie): `python manage.py migrate`
-5. Erstellen der Rollen `python manage.py create_roles` (aktuell noch manuell, später wharscheinlich als script)
+5. Erstellen der Rollen `python manage.py create_roles` (aktuell noch manuell, später wahrscheinlich als script)
 6. Entwicklung starten: `python manage.py runserver` (läuft unter http://127.0.0.1:8000)
 
 ## Frontend (Vite + React)
@@ -115,17 +115,44 @@ Zugriffsrecht: Standard
 Rückgabewert (Format II):
 
 ```json
-{
-    "Name": {
-        "id": Integer,
-        "type": String,
-        "required": Boolean,
-        ...
-        "maxLength": Integer (für "type"="String"),
-        "possibleValues": [Typ äquivalent zu Feldtyp]
-    },
+{   "structure": {
+        "Name": {
+            "id": Integer,
+            "type": String,
+            "required": Boolean,
+            ...
+            "maxLength": Integer (für "type"="String"),
+            "possibleValues": [Typ äquivalent zu Feldtyp]
+        },
 
-    ...
+        ...
+    }
+}
+```
+
+### POST
+
+Erstellt eine neue Version eines DataRecords.
+
+URL: [/api/data/data_record/%T](http://127.0.0.1:8000/api/data/data_record)
+
+Zugriffsrecht: Standard
+
+Rückgabewert (Format II):
+
+```json
+{   "structure": {
+        "Name": {
+            "id": Integer,
+            "type": String,
+            "required": Boolean,
+            ...
+            "maxLength": Integer (für "type"="String"),
+            "possibleValues": [Typ äquivalent zu Feldtyp]
+        },
+
+        ...
+    }
 }
 ```
 
@@ -161,11 +188,10 @@ noch nicht vorhanden (URL: /api/data/search/%T)
 
 - [Fall](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/fall.json)
 
-
-
 ## Projekt lokal mit Docker starten
 
 ### Voraussetzungen
+
 - Docker Desktop
 
 ### Schritte
@@ -173,10 +199,10 @@ noch nicht vorhanden (URL: /api/data/search/%T)
 1. Repository lokal öffnen
 2. Docker Image bauen:
    ```bash
-   docker build -t softwaretechnik . 
+   docker build -t softwaretechnik .
    ```
 3. Container starten:
    ```bash
-   docker run -p 8080:80 softwaretechnik 
+   docker run -p 8080:80 softwaretechnik
    ```
 4. Anwendung im Browser öffnen: http://localhost:8080

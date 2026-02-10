@@ -1,6 +1,7 @@
-import type { DisplayAction, FilterOption } from "./FilterOption";
+import type { DisplayAction } from "./DisplayAction";
+import type { FilterOption } from "./FilterOption";
 
-export class Query {
-  displayActions: DisplayAction[] = [];
-  filterOptions: { id: Number; filter: FilterOption }[] = [];
-}
+export type Query = {
+  displayActions: DisplayAction[];
+  filterOptions: FilterOption[];
+};

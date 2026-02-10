@@ -1,5 +1,5 @@
-import type { IntegerField } from "../classes/DataField";
-import { TextField as Tf} from "@mui/material";
+import { IntegerField } from "../classes/DataField";
+import { Stack, TextField as Tf} from "@mui/material";
 
 
 interface Props {
@@ -10,14 +10,21 @@ interface Props {
 
 function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
     return (
-        <>
+        <Stack direction="row" spacing={2} alignItems="center">
             {!isEditMode && <label>{integerField.name}</label>}
             {isEditMode && (
                 <Tf
                     type="text"
                     onChange={(e) => {
-                        integerField.name = e.target.value;
-                        onChange(integerField);
+                        const updatedintegerField = new IntegerField(
+                            e.target.value,
+                            integerField.id,
+                            integerField.required,
+                            integerField.value,
+                            integerField.minValue,
+                            integerField.maxValue
+                        );
+                        onChange(updatedintegerField);
                     }}
                     defaultValue={integerField.name}
                 ></Tf>
@@ -26,17 +33,24 @@ function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
             {
                 <Tf
                     type="number"
-                    label={integerField.name}
                     disabled={isEditMode}
+                    value={integerField.value ?? 0}
                     onChange={(e) => {
-                        integerField.value = parseInt(e.target.value, 10) || 0;
-                        onChange(integerField);
+                        const updatedintegerField = new IntegerField(
+                            integerField.name,
+                            integerField.id,
+                            integerField.required,
+                            parseInt(e.target.value),
+                            integerField.minValue,
+                            integerField.maxValue
+                        );
+                        onChange(updatedintegerField);
                     }}
-                    defaultValue={integerField.value}
                     size="small"
+                    sx={{width: 100}}
                 ></Tf>
             }
-        </>
+        </Stack>
     );
 }
 
