@@ -29,7 +29,14 @@ function Navbar({ caller }: Props) {
         {!isLoginPage && (
           <>
           {/* Timer sichtbar, solange man eingeloggt ist */}
-          <SessionTimer caller={caller} />
+          <SessionTimer
+            timeoutSeconds={600} // 10 Minuten
+            onTimeout={() => {
+            caller.Logout();
+            navigate("/login");
+            }}
+          />
+
 
         <Button
           color="inherit"

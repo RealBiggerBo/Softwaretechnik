@@ -8,6 +8,3 @@ from rest_framework.permissions import IsAuthenticated
 def hello_world(request):
     return Response({"message": "Hello from Django API"})
 
-@permission_classes([IsAuthenticated])
-def ping(request):
-    return Response({"status": "ok"}, status=200)
