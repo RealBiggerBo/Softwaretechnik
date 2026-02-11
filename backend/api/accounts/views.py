@@ -47,7 +47,6 @@ class MeAPIView(APIView):
             "id": request.user.id, 
             "username": request.user.username, 
             "roles": roles,
-            "is_staff": request.user.is_staff,
             })
 
 # API für Passwort ändern.
