@@ -1,10 +1,17 @@
-import { Button, Checkbox, FormControlLabel } from "@mui/material";
+import { useEffect, useState } from "react";
+import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { FieldRenderer } from "./Fieldrenderer";
-import type { DataField } from "../classes/DataField";
-import { DataRecordConverter } from "../classes/DataRecordConverter";
+import { Button, Fab } from "@mui/material";
 import { DataRecord } from "../classes/DataRecord";
-import { useEffect, useState } from "react";
+import { DateField, IntegerField, TextField, ToggleField, type DataField } from "../classes/DataField";
+import EditIcon from '@mui/icons-material/Edit';
+import AddField from "./AddField";
+import ToggleDataField from "./ToggleDataField";
+import IntegerDataField from "./IntegerDataField";
+import DateDataField from "./DateDataField";
+import TextDataField from "./TextDataField";
+
 
 
 interface Props {
@@ -12,7 +19,7 @@ interface Props {
 }
 
 function LetzteAnfrage({ caller }: Props) {
-    const [isEditMode, setIsEditMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [record, setRecord] = useState<DataRecord | null>(null);
 
   useEffect(() => {
@@ -59,18 +66,45 @@ function LetzteAnfrage({ caller }: Props) {
     );
   }
 
+  function handleCreateField(type: string) {
+    if (!record) return;
+    const id = record.dataFields[record.dataFields.length - 1].id + 1;
+    switch (type) {
+        case "text":
+            const newTextField = new TextField("neues Textfeld", id, false, "");
+            setRecord(
+              new DataRecord([...record.dataFields, newTextField]),
+            );
+            return <TextDataField textField={newTextField} isEditMode={isEditMode} onChange={handleFieldChange}/>
+        case "date":
+            const newDateField = new DateField("neues Datumsfeld", id, false, "");
+            setRecord(
+              new DataRecord([...record.dataFields, newDateField]),
+            );
+            return <DateDataField dateField={newDateField} isEditMode={isEditMode} onChange={handleFieldChange}/>;
+        case "integer":
+            const newIntegerField = new IntegerField("neues Integerfeld", id, false, 0);
+            setRecord(
+              new DataRecord([...record.dataFields, newIntegerField]),
+            );
+            return <IntegerDataField integerField={newIntegerField} isEditMode={isEditMode} onChange={handleFieldChange}/>;
+        case "toggle":
+            const newToggleField = new ToggleField("neues Togglefeld", id, false, false);
+            setRecord(
+              new DataRecord([...record.dataFields, newToggleField]),
+            );
+            return <ToggleDataField toggleField={newToggleField} isEditMode={isEditMode} onChange={handleFieldChange}/>;
+        default:
+            return null;
+    }
+  }
+
   return (
     <div>
       <h1>Hallo ich bin eine Anfrage</h1>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={isEditMode}
-            onChange={(e) => setIsEditMode(e.target.checked)}
-          />
-        }
-        label={"Bearbeitungsmodus"}
-      />
+      <Fab color="primary" aria-label="edit" size="small" style={{ float: "right" }} onClick={() => setIsEditMode(!isEditMode)}>
+        <EditIcon/>
+      </Fab>
       <br />
       {record?.dataFields.map((field) => (
         <div key={field.id}>
@@ -82,6 +116,8 @@ function LetzteAnfrage({ caller }: Props) {
           <br />
         </div>
       ))}
+      <AddField caller={caller} handleCreateField={handleCreateField} isEditMode={!isEditMode} />
+      <br />
       <Button variant="contained" onClick={Save}>
         Speichern
       </Button>
