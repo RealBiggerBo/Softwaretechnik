@@ -1,5 +1,15 @@
 export interface IApiCaller {
-  GetUsers(): Promise<{ success: boolean; errorMsg: string; json: any }>;
+  GetUsers(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: {
+      id: number;
+      username: string;
+      is_active: boolean;
+      is_staff: boolean;
+      date_joined: string;
+    }[];
+  }>;
 
   GetExportUrl(
     timeStart: string,
@@ -127,9 +137,31 @@ export class MockApiCaller implements IApiCaller {
     return true; // Mock: Session ist immer aktiv
   }
 
-  async GetUsers(): Promise<{ success: boolean; errorMsg: string; json: any }> {
+  async GetUsers(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: {
+      id: number;
+      username: string;
+      is_active: boolean;
+      is_staff: boolean;
+      date_joined: string;
+    }[];
+  }> {
     //check current user rights -> done in backend
-    return { success: true, errorMsg: "", json: this.users };
+    return {
+      success: true,
+      errorMsg: "",
+      json: [
+        {
+          id: 1,
+          username: "superuse",
+          is_active: true,
+          is_staff: true,
+          date_joined: "2026-01-02T17:21:19.189201Z",
+        },
+      ],
+    };
   }
 
   async GetStatisticsPresets(): Promise<string[]> {

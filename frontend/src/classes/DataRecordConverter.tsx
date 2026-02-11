@@ -1,3 +1,4 @@
+import NumberField from "../components/NumberField";
 import {
   DataField,
   DateField,
@@ -9,6 +10,27 @@ import {
 import { DataRecord } from "./DataRecord";
 
 export class DataRecordConverter {
+  public static ConvertUsersToDataRecord(
+    rawUsers: {
+      id: number;
+      username: string;
+      is_active: boolean;
+      is_staff: boolean;
+      date_joined: string;
+    }[],
+  ): DataRecord[] {
+    return rawUsers.map(
+      (user) =>
+        new DataRecord([
+          new IntegerField("id", 0, true, user.id),
+          new TextField("Benutzername", 1, true, user.username),
+          new ToggleField("aktiv", 2, true, user.is_active),
+          new ToggleField("ist Mitarbeiter", 3, true, user.is_staff),
+          new TextField("Beitrittsdatum", 4, true, user.date_joined),
+        ]),
+    );
+  }
+
   public static ConvertFormatToDataRecord(raw: unknown) {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 

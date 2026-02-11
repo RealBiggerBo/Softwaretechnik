@@ -74,9 +74,28 @@ export class ApiCaller implements IApiCaller {
   async GetUsers(): Promise<{
     success: boolean;
     errorMsg: string;
-    json: any;
+    json: {
+      id: number;
+      username: string;
+      is_active: boolean;
+      is_staff: boolean;
+      date_joined: string;
+    }[];
   }> {
-    throw new Error("Method not implemented");
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/auth/admin/users/`,
+      "GET",
+      true,
+      undefined,
+      "Anfrage fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
   }
   async GetExportUrl(
     timeStart: string,
