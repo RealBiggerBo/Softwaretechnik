@@ -19,8 +19,13 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Alle API's von Accounts (z.B. api/auth/me/)
     path('api/auth/', include('api.accounts.api_urls')),
+
+    # Alle API's von Database
     path('api/data/', include('api.database.urls')),
+
+    # Alle API's von Export
     path('api/export/', include('api.export.urls')),
 
     # Zum testen, für das Helloworld und ob das CI funktioniert.
