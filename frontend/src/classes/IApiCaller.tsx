@@ -1,6 +1,5 @@
-
 export interface IApiCaller {
-  GetUsers(): Promise<string[]>;
+  GetUsers(): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   GetExportUrl(
     timeStart: string,
@@ -22,6 +21,16 @@ export interface IApiCaller {
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
+  GetCurrentUserRights(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: {
+      id: number;
+      username: string;
+      roles: ("base_user" | "extended_user" | "admin_user")[];
+    };
+  }>;
+
   PingSession(): Promise<boolean>;
 
   Logout(): void;
@@ -35,7 +44,7 @@ export interface IApiCaller {
   TryCreateCase(newCase: any): Promise<{ success: boolean; errorMsg: string }>;
 
   TryCreateAnfrage(
-    newAnfrage: any
+    newAnfrage: any,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TrySearchFall(
@@ -46,15 +55,23 @@ export interface IApiCaller {
     anfrageToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TrySearchAnfrageByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}>;
+  TrySearchAnfrageByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
-  TrySearchFallByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}>;
+  TrySearchFallByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
-  TryUpdateFall(fallToUpdate: any): Promise<{ success: boolean; errorMsg: string }>;
+  TryUpdateFall(
+    fallToUpdate: any,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TryUpdateAnfrage(anfrageToUpdate: any): Promise<{ success: boolean; errorMsg: string }>;
+  TryUpdateAnfrage(
+    anfrageToUpdate: any,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 
-  GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any}>;
+  GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
@@ -88,17 +105,31 @@ export class MockApiCaller implements IApiCaller {
       return { success: false, errorMsg: "Login failed" };
     }
   }
+  async GetCurrentUserRights(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: {
+      id: number;
+      username: string;
+      roles: ("base_user" | "extended_user" | "admin_user")[];
+    };
+  }> {
+    return {
+      success: true,
+      errorMsg: "",
+      json: { id: 1, username: "superuse", roles: ["admin_user"] },
+    };
+  }
   private users: string[] = ["Alf", "Horst", "James"];
   private storedPassword: string = "secret123";
 
-async PingSession(): Promise<boolean> {
-  return true; // Mock: Session ist immer aktiv
-}
+  async PingSession(): Promise<boolean> {
+    return true; // Mock: Session ist immer aktiv
+  }
 
-
-  async GetUsers(): Promise<string[]> {
+  async GetUsers(): Promise<{ success: boolean; errorMsg: string; json: any }> {
     //check current user rights -> done in backend
-    return this.users;
+    return { success: true, errorMsg: "", json: this.users };
   }
 
   async GetStatisticsPresets(): Promise<string[]> {
@@ -189,29 +220,49 @@ async PingSession(): Promise<boolean> {
     return { success: false, errorMsg: "Not implemented in mock!" };
   }
 
-  async GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any}> {
-    return { success: false, errorMsg: "Not implemented in mock!", json: ""};
-  }
-
-  async GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any }> {
+  async GetAnfrageJson(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
     return { success: false, errorMsg: "Not implemented in mock!", json: "" };
   }
 
-  async TrySearchAnfrageByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}> {
+  async GetFallJson(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: "" };
+  }
+
+  async TrySearchAnfrageByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
     void id;
-    return { success: false, errorMsg: "Not implemented in mock!", json: null};
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
-  async TrySearchFallByID(id: number): Promise<{ success: boolean; errorMsg: string, json: any}> {
+  async TrySearchFallByID(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
     void id;
-    return { success: false, errorMsg: "Not implemented in mock!", json: null};
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
-  async GetLastAnfrage(): Promise<{ success: boolean; errorMsg: string; json: any}> {
-    return { success: false, errorMsg: "Not implemented in mock!", json: null};
+  async GetLastAnfrage(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
-  async GetLastFall(): Promise<{ success: boolean; errorMsg: string; json: any}> {
-    return { success: false, errorMsg: "Not implemented in mock!", json: null};
+  async GetLastFall(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 }

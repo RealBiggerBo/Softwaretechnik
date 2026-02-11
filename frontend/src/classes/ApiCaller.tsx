@@ -47,9 +47,36 @@ export class ApiCaller implements IApiCaller {
         }),
     );
   }
-  async GetUsers(): Promise<string[]> {
-    // TODO: Implement actual API call
-    throw new Error("Method not implemented.");
+  async GetCurrentUserRights(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: {
+      id: number;
+      username: string;
+      roles: ("base_user" | "extended_user" | "admin_user")[];
+    };
+  }> {
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/auth/me/`,
+      "GET",
+      true,
+      undefined,
+      "Anfrage fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
+  }
+  async GetUsers(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: any;
+  }> {
+    throw new Error("Method not implemented");
   }
   async GetExportUrl(
     timeStart: string,
@@ -195,7 +222,8 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-    async PingSession(): Promise<boolean> {
+  async PingSession(): Promise<boolean> {
+    //TODO: use 'SendApiCall' instead of 'request'
     const response = await this.request("/api/auth/ping/", {
       method: "GET",
       credentials: "include",
@@ -238,7 +266,6 @@ export class ApiCaller implements IApiCaller {
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
-
 
   async GetAnfrageJson(): Promise<{
     success: boolean;
