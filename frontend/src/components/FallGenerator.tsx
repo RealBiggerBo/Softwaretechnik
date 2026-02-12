@@ -225,11 +225,6 @@ function FallGenerator({ caller }: Props) {
         handleCreateField={handleCreateField}
         isEditMode={!isEditMode}
       />
-      <AddField
-        caller={caller}
-        handleCreateField={handleCreateField}
-        isEditMode={!isEditMode}
-      />
       <br />
       <Button variant="contained" onClick={handleSave}>
         Speichern
