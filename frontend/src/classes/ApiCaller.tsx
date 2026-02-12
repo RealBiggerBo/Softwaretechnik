@@ -135,7 +135,7 @@ export class ApiCaller implements IApiCaller {
     caseToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/save/fall",
+      "/api/data/data/fall",
       "POST",
       true,
       JSON.stringify(caseToCreate),
@@ -147,7 +147,7 @@ export class ApiCaller implements IApiCaller {
     anfrageToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/save/anfrage",
+      "/api/data/data/anfrage",
       "POST",
       true,
       JSON.stringify(anfrageToCreate),
