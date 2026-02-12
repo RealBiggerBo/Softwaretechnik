@@ -13,50 +13,34 @@ function DataviewPage({ caller }: Props) {
   const [searchParams] = useSearchParams();
   const type = searchParams.get("type");
 
-  if (type === "neue-anfrage") {
-    return(
-    <div>
-      <AnfragenGenerator caller={caller}/>
-    </div>
-    );
-  }
-
-  if (type === "neuer-fall") {
-    return(
-    <div>
-      <FallGenerator caller={caller}/>
-    </div>
-    );
-  }
-
-  if (type === "letzte-anfrage") {
-    return(
-    <div>
-      <LetzteAnfrage caller={caller}/>
-    </div>
-    )
-  }
-
-  if (type === "letzter-fall") {
-    return(
-    <div>
-      <LetzterFall caller={caller}/>
-    </div>
-    )
-  }
-
-  if (type == "anfrage"){
-    return(
+  if (type === "neue-anfrage" || type === "anfrage") {
+    return (
       <div>
-        <AnfragenGenerator caller={caller}/>
+        <AnfragenGenerator caller={caller} />
       </div>
     );
   }
 
-  if (type == "fall"){
-    return(
+  if (type === "neuer-fall" || type === "fall") {
+    return (
       <div>
-        <FallGenerator caller={caller}/>
+        <FallGenerator caller={caller} />
+      </div>
+    );
+  }
+
+  if (type === "letzte-anfrage") {
+    return (
+      <div>
+        <LetzteAnfrage caller={caller} />
+      </div>
+    );
+  }
+
+  if (type === "letzter-fall") {
+    return (
+      <div>
+        <LetzterFall caller={caller} />
       </div>
     );
   }
