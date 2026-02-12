@@ -44,13 +44,49 @@ export class DataRecordConverter {
     return dataRecord;
   }
 
-  public static ConvertDataRecordToFormat(
+  public static ConvertDataRecordToFormat3(
     dataRecord: DataRecord,
   ): Record<string, any> {
     const obj: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
       this.GetValue(obj[field.name]);
     });
+    return obj;
+  }
+
+  public static ConvertDataRecordToFormat2(
+    dataRecord: DataRecord,
+  ): Record<string, any> {
+    const obj: Record<string, any> = { structure: {} };
+
+    dataRecord.dataFields.forEach((field) => {
+      const fieldObj: any = {
+        id: field.id,
+        type: field.type,
+        required: field.required,
+      };
+
+      if (field instanceof TextField) {
+        fieldObj.maxLength = field.maxLength;
+      }
+
+      if (field instanceof IntegerField) {
+        fieldObj.value = field.value;
+        fieldObj.minValue = field.minValue;
+        fieldObj.maxValue = field.maxValue;
+      }
+
+      if (field instanceof EnumField) {
+        fieldObj.possibleValues = field.possibleValues;
+      }
+
+      if (field instanceof DateField) {
+        fieldObj.date = field.date;
+      }
+
+      obj.structure[field.name] = fieldObj;
+    });
+
     return obj;
   }
 
