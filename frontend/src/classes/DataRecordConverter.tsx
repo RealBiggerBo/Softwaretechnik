@@ -89,22 +89,22 @@ export class DataRecordConverter {
         required: field.required,
       };
 
-      if (field instanceof TextField) {
-        fieldObj.maxLength = field.maxLength;
-      }
+      switch (field.type) {
+        case "text":
+          fieldObj.maxLength = field.maxLength;
+          break;
 
-      if (field instanceof IntegerField) {
-        fieldObj.value = field.value;
-        fieldObj.minValue = field.minValue;
-        fieldObj.maxValue = field.maxValue;
-      }
+        case "integer":
+          fieldObj.minValue = field.minValue;
+          fieldObj.maxValue = field.maxValue;
+          break;
 
-      if (field instanceof EnumField) {
-        fieldObj.possibleValues = field.possibleValues;
-      }
+        case "enum":
+          fieldObj.possibleValues = field.possibleValues;
+          break;
 
-      if (field instanceof DateField) {
-        fieldObj.date = field.date;
+        default:
+          break;
       }
 
       obj.structure[field.name] = fieldObj;
