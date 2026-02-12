@@ -46,7 +46,7 @@ function FallGenerator({ caller }: Props) {
       if (!isNaN(urlid)) {
         const res2 = await caller.TrySearchFallByID(urlid);
 
-        if  (!res2.success)  {
+        if (!res2.success) {
           return;
         }
 
@@ -200,14 +200,6 @@ function FallGenerator({ caller }: Props) {
   return (
     <div>
       <h1>Hallo ich bin ein Fall</h1>
-      <Fab
-        color="primary"
-        aria-label="edit"
-        size="small"
-        style={{ float: "right" }}
-        onClick={() => setIsEditMode(!isEditMode)}
-      >
-        <EditIcon />
       <Fab
         color="primary"
         aria-label="edit"
