@@ -159,7 +159,7 @@ export class ApiCaller implements IApiCaller {
     caseToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/fall/search",
+      "/api/data/search/fall",
       "POST",
       true,
       JSON.stringify(caseToSearch),
@@ -171,7 +171,7 @@ export class ApiCaller implements IApiCaller {
     anfrageToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/anfrage/search",
+      "/api/data/search/anfrage",
       "POST",
       true,
       JSON.stringify(anfrageToSearch),
@@ -185,7 +185,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      `/api/data/anfrage/search?id=${id}`,
+      `/api/data/search/anfrage?id=${id}`,
       "GET",
       true,
       undefined,
@@ -204,7 +204,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      `/api/data/fall/search?id=${id}`,
+      `/api/data/search/fall?id=${id}`,
       "GET",
       true,
       undefined,
@@ -222,7 +222,7 @@ export class ApiCaller implements IApiCaller {
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      `/api/data/update/fall?id=${id}`,
+      `/api/data/data/fall?id=${id}`,
       "PUT",
       true,
       JSON.stringify(fallToUpdate),
@@ -235,7 +235,7 @@ export class ApiCaller implements IApiCaller {
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      `/api/data/update/anfrage?id=${id}`,
+      `/api/data/data/anfrage?id=${id}`,
       "PUT",
       true,
       JSON.stringify(anfrageToUpdate),
