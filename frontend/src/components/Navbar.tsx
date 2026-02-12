@@ -1,9 +1,12 @@
-import { AppBar, Toolbar, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
 import SessionTimer from "./SessionTimer";
 
-
+import HomeIcon from "@mui/icons-material/Home";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 interface Props {
   caller: IApiCaller;
@@ -17,54 +20,66 @@ function Navbar({ caller }: Props) {
   return (
     <AppBar position="static">
       <Toolbar>
-        {/* Linke Seite */}
-        <Button color="inherit" onClick={() => navigate("/help")}>
-          Hilfe
-        </Button>
 
-        {/* Abstand zwischen links und rechts */}
-        <Box sx={{ flexGrow: 1 }} />
+        {/* Linke Seite: */}
 
-        {/* Rechte Seite */}
-        {!isLoginPage && (
-          <>
-          {/* Timer sichtbar, solange man eingeloggt ist */}
-          <SessionTimer
-            timeoutSeconds={600} // 10 Minuten
-            onTimeout={() => {
-            caller.Logout();
-            navigate("/login");
-            }}
-          />
+        {/* Hilfe Button */}
+        <IconButton
+          color="inherit"
+          onClick={() => navigate("/help")}
+        >
+          <HelpOutlineIcon />
+        </IconButton>
 
-
-        <Button
+        {/* Logout */}
+        <IconButton
           color="inherit"
           onClick={() => {
             caller.Logout();
             navigate("/login");
           }}
         >
-          Logout
-        </Button>
-        </>
-        )}
-        
-        <Button 
-          color="inherit" 
-          disabled={isLoginPage} 
-          onClick={() => navigate("/main")}
-          >
-          Home
-        </Button>
+          <LogoutIcon />
+        </IconButton>
 
-        <Button 
-          color="inherit" 
-          disabled={isLoginPage} 
+        {/* Abstand */}
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* Rechte Seite */}
+        {!isLoginPage && (
+          <>
+            {/* Session Timer */}
+            <Box sx={{ mr: 2 }}>
+              <SessionTimer
+                timeoutSeconds={600}
+                onTimeout={() => {
+                  caller.Logout();
+                  navigate("/login");
+                }}
+              />
+            </Box>
+
+        {/* Home Button */}
+        <IconButton
+          color="inherit"
+          disabled={isLoginPage}
+          onClick={() => navigate("/main")}
+        >
+          <HomeIcon />
+        </IconButton>
+
+        {/* Settings Button */}
+        <IconButton
+          color="inherit"
+          disabled={isLoginPage}
           onClick={() => navigate("/settings")}
-          >
-          Settings
-        </Button>
+        >
+          <SettingsIcon />
+        </IconButton>
+
+          </>
+        )}
+
       </Toolbar>
     </AppBar>
   );
