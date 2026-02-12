@@ -51,7 +51,7 @@ export interface IApiCaller {
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TryCreateCase(newCase: any): Promise<{ success: boolean; errorMsg: string }>;
+  TryCreateFall(newCase: any): Promise<{ success: boolean; errorMsg: string }>;
 
   TryCreateAnfrage(
     newAnfrage: any,
@@ -75,10 +75,12 @@ export interface IApiCaller {
 
   TryUpdateFall(
     fallToUpdate: any,
+    id: number,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TryUpdateAnfrage(
     anfrageToUpdate: any,
+    id: number,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any }>;
@@ -88,6 +90,14 @@ export interface IApiCaller {
   GetLastAnfrage(): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   GetLastFall(): Promise<{ success: boolean; errorMsg: string; json: any }>;
+
+  TryCreateNewDataRecordFall(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
+  TryCreateNewDataRecordAnfrage(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 }
 
 export class MockApiCaller implements IApiCaller {
@@ -228,7 +238,7 @@ export class MockApiCaller implements IApiCaller {
       errorMsg: "",
     };
   }
-  async TryCreateCase(): Promise<{ success: boolean; errorMsg: string }> {
+  async TryCreateFall(): Promise<{ success: boolean; errorMsg: string }> {
     return { success: false, errorMsg: "Not implemented in mock!" };
   }
 
@@ -296,5 +306,17 @@ export class MockApiCaller implements IApiCaller {
     json: any;
   }> {
     return { success: false, errorMsg: "Not implemented in mock!", json: null };
+  }
+
+  async TryCreateNewDataRecordFall(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "Not implemented in mock!" };
+  }
+
+  async TryCreateNewDataRecordAnfrage(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "Not implemented in mock!" };
   }
 }

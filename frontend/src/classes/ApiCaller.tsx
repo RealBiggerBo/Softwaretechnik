@@ -131,7 +131,7 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-  async TryCreateCase(
+  async TryCreateFall(
     caseToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
@@ -219,9 +219,10 @@ export class ApiCaller implements IApiCaller {
 
   async TryUpdateFall(
     fallToUpdate: any,
+    id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/update/fall",
+      `/api/data/update/fall?id=${id}`,
       "PUT",
       true,
       JSON.stringify(fallToUpdate),
@@ -231,9 +232,10 @@ export class ApiCaller implements IApiCaller {
 
   async TryUpdateAnfrage(
     anfrageToUpdate: any,
+    id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/update/anfrage",
+      `/api/data/update/anfrage?id=${id}`,
       "PUT",
       true,
       JSON.stringify(anfrageToUpdate),
@@ -342,5 +344,29 @@ export class ApiCaller implements IApiCaller {
     json: any;
   }> {
     return { success: false, errorMsg: "Not implemented", json: null };
+  }
+
+  async TryCreateNewDataRecordFall(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/data_record/fall",
+      "POST",
+      true,
+      JSON.stringify(updatedRecord),
+      "Speicherung der Änderungen Fehlgeschlagen!",
+    );
+  }
+
+  async TryCreateNewDataRecordAnfrage(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/data_record/anfrage",
+      "POST",
+      true,
+      JSON.stringify(updatedRecord),
+      "Speicherung der Änderungen Fehlgeschlagen!",
+    );
   }
 }
