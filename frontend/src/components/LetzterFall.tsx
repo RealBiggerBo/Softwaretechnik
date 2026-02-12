@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { FieldRenderer } from "./Fieldrenderer";
-import { Button, Fab, Snackbar, Alert } from "@mui/material";
-import { DataRecord } from "../classes/DataRecord";
+import { Button, Fab } from "@mui/material";
+import { type DataRecord } from "../classes/DataRecord";
 import {
-  DateField,
-  IntegerField,
-  TextField,
-  ToggleField,
   type DataField,
+  type DateField,
+  type IntegerField,
+  type TextField,
+  type ToggleField,
 } from "../classes/DataField";
 import EditIcon from "@mui/icons-material/Edit";
 import AddField from "./AddField";
@@ -34,6 +34,7 @@ function LetzterFall({ caller }: Props) {
   useEffect(() => {
     async function loadData() {
       const res = await caller.GetFallJson();
+      const res = await caller.GetFallJson();
 
       if (!res.success) {
         return;
@@ -47,7 +48,14 @@ function LetzterFall({ caller }: Props) {
       if (!res2.success) {
         return;
       }
+      if (!res2.success) {
+        return;
+      }
 
+      datarecord = DataRecordConverter.MergeDataRecordWithData(
+        datarecord,
+        res2.json,
+      );
       datarecord = DataRecordConverter.MergeDataRecordWithData(
         datarecord,
         res2.json,
@@ -84,13 +92,11 @@ function LetzterFall({ caller }: Props) {
 
   function handleFieldChange(updatedField: DataField) {
     if (!record) return;
-    setRecord(
-      new DataRecord(
-        record.dataFields.map((f) =>
-          f.id === updatedField.id ? updatedField : f,
-        ),
+    setRecord({
+      dataFields: record.dataFields.map((f) =>
+        f.id === updatedField.id ? updatedField : f,
       ),
-    );
+    });
   }
 
   function handleCreateField(type: string) {
@@ -98,8 +104,15 @@ function LetzterFall({ caller }: Props) {
     const id = record.dataFields[record.dataFields.length - 1].id + 1;
     switch (type) {
       case "text":
-        const newTextField = new TextField("neues Textfeld", id, false, "");
-        setRecord(new DataRecord([...record.dataFields, newTextField]));
+        const newTextField: TextField = {
+          type: "text",
+          name: "neues Textfeld",
+          id: id,
+          required: false,
+          text: "",
+          maxLength: -1,
+        };
+        setRecord({ dataFields: [...record.dataFields, newTextField] });
         return (
           <TextDataField
             textField={newTextField}
@@ -108,9 +121,14 @@ function LetzterFall({ caller }: Props) {
           />
         );
       case "date":
-        const date = new Date().toISOString().split("T")[0];
-        const newDateField = new DateField("neues Datumsfeld", id, false, date);
-        setRecord(new DataRecord([...record.dataFields, newDateField]));
+        const newDateField: DateField = {
+          type: "date",
+          name: "neues Datumsfeld",
+          id: id,
+          required: false,
+          date: "",
+        };
+        setRecord({ dataFields: [...record.dataFields, newDateField] });
         return (
           <DateDataField
             dateField={newDateField}
@@ -119,13 +137,16 @@ function LetzterFall({ caller }: Props) {
           />
         );
       case "integer":
-        const newIntegerField = new IntegerField(
-          "neues Integerfeld",
-          id,
-          false,
-          0,
-        );
-        setRecord(new DataRecord([...record.dataFields, newIntegerField]));
+        const newIntegerField: IntegerField = {
+          type: "integer",
+          name: "neues Integerfeld",
+          id: id,
+          required: false,
+          value: 0,
+          minValue: -1,
+          maxValue: 0,
+        };
+        setRecord({ dataFields: [...record.dataFields, newIntegerField] });
         return (
           <IntegerDataField
             integerField={newIntegerField}
@@ -134,13 +155,14 @@ function LetzterFall({ caller }: Props) {
           />
         );
       case "toggle":
-        const newToggleField = new ToggleField(
-          "neues Togglefeld",
-          id,
-          false,
-          false,
-        );
-        setRecord(new DataRecord([...record.dataFields, newToggleField]));
+        const newToggleField: ToggleField = {
+          type: "boolean",
+          name: "neues Togglefeld",
+          id: id,
+          required: false,
+          isSelected: false,
+        };
+        setRecord({ dataFields: [...record.dataFields, newToggleField] });
         return (
           <ToggleDataField
             toggleField={newToggleField}
@@ -195,6 +217,11 @@ function LetzterFall({ caller }: Props) {
           <br />
         </div>
       ))}
+      <AddField
+        caller={caller}
+        handleCreateField={handleCreateField}
+        isEditMode={!isEditMode}
+      />
       <AddField
         caller={caller}
         handleCreateField={handleCreateField}

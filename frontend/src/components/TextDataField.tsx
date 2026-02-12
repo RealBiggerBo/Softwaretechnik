@@ -1,4 +1,4 @@
-import { TextField } from "../classes/DataField";
+import { type TextField } from "../classes/DataField";
 import { Stack, TextField as Tf } from "@mui/material";
 
 interface Props {
@@ -15,14 +15,7 @@ function TextDataField({ textField, isEditMode, onChange }: Props) {
         <Tf
           type="text"
           onChange={(e) => {
-            const updatedField = new TextField(
-              e.target.value,
-              textField.id,
-              textField.required,
-              textField.text,
-              textField.maxLength
-            )
-            onChange(updatedField);
+            onChange({ ...textField, name: e.target.value });
           }}
           defaultValue={textField.name}
         ></Tf>
@@ -33,14 +26,7 @@ function TextDataField({ textField, isEditMode, onChange }: Props) {
           type="text"
           disabled={isEditMode}
           onChange={(e) => {
-            const updatedField = new TextField(
-              textField.name,
-              textField.id,
-              textField.required,
-              e.target.value,
-              textField.maxLength
-            )
-            onChange(updatedField);
+            onChange({ ...textField, text: e.target.value });
           }}
           placeholder={textField.name}
           defaultValue={textField.text}

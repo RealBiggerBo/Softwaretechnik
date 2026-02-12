@@ -2,15 +2,9 @@ import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { FieldRenderer } from "./Fieldrenderer";
-import { Button, Fab, Snackbar, Alert } from "@mui/material";
-import { DataRecord } from "../classes/DataRecord";
-import {
-  DateField,
-  IntegerField,
-  TextField,
-  ToggleField,
-  type DataField,
-} from "../classes/DataField";
+import { Button, Fab } from "@mui/material";
+import { type DataRecord } from "../classes/DataRecord";
+import { type DataField } from "../classes/DataField";
 import { useSearchParams } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import AddField from "./AddField";
@@ -90,13 +84,11 @@ function AnfragenGenerator({ caller }: Props) {
 
   function handleFieldChange(updatedField: DataField) {
     if (!record) return;
-    setRecord(
-      new DataRecord(
-        record.dataFields.map((f) =>
-          f.id === updatedField.id ? updatedField : f,
-        ),
+    setRecord({
+      dataFields: record.dataFields.map((f) =>
+        f.id === updatedField.id ? updatedField : f,
       ),
-    );
+    });
   }
 
   function handleCreateField(type: string) {
@@ -104,8 +96,16 @@ function AnfragenGenerator({ caller }: Props) {
     const id = record.dataFields[record.dataFields.length - 1].id + 1;
     switch (type) {
       case "text":
-        const newTextField = new TextField("neues Textfeld", id, false, "");
-        setRecord(new DataRecord([...record.dataFields, newTextField]));
+        const newTextField: DataField = {
+          type: "text",
+          name: "neues Textfeld",
+          id: id,
+          required: false,
+          text: "",
+          maxLength: -1,
+        }; //new TextField("neues Textfeld", id, false, "");
+        //setRecord(new DataRecord([...record.dataFields, newTextField]));
+        setRecord({ dataFields: [...record.dataFields, newTextField] });
         return (
           <TextDataField
             textField={newTextField}
@@ -114,9 +114,15 @@ function AnfragenGenerator({ caller }: Props) {
           />
         );
       case "date":
-        const date = new Date().toISOString().split("T")[0];
-        const newDateField = new DateField("neues Datumsfeld", id, false, date);
-        setRecord(new DataRecord([...record.dataFields, newDateField]));
+        const newDateField: DataField = {
+          type: "date",
+          name: "neues Datumsfeld",
+          id: id,
+          required: false,
+          date: "",
+        }; //new DateField("neues Datumsfeld", id, false, "");
+        //setRecord(new DataRecord([...record.dataFields, newDateField]));
+        setRecord({ dataFields: [...record.dataFields, newDateField] });
         return (
           <DateDataField
             dateField={newDateField}
@@ -125,13 +131,17 @@ function AnfragenGenerator({ caller }: Props) {
           />
         );
       case "integer":
-        const newIntegerField = new IntegerField(
-          "neues Integerfeld",
-          id,
-          false,
-          0,
-        );
-        setRecord(new DataRecord([...record.dataFields, newIntegerField]));
+        const newIntegerField: DataField = {
+          type: "integer",
+          name: "neues Zahlenfeld",
+          id: id,
+          required: false,
+          value: 0,
+          minValue: 0,
+          maxValue: 1,
+        }; //new IntegerField("neues Integerfeld", id, false, 0);
+        //setRecord(new DataRecord([...record.dataFields, newIntegerField]));
+        setRecord({ dataFields: [...record.dataFields, newIntegerField] });
         return (
           <IntegerDataField
             integerField={newIntegerField}
@@ -140,13 +150,15 @@ function AnfragenGenerator({ caller }: Props) {
           />
         );
       case "toggle":
-        const newToggleField = new ToggleField(
-          "neues Togglefeld",
-          id,
-          false,
-          false,
-        );
-        setRecord(new DataRecord([...record.dataFields, newToggleField]));
+        const newToggleField: DataField = {
+          type: "boolean",
+          name: "neues Togglefeld",
+          id: id,
+          required: false,
+          isSelected: false,
+        }; // new ToggleField("neues Togglefeld",id,false,false);
+        //setRecord(new DataRecord([...record.dataFields, newToggleField]));
+        setRecord({ dataFields: [...record.dataFields, newToggleField] });
         return (
           <ToggleDataField
             toggleField={newToggleField}

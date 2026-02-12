@@ -1,4 +1,3 @@
-import { TextField, EnumField, ToggleField, DateField } from "./DataField";
 import { DataRecord } from "./DataRecord";
 import type { AnfrageArt, Ort, SenderRolle } from "./unions";
 
@@ -50,65 +49,7 @@ export class Anfrage {
   }
 
   static GetNewJonsonFormat(): string {
-    const sende_art: TextField = new TextField(
-      "Sendeart",
-      0,
-      true,
-      "Bla bla bla",
-      200,
-    );
-    const sende_datum: DateField = new DateField(
-      "Sendedatum",
-      1,
-      true,
-      "2026-01-07",
-    );
-    const sende_ort: EnumField = new EnumField("Sendeort", 2, true, "Ort");
-    const sender_rolle: EnumField = new EnumField(
-      "Senderrolle",
-      3,
-      true,
-      "SenderRolle",
-    );
-    const im_auftrag: ToggleField = new ToggleField(
-      "Im Auftrag",
-      4,
-      true,
-      false,
-    );
-    const ist_queer: ToggleField = new ToggleField("Ist queer", 5, true, false);
-    const anfrage_art: EnumField = new EnumField(
-      "Anfrageart",
-      6,
-      true,
-      "AnfrageArt",
-    );
-    const mit_termin: ToggleField = new ToggleField(
-      "Mit Termin",
-      7,
-      true,
-      false,
-    );
-    const termin_ort: EnumField = new EnumField("Terminort", 8, true, "Ort");
-    const termin_datum: DateField = new DateField(
-      "Termindatum",
-      9,
-      true,
-      "2026-03-01",
-    );
-
-    const anfrage: DataRecord = new DataRecord(0, [
-      sende_art,
-      sende_datum,
-      sende_ort,
-      sender_rolle,
-      im_auftrag,
-      ist_queer,
-      anfrage_art,
-      mit_termin,
-      termin_ort,
-      termin_datum,
-    ]);
+    const anfrage: DataRecord = new DataRecord([]);
 
     return JSON.stringify(anfrage);
   }
