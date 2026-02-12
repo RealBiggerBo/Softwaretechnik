@@ -204,14 +204,6 @@ function LetzteAnfrage({ caller }: Props) {
         onClick={() => setIsEditMode(!isEditMode)}
       >
         <EditIcon />
-      <Fab
-        color="primary"
-        aria-label="edit"
-        size="small"
-        style={{ float: "right" }}
-        onClick={() => setIsEditMode(!isEditMode)}
-      >
-        <EditIcon />
       </Fab>
       <br />
       {record?.dataFields.map((field) => (
@@ -256,4 +248,3 @@ function LetzteAnfrage({ caller }: Props) {
   );
 }
 export default LetzteAnfrage;
-
