@@ -27,9 +27,7 @@ function FallGenerator({ caller }: Props) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [record, setRecord] = useState<DataRecord | null>(null);
   const [searchParams] = useSearchParams();
-  const [saveResult, setSaveResult] = useState<"success" | "error" | null>(
-    null,
-  );
+  const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [originalRecord, setOriginalRecord] = useState<DataRecord | null>(null);
 
   let urlid = parseInt(searchParams.get("id") ?? "", 10);
@@ -88,8 +86,12 @@ function FallGenerator({ caller }: Props) {
   }
 
   async function handleSave() {
-    const result = await Save();
-    setSaveResult(result ? "success" : "error");
+    try {
+      const result = await Save();
+      setSaveResult(result);
+    } catch (err) {
+      setSaveResult(false);
+    }
   }
 
   function handleFieldChange(updatedField: DataField) {
@@ -235,12 +237,10 @@ function FallGenerator({ caller }: Props) {
         onClose={() => setSaveResult(null)}
       >
         <Alert
-          severity={saveResult === "success" ? "success" : "error"}
+          severity={saveResult ? "success" : "error"}
           onClose={() => setSaveResult(null)}
         >
-          {saveResult === "success"
-            ? "Speichern erfolgreich!"
-            : "Speichern fehlgeschlagen!"}
+          {saveResult ? "Speichern erfolgreich!" : "Speichern fehlgeschlagen!"}
         </Alert>
       </Snackbar>
     </div>
