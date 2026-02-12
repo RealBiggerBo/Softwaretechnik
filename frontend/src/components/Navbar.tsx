@@ -21,25 +21,21 @@ function Navbar({ caller }: Props) {
     <AppBar position="static">
       <Toolbar>
 
-        {/* Linke Seite: */}
-
-        {/* Hilfe Button */}
+        {/* Linke Seite: Home + Settings */}
         <IconButton
           color="inherit"
-          onClick={() => navigate("/help")}
+          disabled={isLoginPage}
+          onClick={() => navigate("/main")}
         >
-          <HelpOutlineIcon />
+          <HomeIcon />
         </IconButton>
 
-        {/* Logout */}
         <IconButton
           color="inherit"
-          onClick={() => {
-            caller.Logout();
-            navigate("/login");
-          }}
+          disabled={isLoginPage}
+          onClick={() => navigate("/settings")}
         >
-          <LogoutIcon />
+          <SettingsIcon />
         </IconButton>
 
         {/* Abstand */}
@@ -59,24 +55,36 @@ function Navbar({ caller }: Props) {
               />
             </Box>
 
-        {/* Home Button */}
-        <IconButton
-          color="inherit"
-          disabled={isLoginPage}
-          onClick={() => navigate("/main")}
-        >
-          <HomeIcon />
-        </IconButton>
+            {/* Hilfe */}
+            <IconButton
+              color="inherit"
+              onClick={() => navigate("/help")}
+            >
+              <HelpOutlineIcon />
+            </IconButton>
 
-        {/* Settings Button */}
-        <IconButton
-          color="inherit"
-          disabled={isLoginPage}
-          onClick={() => navigate("/settings")}
-        >
-          <SettingsIcon />
-        </IconButton>
+            {/* Logout */}
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                caller.Logout();
+                navigate("/login");
+              }}
+            >
+              <LogoutIcon />
+            </IconButton>
+          </>
+        )}
 
+        {/* Wenn ausgeloggt: ausgegraute Icons anzeigen */}
+        {isLoginPage && (
+          <>
+            <IconButton color="inherit" disabled>
+              <HelpOutlineIcon />
+            </IconButton>
+            <IconButton color="inherit" disabled>
+              <LogoutIcon />
+            </IconButton>
           </>
         )}
 
