@@ -1,183 +1,219 @@
-export abstract class DataField {
-  readonly type: string = "";
-  name: string = "";
-  id: number = -1;
-  required: boolean = false;
+type BaseField = {
+  name: string;
+  id: number;
+  required: boolean;
+};
 
-  constructor(name: string, id: number, required: boolean = true) {
-    this.name = name;
-    this.id = id;
-    this.required = required;
-  }
+export type TextField = BaseField & {
+  type: "text";
+  text: string;
+  maxLength: number; // -1 = no bound
+};
 
-  // Display(): string {
-  //   return "";
-  // }
-  // IsValid(): boolean {
-  //   return true;
-  // }
-  SetValue(value: any){
-  }
-  GetValue(): any{
-    return null;
-  }
-}
+export type DateField = BaseField & {
+  type: "date";
+  date: string; // YYYY-MM-DD
+};
 
-export class TextField extends DataField {
-  readonly type: string = "text";
-  text: string = "";
-  maxLength: number = -1; //no length bound
+export type IntegerField = BaseField & {
+  type: "integer";
+  value: number;
+  minValue: number;
+  maxValue: number; // -1 = no upper bound (minValue > maxValue)
+};
 
-  constructor(
-    name: string,
-    id: number,
-    required: boolean = true,
-    text: string,
-    maxLength: number = -1,
-  ) {
-    super(name, id, required);
-    this.text = text;
-    this.maxLength = maxLength;
-  }
+export type EnumField = BaseField & {
+  type: "enum";
+  selectedValue: string;
+  possibleValues: string[];
+};
 
-  // override Display(): string {
-  //   return this.name + ": " + this.text;
-  // }
-  // override IsValid(): boolean {
-  //   return this.maxLength < 0 || this.text.length <= this.maxLength;
-  // }
-  override SetValue(value: any){
-    this.text = value;
-  }
-  override GetValue(): any{
-    return this.text;
-  }
-}
+export type ToggleField = BaseField & {
+  type: "boolean";
+  isSelected: boolean;
+};
 
-export class DateField extends DataField {
-  readonly type: string = "date";
-  date: string = ""; //YYYY-MM-DD
+export type DataField =
+  | TextField
+  | DateField
+  | IntegerField
+  | EnumField
+  | ToggleField;
 
-  constructor(
-    name: string,
-    id: number,
-    required: boolean = true,
-    date: string,
-  ) {
-    super(name, id, required);
-    this.date = date;
-  }
+// export abstract class DataField {
+//   readonly type: string = "";
+//   name: string = "";
+//   id: number = -1;
+//   required: boolean = false;
 
-  // override Display(): string {
-  //   return this.name + ": " + this.date;
-  // }
-  // override IsValid(): boolean {
-  //   const datePattern = /dddd-dd-dd/;
-  //   //TODO: check for valid date: eg. 2026-02-31 -> invalid
-  //   return datePattern.test(this.date);
-  // }
-  override SetValue(value: any){
-    this.date = value;
-  }
-  override GetValue(): any{
-    return this.date;
-  }
-}
+//   constructor(name: string, id: number, required: boolean = true) {
+//     this.name = name;
+//     this.id = id;
+//     this.required = required;
+//   }
 
-export class IntegerField extends DataField {
-  readonly type: string = "integer";
-  value: number = 0;
-  minValue: number = 0;
-  maxValue: number = -1; //no upper bound (due to minValue > maxValue)
+//   // SetValue(value: any){
+//   // }
+//   // GetValue(): any{
+//   //   return null;
+//   // }
+// }
 
-  constructor(
-    name: string,
-    id: number,
-    required: boolean = true,
-    value: number,
-    minValue: number = 0,
-    maxValue: number = -1,
-  ) {
-    super(name, id, required);
-    this.value = value;
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-  }
+// export class TextField extends DataField {
+//   readonly type: string = "text";
+//   text: string = "";
+//   maxLength: number = -1; //no length bound
 
-  // override Display(): string {
-  //   return this.name + ": " + this.value.toString();
-  // }
-  // override IsValid(): boolean {
-  //   return (
-  //     this.minValue > this.maxValue ||
-  //     (this.value >= this.minValue && this.value <= this.maxValue)
-  //   );
-  // }
-  override SetValue(value: any){
-    this.value = value;
-  }
-  override GetValue(): any{
-    return this.value;
-  }
-}
+//   constructor(
+//     name: string,
+//     id: number,
+//     required: boolean = true,
+//     text: string,
+//     maxLength: number = -1,
+//   ) {
+//     super(name, id, required);
+//     this.text = text;
+//     this.maxLength = maxLength;
+//   }
 
-export class EnumField extends DataField {
-  readonly type: string = "enum";
-  selectedValue: string = "";
-  possibleValues: string[] = [];
+//   // override Display(): string {
+//   //   return this.name + ": " + this.text;
+//   // }
+//   // override IsValid(): boolean {
+//   //   return this.maxLength < 0 || this.text.length <= this.maxLength;
+//   // }
+//   // override SetValue(value: any) {
+//   //   this.text = value;
+//   // }
+//   // override GetValue(): any {
+//   //   return this.text;
+//   // }
+// }
 
-  constructor(
-    name: string,
-    id: number,
-    required: boolean = true,
-    possibleValues: string[],
-  ) {
-    super(name, id, required);
-    this.possibleValues = possibleValues;
-  }
+// export class DateField extends DataField {
+//   readonly type: string = "date";
+//   date: string = ""; //YYYY-MM-DD
 
-  // GetPossibleValues(): string[] {
-  //   return this.possibleValues;
-  // }
-  // SetPossibleValues(newValues: string[]): void {
-  //   this.possibleValues = newValues;
-  // }
+//   constructor(
+//     name: string,
+//     id: number,
+//     required: boolean = true,
+//     date: string,
+//   ) {
+//     super(name, id, required);
+//     this.date = date;
+//   }
 
-  // override Display(): string {
-  //   return this.name + ": " + this.selectedValue;
-  // }
-  // override IsValid(): boolean {
-  //   return this.possibleValues.includes(this.selectedValue);
-  // }
-  override SetValue(value: any){
-    this.selectedValue = value;
-  }
-  override GetValue(): any{
-    return this.selectedValue;
-  }
-}
+//   // override Display(): string {
+//   //   return this.name + ": " + this.date;
+//   // }
+//   // override IsValid(): boolean {
+//   //   const datePattern = /dddd-dd-dd/;
+//   //   //TODO: check for valid date: eg. 2026-02-31 -> invalid
+//   //   return datePattern.test(this.date);
+//   // }
+//   // override SetValue(value: any) {
+//   //   this.date = value;
+//   // }
+//   // override GetValue(): any {
+//   //   return this.date;
+//   // }
+// }
 
-export class ToggleField extends DataField {
-  readonly type: string = "boolean";
-  isSelected: boolean = false;
+// export class IntegerField extends DataField {
+//   readonly type: string = "integer";
+//   value: number = 0;
+//   minValue: number = 0;
+//   maxValue: number = -1; //no upper bound (due to minValue > maxValue)
 
-  constructor(
-    name: string,
-    id: number,
-    required: boolean = true,
-    isSelected: boolean,
-  ) {
-    super(name, id, required);
-    this.isSelected = isSelected;
-  }
+//   constructor(
+//     name: string,
+//     id: number,
+//     required: boolean = true,
+//     value: number,
+//     minValue: number = 0,
+//     maxValue: number = -1,
+//   ) {
+//     super(name, id, required);
+//     this.value = value;
+//     this.minValue = minValue;
+//     this.maxValue = maxValue;
+//   }
 
-  // override Display(): string {
-  //   return this.name + ": " + this.isSelected;
-  // }
-  override SetValue(value: any){
-    this.isSelected = value;
-  }
-  override GetValue(): any{
-    return this.isSelected;
-  }
-}
+//   // override Display(): string {
+//   //   return this.name + ": " + this.value.toString();
+//   // }
+//   // override IsValid(): boolean {
+//   //   return (
+//   //     this.minValue > this.maxValue ||
+//   //     (this.value >= this.minValue && this.value <= this.maxValue)
+//   //   );
+//   // }
+//   // override SetValue(value: any) {
+//   //   this.value = value;
+//   // }
+//   // override GetValue(): any {
+//   //   return this.value;
+//   // }
+// }
+
+// export class EnumField extends DataField {
+//   readonly type: string = "enum";
+//   selectedValue: string = "";
+//   possibleValues: string[] = [];
+
+//   constructor(
+//     name: string,
+//     id: number,
+//     required: boolean = true,
+//     possibleValues: string[],
+//   ) {
+//     super(name, id, required);
+//     this.possibleValues = possibleValues;
+//   }
+
+//   // GetPossibleValues(): string[] {
+//   //   return this.possibleValues;
+//   // }
+//   // SetPossibleValues(newValues: string[]): void {
+//   //   this.possibleValues = newValues;
+//   // }
+
+//   // override Display(): string {
+//   //   return this.name + ": " + this.selectedValue;
+//   // }
+//   // override IsValid(): boolean {
+//   //   return this.possibleValues.includes(this.selectedValue);
+//   // }
+//   // override SetValue(value: any) {
+//   //   this.selectedValue = value;
+//   // }
+//   // override GetValue(): any {
+//   //   return this.selectedValue;
+//   // }
+// }
+
+// export class ToggleField extends DataField {
+//   readonly type: string = "boolean";
+//   isSelected: boolean = false;
+
+//   constructor(
+//     name: string,
+//     id: number,
+//     required: boolean = true,
+//     isSelected: boolean,
+//   ) {
+//     super(name, id, required);
+//     this.isSelected = isSelected;
+//   }
+
+//   // override Display(): string {
+//   //   return this.name + ": " + this.isSelected;
+//   // }
+//   // override SetValue(value: any) {
+//   //   this.isSelected = value;
+//   // }
+//   // override GetValue(): any {
+//   //   return this.isSelected;
+//   // }
+// }

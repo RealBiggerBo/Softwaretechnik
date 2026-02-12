@@ -1,7 +1,8 @@
 import { Button } from "@mui/material";
 import type { IApiCaller } from "../classes/IApiCaller";
 import ChangePasswordSettings from "../components/ChangePasswordSettings";
-import UserList from "../components/UserList";
+import DataRecordList from "../components/DataRecordList";
+import { DataRecordConverter } from "../classes/DataRecordConverter";
 
 interface Props {
   caller: IApiCaller;
@@ -15,7 +16,13 @@ function SettingsPage({ caller }: Props) {
       >
         Test
       </Button>
-      <UserList caller={caller}></UserList>
+      <DataRecordList
+        getData={async () =>
+          DataRecordConverter.ConvertUsersToDataRecord(
+            (await caller.GetUsers()).json,
+          )
+        }
+      ></DataRecordList>
       <ChangePasswordSettings caller={caller} />
     </>
   );

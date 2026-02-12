@@ -1,8 +1,7 @@
-import { DateField} from "../classes/DataField";
-import { Stack, TextField as Tf} from "@mui/material";
+import { type DateField } from "../classes/DataField";
+import { Stack, TextField as Tf } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-
 
 interface Props {
   dateField: DateField;
@@ -17,15 +16,16 @@ function DateDataField({ dateField, isEditMode, onChange }: Props) {
       {isEditMode && (
         <Tf
           type="text"
-          onChange={(e) => {
-            const updatedDateField = new DateField(
-              e.target.value,
-              dateField.id,
-              dateField.required,
-              dateField.date
-            );
-            onChange(updatedDateField);
-          }}
+          onChange={(e) => onChange({ ...dateField, name: e.target.value })}
+          // onChange={(e) => {
+          //   const updatedDateField = new DateField(
+          //     e.target.value,
+          //     dateField.id,
+          //     dateField.required,
+          //     dateField.date,
+          //   );
+          //   onChange(updatedDateField);
+          // }}
           defaultValue={dateField.name}
         ></Tf>
       )}
@@ -35,15 +35,21 @@ function DateDataField({ dateField, isEditMode, onChange }: Props) {
           label={dateField.name}
           value={dateField.date ? dayjs(dateField.date) : null}
           disabled={isEditMode}
-          onChange={(newValue) => {
-            const updatedDateField = new DateField(
-              dateField.name,
-              dateField.id,
-              dateField.required,
-              newValue ? newValue.format("YYYY-MM-DD"): ""
-            );
-            onChange(updatedDateField);
-          }}
+          onChange={(newValue) =>
+            onChange({
+              ...dateField,
+              date: newValue ? newValue.format("YYYY-MM-DD") : "",
+            })
+          }
+          // onChange={(newValue) => {
+          //   const updatedDateField = new DateField(
+          //     dateField.name,
+          //     dateField.id,
+          //     dateField.required,
+          //     newValue ? newValue.format("YYYY-MM-DD") : "",
+          //   );
+          //   onChange(updatedDateField);
+          // }}
         ></DatePicker>
       }
     </Stack>
