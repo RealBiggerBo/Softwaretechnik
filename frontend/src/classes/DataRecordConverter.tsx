@@ -72,7 +72,7 @@ export class DataRecordConverter {
   ): Record<string, any> {
     const obj: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
-      this.GetValue(obj[field.name]);
+      obj[field.name] = this.GetValue(field);
     });
     return obj;
   }
