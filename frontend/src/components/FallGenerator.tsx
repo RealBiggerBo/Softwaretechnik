@@ -29,6 +29,7 @@ function FallGenerator({ caller }: Props) {
   const [searchParams] = useSearchParams();
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [originalRecord, setOriginalRecord] = useState<DataRecord | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   let urlid = parseInt(searchParams.get("id") ?? "", 10);
 
@@ -59,6 +60,9 @@ function FallGenerator({ caller }: Props) {
       }
       setRecord(datarecord);
       setOriginalRecord(structuredClone(datarecord));
+
+      const r = await getRole();
+      setRole(r);
     }
     loadData();
   }, [caller]);
@@ -199,18 +203,26 @@ function FallGenerator({ caller }: Props) {
     return false;
   }
 
+  async function getRole(): Promise<string> {
+    const user = (await caller.GetCurrentUserRights()).json;
+    const role = user["role"];
+    return role;
+  }
+
   return (
     <div>
       <h1>Hallo ich bin ein Fall</h1>
-      <Fab
-        color="primary"
-        aria-label="edit"
-        size="small"
-        style={{ float: "right" }}
-        onClick={() => setIsEditMode(!isEditMode)}
-      >
-        <EditIcon />
-      </Fab>
+      {role !== "base_user" && (
+        <Fab
+          color="primary"
+          aria-label="edit"
+          size="small"
+          style={{ float: "right" }}
+          onClick={() => setIsEditMode(!isEditMode)}
+        >
+          <EditIcon />
+        </Fab>
+      )}
       <br />
       {record?.dataFields.map((field) => (
         <div key={field.id}>
@@ -222,11 +234,13 @@ function FallGenerator({ caller }: Props) {
           <br />
         </div>
       ))}
-      <AddField
-        caller={caller}
-        handleCreateField={handleCreateField}
-        isEditMode={!isEditMode}
-      />
+      {role !== "base_user" && (
+        <AddField
+          caller={caller}
+          handleCreateField={handleCreateField}
+          isEditMode={!isEditMode}
+        />
+      )}
       <br />
       <Button variant="contained" onClick={handleSave}>
         Speichern

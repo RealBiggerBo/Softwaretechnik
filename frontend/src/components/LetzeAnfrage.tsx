@@ -28,6 +28,7 @@ function LetzteAnfrage({ caller }: Props) {
   const [originalRecord, setOriginalRecord] = useState<DataRecord | null>(null);
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [anfrageId, setAnfrageId] = useState<number | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -60,6 +61,9 @@ function LetzteAnfrage({ caller }: Props) {
 
       setRecord(datarecord);
       setOriginalRecord(structuredClone(datarecord));
+
+      const r = await getRole();
+      setRole(r);
     }
     loadData();
   }, [caller]);
@@ -195,18 +199,26 @@ function LetzteAnfrage({ caller }: Props) {
     return false;
   }
 
+  async function getRole(): Promise<string> {
+    const user = (await caller.GetCurrentUserRights()).json;
+    const role = user["role"];
+    return role;
+  }
+
   return (
     <div>
       <h1>Hallo ich bin eine Anfrage</h1>
-      <Fab
-        color="primary"
-        aria-label="edit"
-        size="small"
-        style={{ float: "right" }}
-        onClick={() => setIsEditMode(!isEditMode)}
-      >
-        <EditIcon />
-      </Fab>
+      {role !== "base_user" && (
+        <Fab
+          color="primary"
+          aria-label="edit"
+          size="small"
+          style={{ float: "right" }}
+          onClick={() => setIsEditMode(!isEditMode)}
+        >
+          <EditIcon />
+        </Fab>
+      )}
       <br />
       {record?.dataFields.map((field) => (
         <div key={field.id}>
@@ -223,11 +235,13 @@ function LetzteAnfrage({ caller }: Props) {
         handleCreateField={handleCreateField}
         isEditMode={!isEditMode}
       />
-      <AddField
-        caller={caller}
-        handleCreateField={handleCreateField}
-        isEditMode={!isEditMode}
-      />
+      {role !== "base_user" && (
+        <AddField
+          caller={caller}
+          handleCreateField={handleCreateField}
+          isEditMode={!isEditMode}
+        />
+      )}
       <br />
       <Button variant="contained" onClick={handleSave}>
         Speichern
