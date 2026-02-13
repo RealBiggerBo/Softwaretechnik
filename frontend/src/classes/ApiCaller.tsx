@@ -85,7 +85,7 @@ export class ApiCaller implements IApiCaller {
     json: {
       id: number;
       username: string;
-      roles: ("base_user" | "extended_user" | "admin_user")[];
+      role: "base_user" | "extended_user" | "admin_user";
     };
   }> {
     let result: any = null;
@@ -100,7 +100,6 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-
     return { ...res, json: result };
   }
   async GetUsers(): Promise<{
@@ -109,9 +108,8 @@ export class ApiCaller implements IApiCaller {
     json: {
       id: number;
       username: string;
-      is_active: boolean;
-      is_staff: boolean;
       date_joined: string;
+      role: string;
     }[];
   }> {
     let result: any = null;
@@ -126,8 +124,27 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-
+    alert("USERS: " + JSON.stringify({ ...res, json: result }));
     return { ...res, json: result };
+  }
+  async RegisterUser(
+    username: string,
+    password: string,
+    password2: string,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    const passwordObject = {
+      username: username,
+      password: password,
+      password2: password2,
+    };
+
+    return await this.SendApiCall(
+      `/api/auth/admin/users/register/`,
+      "POST",
+      true,
+      JSON.stringify(passwordObject),
+      "Anfrage fehlgeschlagen.",
+    );
   }
   async GetExportUrl(
     timeStart: string,
