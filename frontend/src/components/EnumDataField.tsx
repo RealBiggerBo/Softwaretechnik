@@ -55,6 +55,7 @@ function EnumDataField({ enumField, isEditMode, onChange }: Props) {
             // updatedEnumField.selectedValue = newValue || "";
             // onChange(updatedEnumField);
             onChange({ ...enumField, selectedValue: newValue || "" });
+            setValue(newValue || "");
           }}
           value={enumField.selectedValue}
           renderInput={(params) => (
