@@ -47,9 +47,55 @@ export class ApiCaller implements IApiCaller {
         }),
     );
   }
-  async GetUsers(): Promise<string[]> {
-    // TODO: Implement actual API call
-    throw new Error("Method not implemented.");
+  async GetCurrentUserRights(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: {
+      id: number;
+      username: string;
+      roles: ("base_user" | "extended_user" | "admin_user")[];
+    };
+  }> {
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/auth/me/`,
+      "GET",
+      true,
+      undefined,
+      "Anfrage fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
+  }
+  async GetUsers(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    json: {
+      id: number;
+      username: string;
+      is_active: boolean;
+      is_staff: boolean;
+      date_joined: string;
+    }[];
+  }> {
+    let result: any = null;
+
+    const res = await this.SendApiCall(
+      `/api/auth/admin/users/`,
+      "GET",
+      true,
+      undefined,
+      "Anfrage fehlgeschlagen.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, json: result };
   }
   async GetExportUrl(
     timeStart: string,
@@ -85,11 +131,11 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-  async TryCreateCase(
+  async TryCreateFall(
     caseToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/save/fall",
+      "/api/data/data/fall",
       "POST",
       true,
       JSON.stringify(caseToCreate),
@@ -101,7 +147,7 @@ export class ApiCaller implements IApiCaller {
     anfrageToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/save/anfrage",
+      "/api/data/data/anfrage",
       "POST",
       true,
       JSON.stringify(anfrageToCreate),
@@ -113,7 +159,7 @@ export class ApiCaller implements IApiCaller {
     caseToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/fall/search",
+      "/api/data/search/fall",
       "POST",
       true,
       JSON.stringify(caseToSearch),
@@ -125,7 +171,7 @@ export class ApiCaller implements IApiCaller {
     anfrageToSearch: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/anfrage/search",
+      "/api/data/search/anfrage",
       "POST",
       true,
       JSON.stringify(anfrageToSearch),
@@ -139,7 +185,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      `/api/data/anfrage/search?id=${id}`,
+      `/api/data/search/anfrage?id=${id}`,
       "GET",
       true,
       undefined,
@@ -158,7 +204,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      `/api/data/fall/search?id=${id}`,
+      `/api/data/search/fall?id=${id}`,
       "GET",
       true,
       undefined,
@@ -173,9 +219,10 @@ export class ApiCaller implements IApiCaller {
 
   async TryUpdateFall(
     fallToUpdate: any,
+    id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/update/fall",
+      `/api/data/data/fall?id=${id}`,
       "PUT",
       true,
       JSON.stringify(fallToUpdate),
@@ -185,9 +232,10 @@ export class ApiCaller implements IApiCaller {
 
   async TryUpdateAnfrage(
     anfrageToUpdate: any,
+    id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      "/api/data/update/anfrage",
+      `/api/data/data/anfrage?id=${id}`,
       "PUT",
       true,
       JSON.stringify(anfrageToUpdate),
@@ -195,7 +243,8 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-    async PingSession(): Promise<boolean> {
+  async PingSession(): Promise<boolean> {
+    //TODO: use 'SendApiCall' instead of 'request'
     const response = await this.request("/api/auth/ping/", {
       method: "GET",
       credentials: "include",
@@ -238,7 +287,6 @@ export class ApiCaller implements IApiCaller {
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
-
 
   async GetAnfrageJson(): Promise<{
     success: boolean;
@@ -296,5 +344,29 @@ export class ApiCaller implements IApiCaller {
     json: any;
   }> {
     return { success: false, errorMsg: "Not implemented", json: null };
+  }
+
+  async TryCreateNewDataRecordFall(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/data_record/fall",
+      "POST",
+      true,
+      JSON.stringify(updatedRecord),
+      "Speicherung der Änderungen Fehlgeschlagen!",
+    );
+  }
+
+  async TryCreateNewDataRecordAnfrage(
+    updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      "/api/data/data_record/anfrage",
+      "POST",
+      true,
+      JSON.stringify(updatedRecord),
+      "Speicherung der Änderungen Fehlgeschlagen!",
+    );
   }
 }

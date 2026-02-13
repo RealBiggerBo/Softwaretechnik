@@ -1,14 +1,62 @@
-import {
-  DataField,
-  DateField,
-  EnumField,
-  IntegerField,
-  TextField,
-  ToggleField,
-} from "./DataField";
-import { DataRecord } from "./DataRecord";
+import { type DataField } from "./DataField";
+import { type DataRecord } from "./DataRecord";
 
 export class DataRecordConverter {
+  public static ConvertUsersToDataRecord(
+    rawUsers: {
+      id: number;
+      username: string;
+      is_active: boolean;
+      is_staff: boolean;
+      date_joined: string;
+    }[],
+  ): DataRecord[] {
+    return rawUsers.map((user) => {
+      return {
+        dataFields: [
+          {
+            type: "integer",
+            name: "id",
+            id: 0,
+            required: true,
+            value: user.id,
+            minValue: 0,
+            maxValue: -1,
+          },
+          {
+            type: "text",
+            name: "Benutzername",
+            id: 1,
+            required: true,
+            text: user.username,
+            maxLength: -1,
+          },
+          {
+            type: "boolean",
+            name: "aktiv",
+            id: 2,
+            required: true,
+            isSelected: user.is_active,
+          },
+          {
+            type: "boolean",
+            name: "ist Mitarbeiter",
+            id: 3,
+            required: true,
+            isSelected: user.is_staff,
+          },
+          {
+            type: "date",
+            name: "Beitrittsdatum",
+            id: 4,
+            required: true,
+            date: user.date_joined,
+          },
+        ],
+      };
+    });
+  }
+
   public static ConvertFormatToDataRecord(raw: unknown) {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 
@@ -16,19 +64,52 @@ export class DataRecordConverter {
       ([fieldName, fieldValues]) =>
         this.CreateDataField(fieldName, fieldValues),
     );
-
-    const dataRecord = new DataRecord(dataFields);
-
-    return dataRecord;
+    return { dataFields: dataFields };
   }
 
-  public static ConvertDataRecordToFormat(
+  public static ConvertDataRecordToFormat3(
     dataRecord: DataRecord,
   ): Record<string, any> {
     const obj: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
-      this.GetValue(obj[field.name]);
+      obj[field.name] = this.GetValue(field);
     });
+    return obj;
+  }
+
+  public static ConvertDataRecordToFormat2(
+    dataRecord: DataRecord,
+  ): Record<string, any> {
+    const obj: Record<string, any> = { structure: {} };
+
+    dataRecord.dataFields.forEach((field) => {
+      const fieldObj: any = {
+        id: field.id,
+        type: field.type,
+        required: field.required,
+      };
+
+      switch (field.type) {
+        case "text":
+          fieldObj.maxLength = field.maxLength;
+          break;
+
+        case "integer":
+          fieldObj.minValue = field.minValue;
+          fieldObj.maxValue = field.maxValue;
+          break;
+
+        case "enum":
+          fieldObj.possibleValues = field.possibleValues;
+          break;
+
+        default:
+          break;
+      }
+
+      obj.structure[field.name] = fieldObj;
+    });
+
     return obj;
   }
 
@@ -51,45 +132,56 @@ export class DataRecordConverter {
     return dataRecord;
   }
 
-  private static SetValue(field: DataField, value: unknown) {
+  private static SetValue(field: DataField, value: unknown): DataField {
     if (value == null) return field;
 
     switch (field.type) {
-      case "String":
+      case "text":
         if (typeof value === "string") {
-          if ("text" in field) (field as TextField).text = value;
-          else (field as EnumField).selectedValue = value;
+          return { ...field, text: value };
         }
         break;
-      case "Date":
-        if (typeof value === "string") (field as DateField).date = value;
+      case "enum":
+        if (typeof value === "string") {
+          return { ...field, selectedValue: value };
+        }
         break;
-      case "Boolean":
-        if (typeof value === "boolean")
-          (field as ToggleField).isSelected = value;
+      case "date":
+        if (typeof value === "string") {
+          return { ...field, date: value };
+        }
         break;
-      case "Integer":
-        if (typeof value === "number") (field as IntegerField).value = value;
+      case "boolean":
+        if (typeof value === "boolean") {
+          return { ...field, isSelected: value };
+        }
+        break;
+      case "integer":
+        if (typeof value === "number") {
+          return { ...field, value: value };
+        }
         break;
       default:
-        return field;
+        const _exhaustive: never = field;
+        return _exhaustive;
     }
-
     return field;
   }
-  private static GetValue(field: DataField) {
+  private static GetValue(field: DataField): string | number | boolean | null {
     switch (field.type) {
-      case "String":
-        if ("text" in field) return (field as TextField).text;
-        else return (field as EnumField).selectedValue;
-      case "Date":
-        return (field as DateField).date;
-      case "Boolean":
-        return (field as ToggleField).isSelected;
-      case "Integer":
-        return (field as IntegerField).value;
+      case "text":
+        return field.text;
+      case "enum":
+        return field.selectedValue;
+      case "date":
+        return field.date;
+      case "boolean":
+        return field.isSelected;
+      case "integer":
+        return field.value;
       default:
-        return null;
+        const _exhaustive: never = field;
+        return _exhaustive;
     }
   }
 
@@ -121,35 +213,66 @@ export class DataRecordConverter {
     const type = this.GetValueFromRecord(fieldValues, "type") as string;
 
     switch (type) {
-      case "String":
+      case "String": {
         const possibleValues = this.GetValueFromRecord(
           fieldValues,
           "possibleValues",
-        ) as string[];
+        ) as string[] | undefined;
+
         if (possibleValues == null) {
-          return new TextField(
-            fieldName,
+          return {
+            type: "text",
+            name: fieldName,
             id,
             required,
-            "",
-            this.GetValueFromRecord(fieldValues, "maxLength") as number,
-          );
-        } else {
-          return new EnumField(fieldName, id, required, possibleValues);
+            text: "",
+            maxLength:
+              (this.GetValueFromRecord(fieldValues, "maxLength") as number) ??
+              -1,
+          };
         }
-      case "Date":
-        return new DateField(fieldName, id, required, "0000-00-00");
-      case "Boolean":
-        return new ToggleField(fieldName, id, required, false);
-      case "Integer":
-        return new IntegerField(
-          fieldName,
+
+        return {
+          type: "enum",
+          name: fieldName,
           id,
           required,
-          this.GetValueFromRecord(fieldValues, "value") as number,
-          this.GetValueFromRecord(fieldValues, "minValue") as number,
-          this.GetValueFromRecord(fieldValues, "maxValue") as number,
-        );
+          selectedValue: "",
+          possibleValues,
+        };
+      }
+
+      case "Date":
+        return {
+          type: "date",
+          name: fieldName,
+          id,
+          required,
+          date: "0000-00-00",
+        };
+
+      case "Boolean":
+        return {
+          type: "boolean",
+          name: fieldName,
+          id,
+          required,
+          isSelected: false,
+        };
+
+      case "Integer":
+        return {
+          type: "integer",
+          name: fieldName,
+          id,
+          required,
+          value: (this.GetValueFromRecord(fieldValues, "value") as number) ?? 0,
+          minValue:
+            (this.GetValueFromRecord(fieldValues, "minValue") as number) ?? 0,
+          maxValue:
+            (this.GetValueFromRecord(fieldValues, "maxValue") as number) ?? -1,
+        };
+
       default:
         throw new Error(`Unknown DataField type: ${type}`);
     }

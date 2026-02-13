@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
-import QueryDisplay from "../components/QueryDisplay";
-import { DataRecord } from "../classes/DataRecord";
+import { type DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import { Button } from "@mui/material";
 import {
@@ -20,10 +19,8 @@ function SearchPage({ caller }: Props) {
   const [preset, setPreset] = useState(
     ToUiPreset({ globalFilterOptions: [], queries: [] }),
   );
-  const [query, setQuery] = useState(
-    ToUiQuery({ filterOptions: [], displayActions: [] }),
-  );
-  const [format, setFormat] = useState(new DataRecord([]));
+  const defaultFormat: DataRecord = { dataFields: [] };
+  const [format, setFormat] = useState(defaultFormat);
 
   useEffect(() => {
     const fetchData = async () => {
