@@ -126,7 +126,7 @@ export class ApiCaller implements IApiCaller {
     );
     return { ...res, json: result };
   }
-  async RegisterUser(
+  async RegisterNewUser(
     username: string,
     password: string,
     password2: string,
@@ -145,6 +145,43 @@ export class ApiCaller implements IApiCaller {
       "Anfrage fehlgeschlagen.",
     );
   }
+  async DeleteUser(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return await this.SendApiCall(
+      `/api/auth/admin/users/` + id + `/delete/`,
+      "DELETE",
+      true,
+      undefined,
+      "Löschen fehlgeschlagen.",
+    );
+  }
+  async ChangeUserRole(
+    id: number,
+    newRole: "base_user" | "extended_user" | "admin_user",
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return await this.SendApiCall(
+      `/api/auth/admin/users/` + id + `/role/`,
+      "POST",
+      true,
+      JSON.stringify(newRole),
+      "Berechtigungsänderung fehlgeschlagen.",
+    );
+  }
+
+  async ResetUserPassword(
+    id: number,
+    newPswd: string,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return await this.SendApiCall(
+      `/api/auth/admin/users/` + id + `/reset-password/`,
+      "POST",
+      true,
+      JSON.stringify(newPswd),
+      "Zurücksetzen des Passworts fehlgeschlagen.",
+    );
+  }
+
   async GetExportUrl(
     timeStart: string,
     timeEnd: string,
@@ -154,6 +191,7 @@ export class ApiCaller implements IApiCaller {
     // TODO: Implement actual API call
     throw new Error("Method not implemented.");
   }
+
   async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
     let presets: PresetItemListElement[] = [];
 
@@ -176,6 +214,7 @@ export class ApiCaller implements IApiCaller {
 
     return presets;
   }
+
   async TryChangePassword(
     curPswd: string,
     newPswd: string,
@@ -324,35 +363,6 @@ export class ApiCaller implements IApiCaller {
     return true;
   }
 
-  private async SendApiCall(
-    url: string,
-    method: "GET" | "POST" | "PUT",
-    includeCredentials: boolean,
-    body: any,
-    fallbackErrorMsg: string,
-    successAction?: (response: Response) => Promise<void>,
-  ): Promise<{ success: boolean; errorMsg: string }> {
-    try {
-      const response = await this.request(url, {
-        method: method,
-        credentials: includeCredentials ? "include" : undefined,
-        body: body,
-      });
-
-      if (response.ok) {
-        if (successAction != undefined) await successAction(response);
-        return { success: true, errorMsg: "" };
-      }
-
-      const error = await response.json().catch(() => ({}));
-      const errorMsg = error.error || fallbackErrorMsg;
-
-      return { success: false, errorMsg };
-    } catch {
-      return { success: false, errorMsg: "Netzwerk Fehler" };
-    }
-  }
-
   async GetAnfrageJson(): Promise<{
     success: boolean;
     errorMsg: string;
@@ -433,5 +443,34 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify(updatedRecord),
       "Speicherung der Änderungen Fehlgeschlagen!",
     );
+  }
+
+  private async SendApiCall(
+    url: string,
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    includeCredentials: boolean,
+    body: any,
+    fallbackErrorMsg: string,
+    successAction?: (response: Response) => Promise<void>,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    try {
+      const response = await this.request(url, {
+        method: method,
+        credentials: includeCredentials ? "include" : undefined,
+        body: body,
+      });
+
+      if (response.ok) {
+        if (successAction != undefined) await successAction(response);
+        return { success: true, errorMsg: "" };
+      }
+
+      const error = await response.json().catch(() => ({}));
+      const errorMsg = error.error || fallbackErrorMsg;
+
+      return { success: false, errorMsg };
+    } catch {
+      return { success: false, errorMsg: "Netzwerk Fehler" };
+    }
   }
 }

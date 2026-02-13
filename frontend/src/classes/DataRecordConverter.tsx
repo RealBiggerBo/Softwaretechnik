@@ -10,6 +10,7 @@ export class DataRecordConverter {
       role: string;
     }[],
   ): DataRecord[] {
+    if (!rawUsers) return [];
     return rawUsers.map((user) => {
       return {
         dataFields: [

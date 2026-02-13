@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import type { IApiCaller } from "../classes/IApiCaller";
+import React, { Fragment, useEffect, useState, type ReactNode } from "react";
 import { type DataRecord } from "../classes/DataRecord";
-import { DataRecordConverter } from "../classes/DataRecordConverter";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
+  Collapse,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -13,10 +15,11 @@ import {
 import type { DataField } from "../classes/DataField";
 
 interface Props {
-  getData: () => Promise<DataRecord[]>;
+  data: DataRecord[];
+  mapEntry?: (entry: DataRecord) => ReactNode | null;
 }
 
-function GetFieldValue(field: DataField) {
+function GetFieldValue(field: DataField): ReactNode {
   switch (field.type) {
     case "text":
       return field.text;
@@ -27,56 +30,78 @@ function GetFieldValue(field: DataField) {
     case "date":
       return field.date;
     case "enum":
-      return field.possibleValues;
+      return field.possibleValues?.join(", ");
+    default:
+      return null;
   }
-  throw new Error("unhandled field type");
 }
 
-function GetUserId(user: DataRecord, defaultId: number) {
-  const idFields = user.dataFields.filter((field) => (field.name = "name"));
-  if (idFields.length > 0) return GetFieldValue(idFields[0]).toString();
-  return defaultId.toString();
+function GetRecordId(user: DataRecord, fallbackId: number): number {
+  const idFields = user.dataFields.filter((field) => field.name == "id");
+  if (idFields.length > 0) return GetFieldValue(idFields[0]) as number;
+  return fallbackId;
 }
 
-function DataRecordList({ getData }: Props) {
-  const initialUsers: DataRecord[] = [];
-  const [users, setUsers] = useState(initialUsers);
+function DataRecordList({ data, mapEntry }: Props) {
+  const [openRow, setOpenRow] = useState(-1);
 
-  useEffect(() => {
-    const fetchData = async () => setUsers(await getData());
-    fetchData();
-  }, []);
-
-  if (users.length <= 0) return;
-  alert("fetched users:" + JSON.stringify(users));
+  if (data.length <= 0) return null;
   return (
-    <>
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              {users[0].dataFields.map((field) => (
-                <TableCell id={field.id.toString()}>
-                  {JSON.stringify(field)}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user, id) => (
-              <TableRow
-                key={GetUserId(user, id)}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                {user.dataFields.map((field) => (
-                  <TableCell>{GetFieldValue(field)}</TableCell>
-                ))}
-              </TableRow>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {mapEntry && <TableCell />}
+            {data[0].dataFields.map((field) => (
+              <TableCell key={field.id.toString()}>{field.name}</TableCell>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((record, index) => {
+            const id = GetRecordId(record, index);
+            const isOpen = openRow === index;
+            return (
+              <Fragment key={id.toString()}>
+                <TableRow
+                  hover
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  {mapEntry && (
+                    <TableCell>
+                      <IconButton
+                        onClick={() =>
+                          isOpen ? setOpenRow(-1) : setOpenRow(index)
+                        }
+                      >
+                        {openRow === index ? (
+                          <KeyboardArrowUpIcon />
+                        ) : (
+                          <KeyboardArrowDownIcon />
+                        )}
+                      </IconButton>
+                    </TableCell>
+                  )}
+                  {record.dataFields.map((field) => (
+                    <TableCell key={field.id}>{GetFieldValue(field)}</TableCell>
+                  ))}
+                </TableRow>
+                {mapEntry && (
+                  <TableRow>
+                    <TableCell
+                      style={{ paddingBottom: 0, paddingTop: 0 }}
+                      colSpan={record.dataFields.length + 1}
+                    >
+                      <Collapse in={isOpen}>{mapEntry(record)}</Collapse>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </Fragment>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

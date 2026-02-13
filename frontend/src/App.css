@@ -157,7 +157,7 @@
   margin-left: 10px;
 }
 
-.passwordChangeForm {
+.settingsForm {
   padding: 5px 20px;
   border: solid var(--color-accent-dark);
   border-width: 5px 0 5px 0;
