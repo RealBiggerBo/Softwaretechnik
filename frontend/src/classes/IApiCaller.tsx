@@ -37,7 +37,7 @@ export interface IApiCaller {
     json: {
       id: number;
       username: string;
-      roles: ("base_user" | "extended_user" | "admin_user")[];
+      roles: "base_user" | "extended_user" | "admin_user";
     };
   }>;
 
@@ -131,13 +131,13 @@ export class MockApiCaller implements IApiCaller {
     json: {
       id: number;
       username: string;
-      roles: ("base_user" | "extended_user" | "admin_user")[];
+      roles: "base_user" | "extended_user" | "admin_user";
     };
   }> {
     return {
       success: true,
       errorMsg: "",
-      json: { id: 1, username: "superuse", roles: ["admin_user"] },
+      json: { id: 1, username: "superuse", roles: "admin_user" },
     };
   }
   private users: string[] = ["Alf", "Horst", "James"];
