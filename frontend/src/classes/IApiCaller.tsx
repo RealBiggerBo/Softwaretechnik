@@ -1,3 +1,6 @@
+import type { Preset } from "./Preset";
+import type { PresetItemListElement } from "./StatisticsTypes";
+
 export interface IApiCaller {
   GetUsers(): Promise<{
     success: boolean;
@@ -15,10 +18,13 @@ export interface IApiCaller {
     timeStart: string,
     timeEnd: string,
     preset: string,
-    presetOverrides: string,
     fileformat: string,
   ): Promise<string>;
-  GetStatisticsPresets(): Promise<string[]>;
+  GetStatisticsPresetList(): Promise<PresetItemListElement[]>;
+
+  GetStatisticsPreset(
+    id: Number,
+  ): Promise<{ success: boolean; errorMsg: string; preset: Preset }>;
 
   TryChangePassword(
     curPswd: string,
@@ -101,6 +107,11 @@ export interface IApiCaller {
 }
 
 export class MockApiCaller implements IApiCaller {
+  GetStatisticsPreset(
+    id: Number,
+  ): Promise<{ success: boolean; errorMsg: string; preset: Preset }> {
+    throw new Error("Method not implemented.");
+  }
   Logout(): void {
     throw new Error("Method not implemented.");
   }
@@ -174,11 +185,20 @@ export class MockApiCaller implements IApiCaller {
     };
   }
 
-  async GetStatisticsPresets(): Promise<string[]> {
+  async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
     return [
-      "Statische Angaben zu den Fachberatungstellen Sexulaisierte Gewalt",
-      "Alle Statisische Angaben die Wir haben",
-      "Preset 3",
+      {
+        id: 1,
+        title:
+          "Statische Angaben zu den Fachberatungstellen Sexulaisierte Gewalt",
+        updated_at: "2026-01-02T17:21:19.189201Z",
+      },
+      {
+        id: 2,
+        title: "Alle Statisische Angaben die Wir haben",
+        updated_at: "2026-01-03T09:11:10.000000Z",
+      },
+      { id: 3, title: "Preset 3", updated_at: "2026-01-04T12:00:00.000000Z" },
     ];
   }
 
@@ -186,10 +206,9 @@ export class MockApiCaller implements IApiCaller {
     timeStart: string,
     timeEnd: string,
     preset: string,
-    presetOverrides: string,
     fileformat: string,
   ): Promise<string> {
-    console.log(timeStart, timeEnd, preset, presetOverrides, fileformat);
+    console.log(timeStart, timeEnd, preset, fileformat);
     return "/test.csv";
   }
 

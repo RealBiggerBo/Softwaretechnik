@@ -5,8 +5,18 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import type { Dayjs } from "dayjs";
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
+import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
+import { type DataRecord } from "../classes/DataRecord";
+import { DataRecordConverter } from "../classes/DataRecordConverter";
+import {
+  ToNormalPreset,
+  ToUiPreset,
+  type UiItem,
+  type UiPreset,
+} from "../classes/UiItems";
+import PresetDisplay from "../components/PresetDisplay";
 import DatePickerRange from "../components/DatePickerRange";
 import TemplateDialog from "../components/TemplateDialog";
 
@@ -15,22 +25,35 @@ interface Props {
 }
 
 function StatisticsPage({ caller }: Props) {
-  const [presets, setPresets] = useState<string[]>(["Vorlage 1", "Vorlage 2"]);
+  const [presets, setPresets] = useState<PresetItemListElement[]>([]);
   const [timeStart, setTimeStart] = useState<Dayjs | null>(null);
   const [timeEnd, setTimeEnd] = useState<Dayjs | null>(null);
-  const [preset, setPreset] = useState<string>("");
+  const [preset, setPreset] = useState<UiItem<UiPreset> | null>(null);
+  const [presetTitle, setPresetTitle] = useState<string>("");
   const [fileFormat, setFileFormat] = useState<string>("CSV");
+  const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [TemplatesDialogueOpen, setTemplatesDialogueOpen] =
     useState<boolean>(false);
 
   useEffect(() => {
     const fetchPresets = async () => {
-      const availablePresets = await caller.GetStatisticsPresets();
+      const availablePresets = await caller.GetStatisticsPresetList();
       setPresets(availablePresets);
-      setPreset((prev) => prev || availablePresets[0] || "");
+      setPreset(null);
+      setPresetTitle("");
     };
 
     void fetchPresets();
+  }, [caller]);
+
+  useEffect(() => {
+    const fetchFormat = async () => {
+      const result = await caller.GetFallJson();
+
+      setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+    };
+
+    void fetchFormat();
   }, [caller]);
 
   const exportDisabled =
@@ -48,8 +71,7 @@ function StatisticsPage({ caller }: Props) {
     const url = await caller.GetExportUrl(
       formatDateForApi(timeStart),
       formatDateForApi(timeEnd),
-      preset,
-      "",
+      "preset",
       fileFormat,
     );
 
@@ -59,6 +81,23 @@ function StatisticsPage({ caller }: Props) {
     document.body.appendChild(link);
     link.click();
     link.remove();
+  }
+
+  async function handlePresetChange(
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) {
+    const selectedTitle = event.target.value;
+    const presetMeta = presets.find((p) => p.title === selectedTitle);
+    if (!presetMeta) return;
+
+    const { success, preset: loadedPreset } = await caller.GetStatisticsPreset(
+      presetMeta.id,
+    );
+
+    if (success) {
+      setPreset(ToUiPreset(loadedPreset));
+      setPresetTitle(selectedTitle);
+    }
   }
 
   return (
@@ -80,32 +119,31 @@ function StatisticsPage({ caller }: Props) {
                   fullWidth
                   label="Vorlage"
                   sx={{ "& .MuiSelect-select": { textAlign: "left" } }}
-                  value={preset}
-                  onChange={(event) => setPreset(event.target.value)}
+                  value={presetTitle}
+                  onChange={handlePresetChange}
                 >
-                  {presets.map((preset) => (
-                    <MenuItem key={preset} value={preset}>
-                      {preset}
+                  {presets.map((presetItem) => (
+                    <MenuItem key={presetItem.id} value={presetItem.title}>
+                      {presetItem.title}
                     </MenuItem>
                   ))}
                 </TextField>
                 <Button
                   onClick={() => setTemplatesDialogueOpen(true)}
-                  variant="outlined"
+                  variant="contained"
                   size="large"
                   sx={{ px: 3 }}
                 >
-                  Vorlage Erstellen
-                </Button>
-                <TemplateDialog
-                  caller={caller}
-                  open={TemplatesDialogueOpen}
-                  onClose={() => setTemplatesDialogueOpen(false)}
-                />
-                <Button variant="contained" size="large" sx={{ px: 3 }}>
-                  Anzeigen
+                  Vorlage speichern
                 </Button>
               </Stack>
+              {preset && (
+                <PresetDisplay
+                  preset={preset}
+                  onChange={setPreset}
+                  format={format}
+                />
+              )}
               <Stack spacing={2} direction="row">
                 <TextField
                   select
