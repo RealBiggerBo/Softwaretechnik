@@ -26,7 +26,7 @@ class AdminUserListAPI(APIView):
 
     def get(self, request):
         # Es werden alle Benutzer aus der Datenbank geholt. Dabei werden nur diese Felder zurückgegeben.
-        users = User.objects.all().values("id", "username", "is_active", "is_staff", "date_joined")
+        users = User.objects.all().values("id", "username", "is_active", "is_staff", "date_joined", "role")
         return Response(list(users))
 
 # Benutzer löschen:
