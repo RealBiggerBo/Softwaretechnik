@@ -41,7 +41,10 @@ class MeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        role = request.user.groups.values_list("name", flat=True).first()
+        if request.user.is_superuser:
+            role = "admin_user"
+        else:
+            role = request.user.groups.values_list("name", flat=True).first()
         # Die Basisinformationen des Nutzers werden zurückgegeben.
         return Response({
             "id": request.user.id, 
