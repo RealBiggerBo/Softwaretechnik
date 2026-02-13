@@ -25,9 +25,19 @@ class AdminUserListAPI(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        # Es werden alle Benutzer aus der Datenbank geholt. Dabei werden nur diese Felder zurückgegeben.
-        users = User.objects.all().values("id", "username", "is_active", "is_staff", "date_joined", "role")
-        return Response(list(users))
+        users_data = [] 
+        # Es werden alle Benutzer aus der Datenbank geholt. Dabei werden diese Felder zurückgegeben.
+        for user in User.objects.all():
+            role = user.groups.values_list("name", flat=True).first
+
+            users_data.append({
+                "id": user.id,
+                "username": user.username,
+                "is_active": user.is_active,
+                "date_joined": user.date_joined,
+                "role": role,
+            })
+        return Response(users_data)
 
 # Benutzer löschen:
 class AdminUserDeleteAPI(APIView):
@@ -115,7 +125,7 @@ class AdminChangeRoleAPI(APIView):
         # # Fügt die neue Rolle als Gruppe hinzu.
         # user.groups.add(Group.objects.get(name=role))
 
-        # Löscht alle alten Gruppen, setzt die neue und sorgt dafür, dass es nur eine Rolle gibt.
+        # Löscht alle alten Gruppen, setzt die neue und sorgt dafür, dass es nur eine Rolle
         group = Group.objects.get(name=role) 
         user.groups.set([group])
 
