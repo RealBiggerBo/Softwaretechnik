@@ -3,12 +3,7 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import { Button } from "@mui/material";
-import {
-  ToNormalPreset,
-  ToNormalQuery,
-  ToUiPreset,
-  ToUiQuery,
-} from "../classes/UiItems";
+import { ToNormalPreset, ToUiPreset } from "../classes/UiItems";
 import PresetDisplay from "../components/PresetDisplay";
 
 interface Props {

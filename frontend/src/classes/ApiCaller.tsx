@@ -53,7 +53,7 @@ export class ApiCaller implements IApiCaller {
     json: {
       id: number;
       username: string;
-      roles: ("base_user" | "extended_user" | "admin_user")[];
+      roles: "base_user" | "extended_user" | "admin_user";
     };
   }> {
     let result: any = null;
