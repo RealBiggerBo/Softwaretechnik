@@ -1,10 +1,42 @@
 import type { IApiCaller } from "./IApiCaller";
+import type { Preset } from "./Preset";
+import type { PresetItemListElement } from "./StatisticsTypes";
 
 const baseurl = "http://127.0.0.1:8000";
 const headers = new Headers();
 headers.set("Content-Type", "application/json");
 
 export class ApiCaller implements IApiCaller {
+  async GetStatisticsPreset(
+    id: Number,
+  ): Promise<{ success: boolean; errorMsg: string; preset: Preset }> {
+    let preset: Preset = {
+      globalFilterOptions: [],
+      queries: [],
+    };
+
+    const res = await this.SendApiCall(
+      `/api/stats/presets/${Number(id)}`,
+      "GET",
+      true,
+      undefined,
+      "Vorlage konnte nicht geladen werden.",
+      async (response) => {
+        const data = await response.json();
+        const payload = data?.payload ?? {};
+
+        preset = {
+          globalFilterOptions: Array.isArray(payload.globalFilterOptions)
+            ? payload.globalFilterOptions
+            : [],
+          queries: Array.isArray(payload.Queries) ? payload.Queries : [],
+        };
+      },
+    );
+
+    return { ...res, preset };
+  }
+
   Logout(): void {
     headers.delete("Authorization");
   }
@@ -118,15 +150,32 @@ export class ApiCaller implements IApiCaller {
     timeStart: string,
     timeEnd: string,
     preset: string,
-    presetOverrides: string,
     fileformat: string,
   ): Promise<string> {
     // TODO: Implement actual API call
     throw new Error("Method not implemented.");
   }
-  async GetStatisticsPresets(): Promise<string[]> {
-    // TODO: Implement actual API call
-    throw new Error("Method not implemented.");
+  async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
+    let presets: PresetItemListElement[] = [];
+
+    await this.SendApiCall(
+      "/api/stats/presets",
+      "GET",
+      true,
+      undefined,
+      "Vorlagen konnten nicht geladen werden.",
+      async (response) => {
+        const data = await response.json();
+        const items = Array.isArray(data?.items) ? data.items : [];
+        presets = items.map((item: any) => ({
+          id: Number(item?.id),
+          title: String(item?.title ?? ""),
+          updated_at: String(item?.updated_at ?? ""),
+        }));
+      },
+    );
+
+    return presets;
   }
   async TryChangePassword(
     curPswd: string,
