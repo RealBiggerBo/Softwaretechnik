@@ -6,9 +6,8 @@ export class DataRecordConverter {
     rawUsers: {
       id: number;
       username: string;
-      is_active: boolean;
-      is_staff: boolean;
       date_joined: string;
+      role: string;
     }[],
   ): DataRecord[] {
     return rawUsers.map((user) => {
@@ -32,25 +31,19 @@ export class DataRecordConverter {
             maxLength: -1,
           },
           {
-            type: "boolean",
-            name: "aktiv",
-            id: 2,
-            required: true,
-            isSelected: user.is_active,
-          },
-          {
-            type: "boolean",
-            name: "ist Mitarbeiter",
-            id: 3,
-            required: true,
-            isSelected: user.is_staff,
-          },
-          {
             type: "date",
             name: "Beitrittsdatum",
-            id: 4,
+            id: 2,
             required: true,
             date: user.date_joined,
+          },
+          {
+            type: "text",
+            name: "Rolle",
+            id: 3,
+            required: true,
+            text: user.role,
+            maxLength: -1,
           },
         ],
       };

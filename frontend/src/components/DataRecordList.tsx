@@ -17,6 +17,18 @@ interface Props {
 }
 
 function GetValueField(field: DataField) {
+  switch (field.type) {
+    case "text":
+      return field.text;
+    case "integer":
+      return field.value;
+    case "boolean":
+      return field.isSelected ? "ja" : "nein";
+    case "date":
+      return field.date;
+    case "enum":
+      return field.possibleValues;
+  }
   return "";
 }
 
@@ -27,40 +39,37 @@ function DataRecordList({ getData }: Props) {
   useEffect(() => {
     const fetchData = async () => setUsers(await getData());
     fetchData();
+    alert("Fetch");
   }, []);
 
-  if (users.length <= 0) return;
+  if (users.length <= 0) return <label>ZERO</label>;
   return (
-    <TableContainer>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            {users[0].dataFields.map((field) => (
-              <TableCell>{field.name}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user, id) => (
-            <TableRow
-              key={id}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              {user.dataFields.map((field) => (
+    <>
+      <label>{users.length}</label>
+      <TableContainer>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              {users[0].dataFields.map((field) => (
                 <TableCell>{field.name}</TableCell>
               ))}
-              {/* <TableCell component="th" scope="row">
-                {user.name}
-              </TableCell>
-              <TableCell align="right">{user.calories}</TableCell>
-              <TableCell align="right">{user.fat}</TableCell>
-              <TableCell align="right">{user.carbs}</TableCell>
-              <TableCell align="right">{user.protein}</TableCell> */}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {users.map((user, id) => (
+              <TableRow
+                key={id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                {user.dataFields.map((field) => (
+                  <TableCell>{GetValueField(field)}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }
 
