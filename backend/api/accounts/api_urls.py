@@ -23,7 +23,7 @@ urlpatterns = [
     # Admin
     path('admin/users/register/', AdminUserRegisterAPI.as_view()),
     path('admin/users/', AdminUserListAPI.as_view()),
-    path('admin/users/<int:user_id>/', AdminUserDeleteAPI.as_view()),
+    path('admin/users/<int:user_id>/delete', AdminUserDeleteAPI.as_view()),
     path('admin/users/<int:user_id>/reset-password/', AdminResetPasswordAPI.as_view()),
     path('admin/users/<int:user_id>/role/', AdminChangeRoleAPI.as_view()),
 ]
