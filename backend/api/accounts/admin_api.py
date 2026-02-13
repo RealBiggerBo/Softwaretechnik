@@ -28,7 +28,7 @@ class AdminUserListAPI(APIView):
         users_data = [] 
         # Es werden alle Benutzer aus der Datenbank geholt. Dabei werden diese Felder zurückgegeben.
         for user in User.objects.all():
-            role = user.groups.values_list("name", flat=True).first
+            role = user.groups.values_list("name", flat=True).first()
 
             users_data.append({
                 "id": user.id,
