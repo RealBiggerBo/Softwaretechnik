@@ -153,6 +153,9 @@
 .passwordInput {
   margin-left: 10px;
 }
+.textField {
+  margin-left: 10px;
+}
 
 .passwordChangeForm {
   padding: 5px 20px;
@@ -161,6 +164,7 @@
   display: grid;
   row-gap: 10px;
   grid-template-columns: repeat(2, 1fr);
+  align-items: center;
 }
 
 .passwordChangeSubmitBtn {

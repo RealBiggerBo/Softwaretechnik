@@ -124,7 +124,6 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-    alert("USERS: " + JSON.stringify({ ...res, json: result }));
     return { ...res, json: result };
   }
   async RegisterUser(

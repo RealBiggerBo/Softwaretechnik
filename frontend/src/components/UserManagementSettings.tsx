@@ -16,7 +16,8 @@ async function submitRegisterUser(
   pswdCtrl: string,
 ): Promise<void> {
   const result = await caller.RegisterUser(userName, pswd, pswdCtrl);
-  alert(JSON.stringify(result));
+  if (result.success) alert("Nutzer erfolgreich hinzugefügt.");
+  else alert("Nutzer konnte nicht hinzugefügt werden!");
 }
 
 function UserManagementSettings({ caller }: Props) {
@@ -27,20 +28,16 @@ function UserManagementSettings({ caller }: Props) {
   return (
     <>
       <DataRecordList
-        getData={async () =>
-          DataRecordConverter.ConvertUsersToDataRecord(
+        getData={async () => {
+          const res = DataRecordConverter.ConvertUsersToDataRecord(
             (await caller.GetUsers()).json,
-          )
-        }
-      ></DataRecordList>
-      {/* <Button
-        onClick={async () => {
-          const result = await caller.RegisterUser(userName, pswd, pswdCtrl);
-          alert(JSON.stringify(result));
+          );
+
+          alert("res: " + JSON.stringify(res));
+
+          return res;
         }}
-      >
-        Neuen Nutzer hinzufügen
-      </Button> */}
+      ></DataRecordList>
       <form
         className="passwordChangeForm"
         onSubmit={async (event) => {
@@ -48,9 +45,13 @@ function UserManagementSettings({ caller }: Props) {
           await submitRegisterUser(caller, userName, pswd, pswdCtrl);
         }}
       >
+        <label htmlFor="userName" className="gridLabel">
+          Benutzername
+        </label>
         <TextField
           label="Benutzername"
           id="userName"
+          className="textField"
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />

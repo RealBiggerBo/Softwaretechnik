@@ -14,7 +14,6 @@ interface Props {
 
 function PasswordInput({ label, id, value, onValueChange }: Props) {
   const [showPswd, setShowPswd] = useState(false);
-  // const [value, setValue] = useState({ password: "", showPassword: false });
 
   return (
     <>

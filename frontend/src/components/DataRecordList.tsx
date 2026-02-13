@@ -16,7 +16,7 @@ interface Props {
   getData: () => Promise<DataRecord[]>;
 }
 
-function GetValueField(field: DataField) {
+function GetFieldValue(field: DataField) {
   switch (field.type) {
     case "text":
       return field.text;
@@ -29,7 +29,13 @@ function GetValueField(field: DataField) {
     case "enum":
       return field.possibleValues;
   }
-  return "";
+  throw new Error("unhandled field type");
+}
+
+function GetUserId(user: DataRecord, defaultId: number) {
+  const idFields = user.dataFields.filter((field) => (field.name = "name"));
+  if (idFields.length > 0) return GetFieldValue(idFields[0]).toString();
+  return defaultId.toString();
 }
 
 function DataRecordList({ getData }: Props) {
@@ -39,30 +45,31 @@ function DataRecordList({ getData }: Props) {
   useEffect(() => {
     const fetchData = async () => setUsers(await getData());
     fetchData();
-    alert("Fetch");
   }, []);
 
-  if (users.length <= 0) return <label>ZERO</label>;
+  if (users.length <= 0) return;
+  alert("fetched users:" + JSON.stringify(users));
   return (
     <>
-      <label>{users.length}</label>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               {users[0].dataFields.map((field) => (
-                <TableCell>{field.name}</TableCell>
+                <TableCell id={field.id.toString()}>
+                  {JSON.stringify(field)}
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {users.map((user, id) => (
               <TableRow
-                key={id}
+                key={GetUserId(user, id)}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 {user.dataFields.map((field) => (
-                  <TableCell>{GetValueField(field)}</TableCell>
+                  <TableCell>{GetFieldValue(field)}</TableCell>
                 ))}
               </TableRow>
             ))}
