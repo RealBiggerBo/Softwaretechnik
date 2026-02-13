@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.validators import RegexValidator
 
 # Der Validator erlaubt es nur Buchstaben und Zahlen im Username zu verwenden.
@@ -40,6 +40,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             password=validated_data['password']
         )
+
+        # Setzte neuen Nutzer automatisch auf base_user.
+        base_group = Group.objects.get(name="base_user")
+        # Durch set() wird garantiert das es genau eine Rolle gibt.
+        user.groups.set([base_group])
+
         return user
     
 class ChangePasswordSerializer(serializers.Serializer):

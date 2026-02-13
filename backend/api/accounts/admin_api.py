@@ -109,11 +109,15 @@ class AdminChangeRoleAPI(APIView):
         ):
             return Response({"error": "Mindestens ein Admin muss existieren"}, status=403)
 
-        # Löscht alle aktuellen Gruppen des Benutzers.
-        user.groups.clear()
+        # # Löscht alle aktuellen Gruppen des Benutzers.
+        # user.groups.clear()
         
-        # Fügt die neue Rolle als Gruppe hinzu.
-        user.groups.add(Group.objects.get(name=role))
+        # # Fügt die neue Rolle als Gruppe hinzu.
+        # user.groups.add(Group.objects.get(name=role))
+
+        # Löscht alle alten Gruppen, setzt die neue und sorgt dafür, dass es nur eine Rolle gibt.
+        group = Group.objects.get(name=role) 
+        user.groups.set([group])
 
         # is_staff wird True gesetzt, wenn es eine Admin ist, wenn nicht auf False
         user.is_staff = (role == "admin_user")
