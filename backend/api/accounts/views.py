@@ -41,12 +41,12 @@ class MeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        roles = list(request.user.groups.values_list("name", flat=True))
+        role = request.user.groups.values_list("name", flat=True).first()
         # Die Basisinformationen des Nutzers werden zurückgegeben.
         return Response({
             "id": request.user.id, 
             "username": request.user.username, 
-            "roles": roles,
+            "role": role,
             })
 
 # API für Passwort ändern.

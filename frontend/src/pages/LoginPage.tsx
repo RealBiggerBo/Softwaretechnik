@@ -5,9 +5,10 @@ import type { IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
   caller: IApiCaller;
+  onLogin: () => void;
 }
 
-function LoginPage({ caller }: Props) {
+function LoginPage({ caller, onLogin }: Props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,6 +23,7 @@ function LoginPage({ caller }: Props) {
     try {
       const result = await caller.TryLogin(username, password);
       if (result.success) {
+        onLogin();
         navigate("/main");
         return;
       }

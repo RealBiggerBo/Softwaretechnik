@@ -26,7 +26,7 @@ function DateDataField({ dateField, isEditMode, onChange }: Props) {
           //   );
           //   onChange(updatedDateField);
           // }}
-          defaultValue={dateField.name}
+          value={dateField.name}
         ></Tf>
       )}
 

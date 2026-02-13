@@ -20,7 +20,7 @@ function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
               name: e.target.value,
             });
           }}
-          defaultValue={integerField.name}
+          value={integerField.name}
         ></Tf>
       )}
 

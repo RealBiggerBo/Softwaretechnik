@@ -22,7 +22,7 @@ function ToggleDataField({ toggleField, isEditMode, onChange }: Props) {
           onChange={(e) => {
             onChange({ ...toggleField, name: e.target.value });
           }}
-          defaultValue={toggleField.name}
+          value={toggleField.name}
         ></Tf>
       )}
 
