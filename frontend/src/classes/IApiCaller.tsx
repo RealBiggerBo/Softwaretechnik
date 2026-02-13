@@ -5,11 +5,16 @@ export interface IApiCaller {
     json: {
       id: number;
       username: string;
-      is_active: boolean;
-      is_staff: boolean;
       date_joined: string;
+      role: string;
     }[];
   }>;
+
+  RegisterUser(
+    username: string,
+    password: string,
+    password2: string,
+  ): Promise<{ success: boolean; errorMsg: string }>;
 
   GetExportUrl(
     timeStart: string,
@@ -37,7 +42,7 @@ export interface IApiCaller {
     json: {
       id: number;
       username: string;
-      roles: "base_user" | "extended_user" | "admin_user";
+      role: "base_user" | "extended_user" | "admin_user";
     };
   }>;
 
@@ -131,13 +136,13 @@ export class MockApiCaller implements IApiCaller {
     json: {
       id: number;
       username: string;
-      roles: "base_user" | "extended_user" | "admin_user";
+      role: "base_user" | "extended_user" | "admin_user";
     };
   }> {
     return {
       success: true,
       errorMsg: "",
-      json: { id: 1, username: "superuse", roles: "admin_user" },
+      json: { id: 1, username: "superuse", role: "admin_user" },
     };
   }
   private users: string[] = ["Alf", "Horst", "James"];
@@ -153,9 +158,8 @@ export class MockApiCaller implements IApiCaller {
     json: {
       id: number;
       username: string;
-      is_active: boolean;
-      is_staff: boolean;
       date_joined: string;
+      role: string;
     }[];
   }> {
     //check current user rights -> done in backend
@@ -165,13 +169,19 @@ export class MockApiCaller implements IApiCaller {
       json: [
         {
           id: 1,
-          username: "superuse",
-          is_active: true,
-          is_staff: true,
+          username: "superuser",
           date_joined: "2026-01-02T17:21:19.189201Z",
+          role: "admin",
         },
       ],
     };
+  }
+  async RegisterUser(
+    username: string,
+    password: string,
+    password2: string,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "not supported in MockApi" };
   }
 
   async GetStatisticsPresets(): Promise<string[]> {
