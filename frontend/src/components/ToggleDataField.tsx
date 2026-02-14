@@ -5,14 +5,21 @@ import {
   FormControlLabel,
   Stack,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
   toggleField: ToggleField;
   isEditMode: boolean;
   onChange: (field: ToggleField) => void;
+  onDelete: (id: number) => void;
 }
 
-function ToggleDataField({ toggleField, isEditMode, onChange }: Props) {
+function ToggleDataField({
+  toggleField,
+  isEditMode,
+  onChange,
+  onDelete,
+}: Props) {
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{toggleField.name}</label>}
@@ -40,6 +47,9 @@ function ToggleDataField({ toggleField, isEditMode, onChange }: Props) {
           label=""
         />
       }
+      {isEditMode && (
+        <DeleteIcon color="error" onClick={() => onDelete(toggleField.id)} />
+      )}
     </Stack>
   );
 }

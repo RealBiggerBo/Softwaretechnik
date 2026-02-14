@@ -2,7 +2,16 @@ import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { FieldRenderer } from "./Fieldrenderer";
-import { Alert, Button, Fab, Snackbar } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Fab,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { type DataRecord } from "../classes/DataRecord";
 import { type DataField } from "../classes/DataField";
 import { useSearchParams } from "react-router-dom";
@@ -24,6 +33,8 @@ function AnfragenGenerator({ caller }: Props) {
   const [originalRecord, setOriginalRecord] = useState<DataRecord | null>(null);
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [role, setRole] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   let urlid = parseInt(searchParams.get("id") ?? "", 10);
 
@@ -117,6 +128,7 @@ function AnfragenGenerator({ caller }: Props) {
             textField={newTextField}
             isEditMode={isEditMode}
             onChange={handleFieldChange}
+            onDelete={handleDelete}
           />
         );
       case "date":
@@ -134,6 +146,7 @@ function AnfragenGenerator({ caller }: Props) {
             dateField={newDateField}
             isEditMode={isEditMode}
             onChange={handleFieldChange}
+            onDelete={handleDelete}
           />
         );
       case "integer":
@@ -153,6 +166,7 @@ function AnfragenGenerator({ caller }: Props) {
             integerField={newIntegerField}
             isEditMode={isEditMode}
             onChange={handleFieldChange}
+            onDelete={handleDelete}
           />
         );
       case "toggle":
@@ -170,6 +184,7 @@ function AnfragenGenerator({ caller }: Props) {
             toggleField={newToggleField}
             isEditMode={isEditMode}
             onChange={handleFieldChange}
+            onDelete={handleDelete}
           />
         );
       default:
@@ -202,6 +217,27 @@ function AnfragenGenerator({ caller }: Props) {
     return role;
   }
 
+  function handleDelete() {
+    if (!record || deleteId === null) return;
+
+    setRecord({
+      dataFields: record.dataFields.filter((f) => f.id !== deleteId),
+    });
+
+    setDeleteId(null);
+    setOpenDeleteDialog(false);
+  }
+
+  function handleDeleteRequest(id: number) {
+    setDeleteId(id);
+    setOpenDeleteDialog(true);
+  }
+
+  function cancelDelete() {
+    setDeleteId(null);
+    setOpenDeleteDialog(false);
+  }
+
   return (
     <div>
       <h1>Hallo ich bin eine Anfrage</h1>
@@ -223,6 +259,7 @@ function AnfragenGenerator({ caller }: Props) {
             field={field}
             isEditMode={isEditMode}
             onChange={handleFieldChange}
+            onDelete={handleDeleteRequest}
           />
           <br />
         </div>
@@ -250,6 +287,16 @@ function AnfragenGenerator({ caller }: Props) {
           {saveResult ? "Speichern erfolgreich!" : "Speichern fehlgeschlagen!"}
         </Alert>
       </Snackbar>
+      <Dialog open={openDeleteDialog} onClose={cancelDelete}>
+        <DialogTitle>Feld löschen?</DialogTitle>
+        <DialogContent>Möchten Sie dieses Feld wirklich löschen?</DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete}>Abbrechen</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            Löschen
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

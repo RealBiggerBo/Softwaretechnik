@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { type TextField } from "../classes/DataField";
 import { Stack, TextField as Tf } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
   textField: TextField;
   isEditMode: boolean;
   onChange: (field: TextField) => void;
+  onDelete: (id: number) => void;
 }
 
-function TextDataField({ textField, isEditMode, onChange }: Props) {
+function TextDataField({ textField, isEditMode, onChange, onDelete }: Props) {
   const [value, setValue] = useState("");
   const [touched, setTouched] = useState(false);
   const isError = touched && value.trim() === "" && textField.required;
@@ -42,6 +44,9 @@ function TextDataField({ textField, isEditMode, onChange }: Props) {
           helperText={isError ? "Dieses Feld ist erforderlich" : ""}
         ></Tf>
       }
+      {isEditMode && (
+        <DeleteIcon color="error" onClick={() => onDelete(textField.id)} />
+      )}
     </Stack>
   );
 }

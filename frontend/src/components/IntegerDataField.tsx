@@ -1,13 +1,20 @@
 import { type IntegerField } from "../classes/DataField";
 import { Stack, TextField as Tf } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
   integerField: IntegerField;
   isEditMode: boolean;
   onChange: (field: IntegerField) => void;
+  onDelete: (id: number) => void;
 }
 
-function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
+function IntegerDataField({
+  integerField,
+  isEditMode,
+  onChange,
+  onDelete,
+}: Props) {
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{integerField.name}</label>}
@@ -36,6 +43,9 @@ function IntegerDataField({ integerField, isEditMode, onChange }: Props) {
           sx={{ width: 100 }}
         ></Tf>
       }
+      {isEditMode && (
+        <DeleteIcon color="error" onClick={() => onDelete(integerField.id)} />
+      )}
     </Stack>
   );
 }

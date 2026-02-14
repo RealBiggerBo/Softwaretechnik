@@ -2,14 +2,16 @@ import { type DateField } from "../classes/DataField";
 import { Stack, TextField as Tf } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
   dateField: DateField;
   isEditMode: boolean;
   onChange: (field: DateField) => void;
+  onDelete: (id: number) => void;
 }
 
-function DateDataField({ dateField, isEditMode, onChange }: Props) {
+function DateDataField({ dateField, isEditMode, onChange, onDelete }: Props) {
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       {!isEditMode && <label>{dateField.name}</label>}
@@ -52,6 +54,9 @@ function DateDataField({ dateField, isEditMode, onChange }: Props) {
           // }}
         ></DatePicker>
       }
+      {isEditMode && (
+        <DeleteIcon color="error" onClick={() => onDelete(dateField.id)} />
+      )}
     </Stack>
   );
 }

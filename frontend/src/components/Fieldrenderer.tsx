@@ -9,9 +9,15 @@ interface Props {
   field: DataField;
   isEditMode: boolean;
   onChange: (field: DataField) => void;
+  onDelete: (id: number) => void;
 }
 
-export function FieldRenderer({ field, isEditMode, onChange }: Props) {
+export function FieldRenderer({
+  field,
+  isEditMode,
+  onChange,
+  onDelete,
+}: Props) {
   switch (field.type) {
     case "text":
       return (
@@ -19,6 +25,7 @@ export function FieldRenderer({ field, isEditMode, onChange }: Props) {
           textField={field}
           isEditMode={isEditMode}
           onChange={onChange}
+          onDelete={onDelete}
         />
       );
     case "integer":
@@ -27,6 +34,7 @@ export function FieldRenderer({ field, isEditMode, onChange }: Props) {
           integerField={field}
           isEditMode={isEditMode}
           onChange={onChange}
+          onDelete={onDelete}
         />
       );
     case "boolean":
@@ -35,6 +43,7 @@ export function FieldRenderer({ field, isEditMode, onChange }: Props) {
           toggleField={field}
           isEditMode={isEditMode}
           onChange={onChange}
+          onDelete={onDelete}
         />
       );
     case "enum":
@@ -43,6 +52,7 @@ export function FieldRenderer({ field, isEditMode, onChange }: Props) {
           enumField={field}
           isEditMode={isEditMode}
           onChange={onChange}
+          onDelete={onDelete}
         />
       );
     case "date":
@@ -51,6 +61,7 @@ export function FieldRenderer({ field, isEditMode, onChange }: Props) {
           dateField={field}
           isEditMode={isEditMode}
           onChange={onChange}
+          onDelete={onDelete}
         />
       );
   }

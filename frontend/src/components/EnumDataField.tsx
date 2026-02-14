@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { type EnumField } from "../classes/DataField";
 import { TextField as Tf, Autocomplete, Stack } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
   enumField: EnumField;
   isEditMode: boolean;
   onChange: (field: EnumField) => void;
+  onDelete: (id: number) => void;
 }
 
-function EnumDataField({ enumField, isEditMode, onChange }: Props) {
+function EnumDataField({ enumField, isEditMode, onChange, onDelete }: Props) {
   const [value, setValue] = useState("");
   const [touched, setTouched] = useState(false);
   const isError = touched && value.trim() === "" && enumField.required;
@@ -71,6 +73,9 @@ function EnumDataField({ enumField, isEditMode, onChange }: Props) {
           sx={{ width: 300 }}
         />
       }
+      {isEditMode && (
+        <DeleteIcon color="error" onClick={() => onDelete(enumField.id)} />
+      )}
     </Stack>
   );
 }
