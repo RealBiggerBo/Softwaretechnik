@@ -9,15 +9,22 @@ interface Props {
   label: string;
   id: string;
   value: string;
+  extraLabel?: string;
   onValueChange: (value: string) => void;
 }
 
-function PasswordInput({ label, id, value, onValueChange }: Props) {
+function PasswordInput({
+  label,
+  id,
+  value,
+  extraLabel = label,
+  onValueChange,
+}: Props) {
   const [showPswd, setShowPswd] = useState(false);
 
   return (
     <>
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>{extraLabel}</label>
       <Input
         id={id}
         className="passwordInput"

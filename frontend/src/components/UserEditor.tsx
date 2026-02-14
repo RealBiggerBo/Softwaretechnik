@@ -1,6 +1,8 @@
 import { Autocomplete, Button, TextField } from "@mui/material";
 import type { IApiCaller } from "../classes/IApiCaller";
 import type { DataRecord } from "../classes/DataRecord";
+import React, { useState } from "react";
+import PasswordInput from "./PasswordInput";
 
 interface Props {
   user: DataRecord;
@@ -8,7 +10,7 @@ interface Props {
   updateData: () => void;
 }
 
-function GetUserRight(user: DataRecord) {
+function GetUserRole(user: DataRecord) {
   const rightFields = user.dataFields.filter((field) => field.name == "Rolle");
   if (rightFields.length > 0 && rightFields[0].type == "text") {
     switch (rightFields[0].text) {
@@ -20,15 +22,6 @@ function GetUserRight(user: DataRecord) {
         return "Admin";
     }
   } else return "";
-}
-
-function GetUserId(user: DataRecord) {
-  const idFields = user.dataFields.filter(
-    (field) => field.name.toLowerCase() == "id",
-  );
-  if (idFields.length > 0 && idFields[0].type == "integer")
-    return idFields[0].value;
-  else return -1;
 }
 
 function MapToApiRoleString(
@@ -46,12 +39,27 @@ function MapToApiRoleString(
   }
 }
 
+function GetUserId(user: DataRecord) {
+  const idFields = user.dataFields.filter(
+    (field) => field.name.toLowerCase() == "id",
+  );
+  if (idFields.length > 0 && idFields[0].type == "integer")
+    return idFields[0].value;
+  else return -1;
+}
+
 function UserEditor({ user, caller, updateData }: Props) {
+  const initialUserRole = GetUserRole(user);
+  const [role, setRole] = useState(initialUserRole ? initialUserRole : "");
+  const [newPswd, setNewPswd] = useState("");
+
   return (
-    <>
+    <div className="settingsForm">
+      <label>Benutzerrolle ändern</label>
       <Autocomplete
         options={["Admin", "Erweitert", "Basis"]}
-        value={GetUserRight(user)}
+        value={role}
+        disableClearable={true}
         onChange={async (e, newOption) => {
           const roleString = MapToApiRoleString(newOption);
           if (roleString) {
@@ -59,18 +67,32 @@ function UserEditor({ user, caller, updateData }: Props) {
               GetUserId(user),
               roleString,
             );
+            if (res.success) {
+              setRole(newOption);
+              alert("Nutzerberechtigung erfolgreich übernommen");
+            } else {
+              setRole(role); //display previous role to show the failed change
+              alert(res.errorMsg);
+            }
             updateData();
-            if (res.success) alert("Nutzerberechtigung erfolgreich übernommen");
-            else alert(res.errorMsg);
           }
         }}
         renderInput={(params) => (
           <TextField {...params} label="Rolle auswählen" />
         )}
       />
+      {/* <label>Passwort zurücksetzen</label> */}
+      <PasswordInput
+        label="neues Passwort"
+        id="newPswd"
+        value={newPswd}
+        extraLabel="Passwort zurücksetzen"
+        onValueChange={setNewPswd}
+      />
       <Button
+        className="passwordChangeSubmitBtn"
         onClick={async () => {
-          const res = await caller.ResetUserPassword(GetUserId(user), "asd");
+          const res = await caller.ResetUserPassword(GetUserId(user), newPswd);
           updateData();
           if (res.success) alert("Passwort erfolgreich zurückgesetzt");
           else alert(res.errorMsg);
@@ -79,6 +101,7 @@ function UserEditor({ user, caller, updateData }: Props) {
         Passwort zurücksetzen
       </Button>
       <Button
+        className="passwordChangeSubmitBtn"
         onClick={async () => {
           const res = await caller.DeleteUser(GetUserId(user));
           updateData();
@@ -88,7 +111,7 @@ function UserEditor({ user, caller, updateData }: Props) {
       >
         Nutzer löschen
       </Button>
-    </>
+    </div>
   );
 }
 

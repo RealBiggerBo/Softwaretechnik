@@ -164,7 +164,7 @@ export class ApiCaller implements IApiCaller {
       `/api/auth/admin/users/` + id + `/role/`,
       "POST",
       true,
-      JSON.stringify(newRole),
+      JSON.stringify({ role: newRole }),
       "Berechtigungsänderung fehlgeschlagen.",
     );
   }
@@ -177,7 +177,7 @@ export class ApiCaller implements IApiCaller {
       `/api/auth/admin/users/` + id + `/reset-password/`,
       "POST",
       true,
-      JSON.stringify(newPswd),
+      JSON.stringify({ new_password: newPswd }),
       "Zurücksetzen des Passworts fehlgeschlagen.",
     );
   }

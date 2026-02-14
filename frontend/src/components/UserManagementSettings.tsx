@@ -48,6 +48,19 @@ function UserManagementSettings({ caller }: Props) {
         mapEntry={(user) => (
           <UserEditor user={user} caller={caller} updateData={loadData} />
         )}
+        mapField={(field) => {
+          if (field.type == "text") {
+            switch (field.text) {
+              case "admin_user":
+                return "Admin";
+              case "extended_user":
+                return "Erweitert";
+              case "base_user":
+                return "Basis";
+            }
+            return null;
+          }
+        }}
       ></DataRecordList>
       <form
         className="settingsForm"

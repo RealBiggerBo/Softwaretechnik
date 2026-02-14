@@ -17,6 +17,7 @@ import type { DataField } from "../classes/DataField";
 interface Props {
   data: DataRecord[];
   mapEntry?: (entry: DataRecord) => ReactNode | null;
+  mapField?: (field: DataField) => ReactNode | null;
 }
 
 function GetFieldValue(field: DataField): ReactNode {
@@ -42,7 +43,7 @@ function GetRecordId(user: DataRecord, fallbackId: number): number {
   return fallbackId;
 }
 
-function DataRecordList({ data, mapEntry }: Props) {
+function DataRecordList({ data, mapEntry, mapField }: Props) {
   const [openRow, setOpenRow] = useState(-1);
 
   if (data.length <= 0) return null;
@@ -82,9 +83,14 @@ function DataRecordList({ data, mapEntry }: Props) {
                       </IconButton>
                     </TableCell>
                   )}
-                  {record.dataFields.map((field) => (
-                    <TableCell key={field.id}>{GetFieldValue(field)}</TableCell>
-                  ))}
+                  {record.dataFields.map((field) => {
+                    const mappedValue = mapField ? mapField(field) : null;
+                    return (
+                      <TableCell key={field.id}>
+                        {mappedValue ? mappedValue : GetFieldValue(field)}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
                 {mapEntry && (
                   <TableRow>
