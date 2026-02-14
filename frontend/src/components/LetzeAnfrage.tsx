@@ -31,6 +31,46 @@ interface Props {
   caller: IApiCaller;
 }
 
+function IsValid(field: DataField) {
+  if (!field.required) return true;
+  switch (field.type) {
+    case "text":
+      return (
+        field.text.length > 0 &&
+        (field.maxLength <= 0 || field.text.length <= field.maxLength)
+      );
+    case "date":
+      return /^\d{4}-\d{2}-\d{2}$/.test(field.date);
+    case "enum":
+      return (
+        field.possibleValues.filter((option) => option == field.selectedValue)
+          .length > 0
+      );
+    case "integer":
+      return (
+        field.maxValue <= field.minValue ||
+        (field.value <= field.maxValue && field.value >= field.minValue)
+      );
+    case "boolean":
+      return true;
+  }
+}
+
+function GetDataRecordValidity(record: DataRecord | null) {
+  if (!record) {
+    alert("Nichts zum Speichern");
+    return false;
+  }
+  for (let i = 0; i < record.dataFields.length; i++) {
+    const field = record.dataFields[i];
+    if (!IsValid(field)) {
+      alert("Fehler bei Feld: " + field.name);
+      return false;
+    }
+  }
+  return true;
+}
+
 function LetzteAnfrage({ caller }: Props) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [record, setRecord] = useState<DataRecord | null>(null);
@@ -99,6 +139,8 @@ function LetzteAnfrage({ caller }: Props) {
 
   async function handleSave() {
     try {
+      if (!GetDataRecordValidity(record)) return;
+
       const result = await Save();
       setSaveResult(result);
     } catch (err) {
