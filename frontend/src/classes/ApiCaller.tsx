@@ -448,25 +448,33 @@ export class ApiCaller implements IApiCaller {
   async TryCreateNewDataRecordFall(
     updatedRecord: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
+    const res = this.SendApiCall(
       "/api/data/data_record/fall",
       "POST",
       true,
       JSON.stringify(updatedRecord),
       "Speicherung der Änderungen Fehlgeschlagen!",
     );
+    if ((await res).success) {
+      alert("Erfolgreich gespeichert!");
+    }
+    return res;
   }
 
   async TryCreateNewDataRecordAnfrage(
     updatedRecord: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
+    const res = this.SendApiCall(
       "/api/data/data_record/anfrage",
       "POST",
       true,
       JSON.stringify(updatedRecord),
       "Speicherung der Änderungen Fehlgeschlagen!",
     );
+    if ((await res).success) {
+      alert("Erfolgreich gespeichert!");
+    }
+    return res;
   }
 
   private async SendApiCall(
