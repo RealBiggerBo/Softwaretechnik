@@ -347,6 +347,30 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
+  async TryDeleteFall(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      `/api/data/data/fall/delete?id=${id}`,
+      "PUT",
+      true,
+      undefined,
+      "Löschen fehlgeschlagen",
+    );
+  }
+
+  async TryDeleteAnfrage(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return this.SendApiCall(
+      `/api/data/data/anfrage/delete?id=${id}`,
+      "PUT",
+      true,
+      undefined,
+      "Löschen fehlgeschlagen",
+    );
+  }
+
   async PingSession(): Promise<boolean> {
     //TODO: use 'SendApiCall' instead of 'request'
     const response = await this.request("/api/auth/ping/", {

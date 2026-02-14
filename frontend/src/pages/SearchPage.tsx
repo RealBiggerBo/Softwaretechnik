@@ -132,6 +132,21 @@ function NavigateToDataPage(
   navigate("/dataview?type=" + type + "&id=" + 1);
 }
 
+async function DeleteDataRecord(
+  type: "fall" | "anfrage",
+  entry: DataRecord,
+  caller: IApiCaller,
+  updateData: () => void,
+) {
+  let res;
+  if (type == "fall") res = await caller.TryDeleteFall(-1);
+  else res = await caller.TryDeleteAnfrage(-1);
+
+  if (res.success) alert("Löschen erfolgreich");
+  else alert(res.errorMsg);
+  updateData();
+}
+
 function SearchPage({ caller }: Props) {
   const navigate = useNavigate();
   const type: "anfrage" | "fall" = GetType(useSearchParams()[0].get("type"));
@@ -139,16 +154,15 @@ function SearchPage({ caller }: Props) {
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
 
+  const loadData = async () => {
+    const result =
+      type == "fall"
+        ? await caller.GetFallJson()
+        : await caller.GetAnfrageJson();
+    setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const result =
-        type == "fall"
-          ? await caller.GetFallJson()
-          : await caller.GetAnfrageJson();
-
-      setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
-    };
-    fetchData();
+    loadData();
   }, [caller]);
 
   return (
@@ -175,9 +189,18 @@ function SearchPage({ caller }: Props) {
         data={searchResult}
         mapEntry={(entry) => {
           return (
-            <Button onClick={() => NavigateToDataPage(type, entry, navigate)}>
-              Bearbeiten
-            </Button>
+            <>
+              <Button onClick={() => NavigateToDataPage(type, entry, navigate)}>
+                Bearbeiten
+              </Button>
+              <Button
+                onClick={async () =>
+                  await DeleteDataRecord(type, entry, caller, loadData)
+                }
+              >
+                Löschen
+              </Button>
+            </>
           );
         }}
       />
