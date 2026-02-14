@@ -1,5 +1,4 @@
-//import { useEffect, useState } from "react";
-import { Routes, Route, Link, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -82,6 +81,7 @@ function App({ caller }: Props) {
                 element={<DataviewPage caller={caller} />}
               />
             </Route>
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </Box>
       </Container>

@@ -3,15 +3,12 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import { Button } from "@mui/material";
+import { ToUiItem, type UiItem } from "../classes/UiItems";
 import {
-  ToNormalPreset,
-  ToUiItem,
-  ToUiPreset,
-  type UiItem,
-} from "../classes/UiItems";
-import PresetDisplay from "../components/PresetDisplay";
-import { useSearchParams } from "react-router";
-import FilterOptionDisplay from "../components/FilterOptionDisplay";
+  useNavigate,
+  useSearchParams,
+  type NavigateFunction,
+} from "react-router";
 import FilterOptionList from "../components/FilterOptionList";
 import type { FilterOption } from "../classes/FilterOption";
 import DataRecordList from "../components/DataRecordList";
@@ -20,7 +17,18 @@ interface Props {
   caller: IApiCaller;
 }
 
-function GetDefaultFilterOptions(type: string): UiItem<FilterOption>[] {
+function GetType(type: string | null) {
+  switch (type?.toLowerCase() ?? "") {
+    case "fall":
+      return "fall";
+    default:
+      return "anfrage";
+  }
+}
+
+function GetDefaultFilterOptions(
+  type: "fall" | "anfrage",
+): UiItem<FilterOption>[] {
   let options: UiItem<FilterOption>[] = [];
 
   return options;
@@ -48,7 +56,7 @@ function RemoveOption(
 }
 
 function Search(
-  type: string,
+  type: "fall" | "anfrage",
   options: UiItem<FilterOption>[],
   setSearchResult: (recordds: DataRecord[]) => void,
   caller: IApiCaller,
@@ -116,8 +124,17 @@ function Search(
   setSearchResult(dummyValues);
 }
 
+function NavigateToDataPage(
+  type: "fall" | "anfrage",
+  entry: DataRecord,
+  navigate: NavigateFunction,
+) {
+  navigate("/dataview?type=" + type + "&id=" + 1);
+}
+
 function SearchPage({ caller }: Props) {
-  const type = useSearchParams()[0].get("type")?.toLocaleLowerCase() ?? "";
+  const navigate = useNavigate();
+  const type: "anfrage" | "fall" = GetType(useSearchParams()[0].get("type"));
   const [options, setOptions] = useState(GetDefaultFilterOptions(type));
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
@@ -154,7 +171,16 @@ function SearchPage({ caller }: Props) {
         Suchen
       </Button>
       <br></br>
-      <DataRecordList data={searchResult}></DataRecordList>
+      <DataRecordList
+        data={searchResult}
+        mapEntry={(entry) => {
+          return (
+            <Button onClick={() => NavigateToDataPage(type, entry, navigate)}>
+              Bearbeiten
+            </Button>
+          );
+        }}
+      />
     </>
   );
 }

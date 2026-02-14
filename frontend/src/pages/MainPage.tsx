@@ -1,6 +1,5 @@
 import MainPageContainer from "../components/MainPageContainer";
 import type { IApiCaller } from "../classes/IApiCaller";
-import { useState } from "react";
 
 interface Props {
   caller: IApiCaller;
