@@ -7,6 +7,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useEffect, useState } from "react";
 
 interface Props {
   caller: IApiCaller;
@@ -16,10 +17,17 @@ function Navbar({ caller }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
+  const [userName, setUserName] = useState("");
 
   const openHelp = () => {
     window.open("/docs/Nutzerhandbuch.pdf", "_blank");
   };
+
+  useEffect(() => {
+    const loadData = async () =>
+      setUserName((await caller.GetCurrentUserRights()).json?.username ?? "");
+    !isLoginPage ? loadData() : setUserName("");
+  }, [isLoginPage]);
 
   return (
     <AppBar position="static">
@@ -40,6 +48,9 @@ function Navbar({ caller }: Props) {
         >
           <SettingsIcon />
         </IconButton>
+
+        {/* Anzeigen des aktuell angemeldeten Nutzers*/}
+        <label style={{ padding: "8px" }}>{userName}</label>
 
         {/* Abstand */}
         <Box sx={{ flexGrow: 1 }} />
@@ -79,7 +90,7 @@ function Navbar({ caller }: Props) {
         {/* Wenn ausgeloggt: ausgegraute Icons anzeigen */}
         {isLoginPage && (
           <>
-            <IconButton color="inherit" disabled>
+            <IconButton color="inherit" onClick={openHelp}>
               <HelpOutlineIcon />
             </IconButton>
             <IconButton color="inherit" disabled>
