@@ -11,7 +11,6 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import DataviewPage from "./pages/DataviewPage";
 import SearchPage from "./pages/SearchPage";
-import HelpPage from "./pages/HelpPage";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -66,7 +65,7 @@ function App({ caller }: Props) {
               path="/login"
               element={<LoginPage caller={caller} onLogin={handleLogin} />}
             />
-            <Route path="/help" element={<HelpPage />} />
+            <Route path="/help" element={<></>} />
             <Route element={<ProtectedRoute isAuthenticated={isLoggedIn} />}>
               <Route path="/main" element={<MainPage caller={caller} />} />
               <Route

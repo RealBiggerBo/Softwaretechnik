@@ -57,7 +57,10 @@ function Search(
   if (type == "fall") res = caller.TrySearchFall(options);
   else res = caller.TrySearchAnfrage(options);
 
-  alert("Not yet implemented. Dummy values provided");
+  alert(
+    "Not yet implemented. Dummy values provided. FilterOptions were: " +
+      JSON.stringify(options),
+  );
 
   const dummyValues: DataRecord[] = [
     {
