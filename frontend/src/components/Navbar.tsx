@@ -17,10 +17,13 @@ function Navbar({ caller }: Props) {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
 
+  const openHelp = () => {
+    window.open("/docs/Nutzerhandbuch.pdf", "_blank");
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
-
         {/* Linke Seite: Home + Settings */}
         <IconButton
           color="inherit"
@@ -56,10 +59,7 @@ function Navbar({ caller }: Props) {
             </Box>
 
             {/* Hilfe */}
-            <IconButton
-              color="inherit"
-              onClick={() => navigate("/help")}
-            >
+            <IconButton color="inherit" onClick={openHelp}>
               <HelpOutlineIcon />
             </IconButton>
 
@@ -87,7 +87,6 @@ function Navbar({ caller }: Props) {
             </IconButton>
           </>
         )}
-
       </Toolbar>
     </AppBar>
   );
