@@ -31,7 +31,7 @@ function FilterOptionList({
       {filterOptions.map((option, _) => (
         <div key={option.id}>
           <FilterOptionDisplay
-            action={option}
+            option={option}
             format={format}
             onChange={(newOption) => {
               updateFilterOption(option, newOption);

@@ -19,8 +19,8 @@ function MainPage({ caller }: Props) {
           heading="Suche"
           body="Hier können Anfragen und Fälle gesucht werden."
           color="search"
-          buttons={["Suchen"]}
-          links={["/search"]}
+          buttons={["Fall Suchen", "Anfrage Suchen"]}
+          links={["/search?type=fall", "/search?type=anfrage"]}
         />
         <MainPageContainer
           heading="Statistik"
@@ -34,7 +34,10 @@ function MainPage({ caller }: Props) {
           body="Hier können der zuletzt bearbeitete Fall und die zuletzt bearbeitete Anfrage aufgerufen werden."
           color="lastUsed"
           buttons={["Letzter Fall", "Letzte Anfrage"]}
-          links={["/dataview?type=letzter-fall", "/dataview?type=letzte-anfrage"]}
+          links={[
+            "/dataview?type=letzter-fall",
+            "/dataview?type=letzte-anfrage",
+          ]}
         />
         <MainPageContainer
           heading="Neu erstellen"

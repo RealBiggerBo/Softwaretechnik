@@ -7,7 +7,7 @@ import type { FilterOption } from "../classes/FilterOption";
 import FilterOptionEditor from "./FilterOptionEditor";
 
 interface Props {
-  action: UiItem<FilterOption>;
+  option: UiItem<FilterOption>;
   format: DataRecord;
   onChange: (action: UiItem<FilterOption>) => void;
 }
@@ -118,13 +118,13 @@ function GetSelectedFilterOption(
   );
 }
 
-function FilterOptionDisplay({ action, format, onChange }: Props) {
+function FilterOptionDisplay({ option, format, onChange }: Props) {
   const selectedDataField = format.dataFields.find(
-    (f) => f.id === action.value.fieldId,
+    (f) => f.id === option.value.fieldId,
   );
   const filterOptions = GenerateAutoCompleteOptions(selectedDataField);
-  const selectedFilterOption = GetSelectedFilterOption(action, filterOptions);
-  const selectedFieldOption = GetSelectedFieldOption(action, format.dataFields);
+  const selectedFilterOption = GetSelectedFilterOption(option, filterOptions);
+  const selectedFieldOption = GetSelectedFieldOption(option, format.dataFields);
 
   return (
     <>
@@ -164,7 +164,7 @@ function FilterOptionDisplay({ action, format, onChange }: Props) {
       )}
       {selectedDataField != undefined && selectedFilterOption != undefined && (
         <FilterOptionEditor
-          filterOption={action}
+          filterOption={option}
           onChange={onChange}
         ></FilterOptionEditor>
       )}
