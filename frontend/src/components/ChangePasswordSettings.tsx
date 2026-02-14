@@ -25,7 +25,7 @@ function ChangePasswordSettings({ caller }: Props) {
 
   return (
     <form
-      className="passwordChangeForm"
+      className="settingsForm"
       onSubmit={async (event) => {
         event.preventDefault();
         await submitPasswordChangeRequest(

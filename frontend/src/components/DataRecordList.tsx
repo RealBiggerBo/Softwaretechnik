@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import type { IApiCaller } from "../classes/IApiCaller";
+import React, { Fragment, useEffect, useState, type ReactNode } from "react";
 import { type DataRecord } from "../classes/DataRecord";
-import { DataRecordConverter } from "../classes/DataRecordConverter";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
+  Collapse,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -13,10 +15,12 @@ import {
 import type { DataField } from "../classes/DataField";
 
 interface Props {
-  getData: () => Promise<DataRecord[]>;
+  data: DataRecord[];
+  mapEntry?: (entry: DataRecord) => ReactNode | null;
+  mapField?: (field: DataField) => ReactNode | null;
 }
 
-function GetValueField(field: DataField) {
+function GetFieldValue(field: DataField): ReactNode {
   switch (field.type) {
     case "text":
       return field.text;
@@ -27,49 +31,83 @@ function GetValueField(field: DataField) {
     case "date":
       return field.date;
     case "enum":
-      return field.possibleValues;
+      return field.possibleValues?.join(", ");
+    default:
+      return null;
   }
-  return "";
 }
 
-function DataRecordList({ getData }: Props) {
-  const initialUsers: DataRecord[] = [];
-  const [users, setUsers] = useState(initialUsers);
+function GetRecordId(user: DataRecord, fallbackId: number): number {
+  const idFields = user.dataFields.filter((field) => field.name == "id");
+  if (idFields.length > 0) return GetFieldValue(idFields[0]) as number;
+  return fallbackId;
+}
 
-  useEffect(() => {
-    const fetchData = async () => setUsers(await getData());
-    fetchData();
-    alert("Fetch");
-  }, []);
+function DataRecordList({ data, mapEntry, mapField }: Props) {
+  const [openRow, setOpenRow] = useState(-1);
 
-  if (users.length <= 0) return <label>ZERO</label>;
+  if (data.length <= 0) return null;
   return (
-    <>
-      <label>{users.length}</label>
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              {users[0].dataFields.map((field) => (
-                <TableCell>{field.name}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user, id) => (
-              <TableRow
-                key={id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                {user.dataFields.map((field) => (
-                  <TableCell>{GetValueField(field)}</TableCell>
-                ))}
-              </TableRow>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {mapEntry && <TableCell />}
+            {data[0].dataFields.map((field) => (
+              <TableCell key={field.id.toString()}>{field.name}</TableCell>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((record, index) => {
+            const id = GetRecordId(record, index);
+            const isOpen = openRow === index;
+            return (
+              <Fragment key={id.toString()}>
+                <TableRow
+                  hover
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  {mapEntry && (
+                    <TableCell>
+                      <IconButton
+                        onClick={() =>
+                          isOpen ? setOpenRow(-1) : setOpenRow(index)
+                        }
+                      >
+                        {openRow === index ? (
+                          <KeyboardArrowUpIcon />
+                        ) : (
+                          <KeyboardArrowDownIcon />
+                        )}
+                      </IconButton>
+                    </TableCell>
+                  )}
+                  {record.dataFields.map((field) => {
+                    const mappedValue = mapField ? mapField(field) : null;
+                    return (
+                      <TableCell key={field.id}>
+                        {mappedValue ? mappedValue : GetFieldValue(field)}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+                {mapEntry && (
+                  <TableRow>
+                    <TableCell
+                      style={{ paddingBottom: 0, paddingTop: 0 }}
+                      colSpan={record.dataFields.length + 1}
+                    >
+                      <Collapse in={isOpen}>{mapEntry(record)}</Collapse>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </Fragment>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

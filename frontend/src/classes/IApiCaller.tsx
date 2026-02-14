@@ -13,18 +13,27 @@ export interface IApiCaller {
     }[];
   }>;
 
-  RegisterUser(
+  RegisterNewUser(
     username: string,
     password: string,
     password2: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
-
+  DeleteUser(id: number): Promise<{ success: boolean; errorMsg: string }>;
+  ChangeUserRole(
+    id: number,
+    newRole: "base_user" | "extended_user" | "admin_user",
+  ): Promise<{ success: boolean; errorMsg: string }>;
   GetExportUrl(
     timeStart: string,
     timeEnd: string,
     preset: string,
     fileformat: string,
   ): Promise<string>;
+  ResetUserPassword(
+    id: number,
+    newPswd: string,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
   GetStatisticsPresetList(): Promise<PresetItemListElement[]>;
 
   GetStatisticsPreset(
@@ -125,7 +134,6 @@ export class MockApiCaller implements IApiCaller {
     pswd1: string,
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    void user;
     if (pswd1 == pswd2) {
       return { success: true, errorMsg: "" };
     }
@@ -187,10 +195,27 @@ export class MockApiCaller implements IApiCaller {
       ],
     };
   }
-  async RegisterUser(
+  async RegisterNewUser(
     username: string,
     password: string,
     password2: string,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "not supported in MockApi" };
+  }
+  async DeleteUser(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "not supported in MockApi" };
+  }
+  async ChangeUserRole(
+    id: number,
+    newRole: "base_user" | "extended_user" | "admin_user",
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "not supported in MockApi" };
+  }
+  async ResetUserPassword(
+    id: number,
+    newPswd: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return { success: false, errorMsg: "not supported in MockApi" };
   }
