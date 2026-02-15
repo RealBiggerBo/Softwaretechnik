@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
@@ -88,7 +88,7 @@ class DataAPI(APIView):
         return Response(serializer.data)
 
 class DataRecordAPI(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, type):
         """
@@ -106,6 +106,9 @@ class DataRecordAPI(APIView):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+class DataRecordAdminAPI(APIView):
+    permission_classes = [IsAdminUser]
+
     def post(self, request, type):
         """
         Erstellt eine neue Version eines DataRecords.
