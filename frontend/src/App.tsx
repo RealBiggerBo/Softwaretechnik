@@ -36,7 +36,7 @@ function GetMainColor(url: string, search: string) {
     case "/statistics":
       return "#e5017c";
     case "/dataview":
-      if (searchParams.has("id")) return "#00ff00";
+      if (searchParams.has("id")) return "#e5017c40";
       return "#fd0";
     case "/settings":
       return "#bcbcbc";
