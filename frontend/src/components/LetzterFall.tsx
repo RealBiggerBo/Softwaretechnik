@@ -299,7 +299,7 @@ function LetzterFall({ caller }: Props) {
 
   return (
     <div>
-      <h1>Hallo ich bin eine Fall</h1>
+      <h1>Fall bearbeiten</h1>
       {role !== "base_user" && (
         <Fab
           color="primary"

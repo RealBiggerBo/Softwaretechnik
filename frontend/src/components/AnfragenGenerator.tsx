@@ -305,7 +305,7 @@ function AnfragenGenerator({ caller }: Props) {
 
   return (
     <div>
-      <h1>Hallo ich bin eine Anfrage</h1>
+      {isNaN(urlid) ? <h1>Anfrage erstellen</h1> : <h1>Anfrage bearbeiten</h1>}
       {role !== "base_user" && (
         <Fab
           color="primary"

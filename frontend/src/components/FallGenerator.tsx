@@ -316,7 +316,7 @@ function FallGenerator({ caller }: Props) {
 
   return (
     <div>
-      <h1>Hallo ich bin ein Fall</h1>
+      {isNaN(urlid) ? <h1>Fall erstellen</h1> : <h1>Fall bearbeiten</h1>}
       {role !== "base_user" && (
         <Fab
           color="primary"
