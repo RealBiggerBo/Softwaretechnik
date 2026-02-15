@@ -286,11 +286,13 @@ function LetzteAnfrage({ caller }: Props) {
   }
 
   function deletable() {
+    const urlid = -1;
     if (!isNaN(urlid) && isEditMode) return true;
     else return false;
   }
 
   async function handleDeleteRecord() {
+    const urlid = -1;
     const suc = (await caller.TryDeleteAnfrage(urlid)).success;
     if (suc) {
       alert("Anfrage erfolgreich gelöscht");

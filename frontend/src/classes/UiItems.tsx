@@ -9,6 +9,7 @@ export type UiItem<T> = {
 };
 
 export type UiQuery = {
+  queryTitle: string;
   displayActions: UiItem<DisplayAction>[];
   filterOptions: UiItem<FilterOption>[];
 };
@@ -31,6 +32,7 @@ export function ToUiQuery(
   existing?: UiItem<UiQuery>,
 ): UiItem<UiQuery> {
   const uiQuery: UiQuery = {
+    queryTitle: query.queryTitle,
     displayActions: query.displayActions.map((da) => ToUiItem(da)),
     filterOptions: query.filterOptions.map((fo) => ToUiItem(fo)),
   };
@@ -49,6 +51,7 @@ export function ToUiPreset(preset: Preset, existing?: UiItem<UiPreset>) {
 
 export function ToNormalQuery(uiQuery: UiItem<UiQuery>): Query {
   return {
+    queryTitle: uiQuery.value.queryTitle,
     displayActions: uiQuery.value.displayActions.map(
       (uiDisplayAction) => uiDisplayAction.value,
     ),
