@@ -4,6 +4,7 @@ from rest_framework import status
 from api.accounts.permissions import IsAdminUser
 from django.contrib.auth.models import User, Group
 from .serializers import RegisterSerializer
+from django.db.models import Q
 
 # API für die Registrierung.
 class AdminUserRegisterAPI(APIView):
@@ -109,16 +110,20 @@ class AdminChangeRoleAPI(APIView):
         if user == request.user and role != "admin_user":
             return Response({"error": "Du kannst dir selbst keine Adminrechte entziehen"}, status=403)
 
-        # Es wird sicher gestellt, dass es min. einen Admin im System gibt.
+        # Es wird sicher gestellt, dass es min. einen Admin/Superuser im System gibt. 
         # Prüfen:
-        # 1. ob Nutzer derzeit ein Admin ist.
+        # 1. ob Nutzer derzeit ein Admin/Superuser ist.
         # 2. ob Nutzer Admin ist und ihm die Admin Rolle entzogen werden soll.
         # 3. ob es aktuell nur einen Admin gibt.
         # Wenn etwas davon zutrifft gib es eine Fehlermeldung.
+        admin_count = User.objects.filter(
+           Q(groups__name="admin_user") | Q(is_superuser=True)
+        ).distinct().count()
+       
         if (
-            user.groups.filter(name="admin_user").exists()  
+            (user.groups.filter(name="admin_user").exists() or user.is_superuser)
             and role != "admin_user"                        
-            and User.objects.filter(groups__name="admin_user").count() <= 1     
+            and admin_count <= 1     
         ):
             return Response({"error": "Mindestens ein Admin muss existieren"}, status=403)
 
