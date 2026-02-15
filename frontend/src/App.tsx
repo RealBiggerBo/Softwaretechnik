@@ -1,4 +1,11 @@
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useNavigation,
+  useNavigate,
+} from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -37,7 +44,7 @@ function App({ caller }: Props) {
     }
 
     checkLogin();
-  }, [caller]);
+  }, [useNavigate()]);
 
   function handleLogin() {
     setIsLoggedIn(true);
