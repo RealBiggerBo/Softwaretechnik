@@ -25,7 +25,9 @@ interface Props {
   caller: IApiCaller;
 }
 
-function GetMainColor(url: string) {
+function GetMainColor(url: string, search: string) {
+  const searchParams = new URLSearchParams(search);
+
   switch (url) {
     case "/main":
     case "/login":
@@ -34,6 +36,7 @@ function GetMainColor(url: string) {
     case "/statistics":
       return "#e5017c";
     case "/dataview":
+      if (searchParams.has("id")) return "#00ff00";
       return "#fd0";
     case "/settings":
       return "#bcbcbc";
@@ -41,8 +44,8 @@ function GetMainColor(url: string) {
   return "#ff00ff";
 }
 
-function GetColorTheme(url: string): Theme {
-  const mainCol = GetMainColor(url);
+function GetColorTheme(url: string, search: string): Theme {
+  const mainCol = GetMainColor(url, search);
 
   return createTheme({
     palette: {
@@ -58,7 +61,9 @@ function App({ caller }: Props) {
     isAuthenticated: boolean;
   }
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [theme, setTheme] = useState(GetColorTheme(useLocation().pathname));
+  const [theme, setTheme] = useState(
+    GetColorTheme(useLocation().pathname, useLocation().search),
+  );
 
   useEffect(() => {
     async function checkLogin() {
@@ -78,8 +83,8 @@ function App({ caller }: Props) {
   }, [useNavigate()]);
 
   useEffect(() => {
-    setTheme(GetColorTheme(location.pathname));
-  }, [location.pathname]);
+    setTheme(GetColorTheme(location.pathname, location.search));
+  }, [location.pathname, location.search]);
 
   function handleLogin() {
     setIsLoggedIn(true);
