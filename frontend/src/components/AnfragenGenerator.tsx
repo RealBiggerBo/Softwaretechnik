@@ -21,6 +21,7 @@ import ToggleDataField from "./ToggleDataField";
 import IntegerDataField from "./IntegerDataField";
 import DateDataField from "./DateDataField";
 import TextDataField from "./TextDataField";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   caller: IApiCaller;
@@ -75,6 +76,7 @@ function AnfragenGenerator({ caller }: Props) {
   const [role, setRole] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const navigate = useNavigate();
 
   let urlid = parseInt(searchParams.get("id") ?? "", 10);
 
@@ -276,6 +278,19 @@ function AnfragenGenerator({ caller }: Props) {
     setOpenDeleteDialog(false);
   }
 
+  function deletable() {
+    if (!isNaN(urlid) && isEditMode) return true;
+    else return false;
+  }
+
+  async function handleDeleteRecord() {
+    const suc = (await caller.TryDeleteAnfrage(urlid)).success;
+    if (suc) {
+      alert("Anfrage erfolgreich gelöscht");
+      navigate("/main");
+    }
+  }
+
   return (
     <div>
       <h1>Hallo ich bin eine Anfrage</h1>
@@ -310,6 +325,11 @@ function AnfragenGenerator({ caller }: Props) {
         />
       )}
       <br />
+      {deletable() && (
+        <Button variant="contained" color="error" onClick={handleDeleteRecord}>
+          Datensatz löschen
+        </Button>
+      )}
       <Button variant="contained" onClick={handleSave}>
         Speichern
       </Button>
