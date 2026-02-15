@@ -352,7 +352,7 @@ export class ApiCaller implements IApiCaller {
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       `/api/data/data/fall/delete?id=${id}`,
-      "PUT",
+      "DELETE",
       true,
       undefined,
       "Löschen fehlgeschlagen",
@@ -364,7 +364,7 @@ export class ApiCaller implements IApiCaller {
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
       `/api/data/data/anfrage/delete?id=${id}`,
-      "PUT",
+      "DELETE",
       true,
       undefined,
       "Löschen fehlgeschlagen",
