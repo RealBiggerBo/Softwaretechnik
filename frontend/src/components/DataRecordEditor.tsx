@@ -266,7 +266,7 @@ function DataRecordEditor({ caller }: Props) {
       //merge data and data
       const datarecord = DataRecordConverter.MergeDataRecordWithData(
         format,
-        dataRes.success,
+        dataRes.json,
       );
       setRecord(datarecord);
       setLastSavedRecord(datarecord);
