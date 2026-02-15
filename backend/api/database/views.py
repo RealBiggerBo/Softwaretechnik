@@ -124,33 +124,6 @@ class DataRecordAdminAPI(APIView):
 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-class ListAPI(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(request, type):
-        """
-        Listet DataRecords auf.
-        """
-        if type == "anfrage":
-            data_record_list = Anfrage.objects.all()
-            serializer = AnfrageSerializer(data_record_list, many=True)
-        elif type == "fall":
-            data_record_list = Fall.objects.all()
-            serializer = FallSerializer(data_record_list, many=True)
-        elif type == "beratung":
-            data_record_list = Beratung.objects.all()
-            serializer = BeratungSerializer(data_record_list, many=True)
-        elif type == "gewalttat":
-            data_record_list = Gewalttat.objects.all()
-            serializer = GewalttatSerializer(data_record_list, many=True)
-        elif type == "taeter":
-            data_record_list = Taeter.objects.all()
-            serializer = TaeterSerializer(data_record_list, many=True)
-        else:
-            return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(serializer.data)
 
 class SearchAPI(APIView):
     permission_classes = [IsAuthenticated]
