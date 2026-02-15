@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsExtendedUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
@@ -107,7 +107,7 @@ class DataRecordAPI(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class DataRecordAdminAPI(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsExtendedUser]
 
     def post(self, request, type):
         """
