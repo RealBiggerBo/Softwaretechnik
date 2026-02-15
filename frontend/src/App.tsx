@@ -3,8 +3,8 @@ import {
   Route,
   Navigate,
   Outlet,
-  useNavigation,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
@@ -18,9 +18,39 @@ import Container from "@mui/material/Container";
 import DataviewPage from "./pages/DataviewPage";
 import SearchPage from "./pages/SearchPage";
 import { useEffect, useState } from "react";
+import { ThemeProvider, type Theme } from "@emotion/react";
+import { createTheme } from "@mui/material";
 
 interface Props {
   caller: IApiCaller;
+}
+
+function GetMainColor(url: string) {
+  switch (url) {
+    case "/main":
+    case "/login":
+    case "/search":
+      return "#294d9d";
+    case "/statistics":
+      return "#e5017c";
+    case "/dataview":
+      return "#fd0";
+    case "/settings":
+      return "#bcbcbc";
+  }
+  return "#ff00ff";
+}
+
+function GetColorTheme(url: string): Theme {
+  const mainCol = GetMainColor(url);
+
+  return createTheme({
+    palette: {
+      primary: {
+        main: mainCol,
+      },
+    },
+  });
 }
 
 function App({ caller }: Props) {
@@ -28,6 +58,7 @@ function App({ caller }: Props) {
     isAuthenticated: boolean;
   }
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [theme, setTheme] = useState(GetColorTheme(useLocation().pathname));
 
   useEffect(() => {
     async function checkLogin() {
@@ -46,6 +77,10 @@ function App({ caller }: Props) {
     checkLogin();
   }, [useNavigate()]);
 
+  useEffect(() => {
+    setTheme(GetColorTheme(location.pathname));
+  }, [location.pathname]);
+
   function handleLogin() {
     setIsLoggedIn(true);
   }
@@ -62,36 +97,41 @@ function App({ caller }: Props) {
 
   return (
     <div className="mainContainer">
-      <Navbar caller={caller} />
-      <Container fixed>
-        <Box>
-          <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route
-              path="/login"
-              element={<LoginPage caller={caller} onLogin={handleLogin} />}
-            />
-            <Route path="/help" element={<></>} />
-            <Route element={<ProtectedRoute isAuthenticated={isLoggedIn} />}>
-              <Route path="/main" element={<MainPage caller={caller} />} />
+      <ThemeProvider theme={theme}>
+        <Navbar caller={caller} />
+        <Container fixed>
+          <Box>
+            <Routes>
+              <Route path="/" element={<Navigate to="/login" replace />} />
               <Route
-                path="/settings"
-                element={<SettingsPage caller={caller} />}
+                path="/login"
+                element={<LoginPage caller={caller} onLogin={handleLogin} />}
               />
-              <Route
-                path="/statistics"
-                element={<StatisticsPage caller={caller} />}
-              />
-              <Route path="/search" element={<SearchPage caller={caller} />} />
-              <Route
-                path="/dataview"
-                element={<DataviewPage caller={caller} />}
-              />
-            </Route>
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </Box>
-      </Container>
+              <Route path="/help" element={<></>} />
+              <Route element={<ProtectedRoute isAuthenticated={isLoggedIn} />}>
+                <Route path="/main" element={<MainPage caller={caller} />} />
+                <Route
+                  path="/settings"
+                  element={<SettingsPage caller={caller} />}
+                />
+                <Route
+                  path="/statistics"
+                  element={<StatisticsPage caller={caller} />}
+                />
+                <Route
+                  path="/search"
+                  element={<SearchPage caller={caller} />}
+                />
+                <Route
+                  path="/dataview"
+                  element={<DataviewPage caller={caller} />}
+                />
+              </Route>
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          </Box>
+        </Container>
+      </ThemeProvider>
 
       <footer>
         <label>Hier text für den footer?</label>
