@@ -1,7 +1,8 @@
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsExtendedUser
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from api.accounts.permissions import IsExtendedUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
@@ -88,7 +89,7 @@ class DataAPI(APIView):
         return Response(serializer.data)
 
 class DataRecordAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsExtendedUser]
 
     def get(self, request, type):
         """
@@ -96,15 +97,7 @@ class DataRecordAPI(APIView):
         """
         id = request.GET.get("id", None)
 
-        try:
-            data_record = Anfrage if type == "anfrage" else Fall
-            objekt = data_record.objects.get(pk=id) if id != None else data_record.objects.last()
-        except data_record.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        serializer = AnfrageSerializer(objekt) if type == "anfrage" else FallSerializer(objekt)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return get_data_record(id, type)
     
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
@@ -133,3 +126,14 @@ class SearchAPI(APIView):
 
 def type_is_valid(type):
     return type in ["anfrage", "fall"]
+
+def get_data_record(id, type):
+    try:
+        data_record = Anfrage if type == "anfrage" else Fall
+        objekt = data_record.objects.get(pk=id) if id != None else data_record.objects.last()
+    except data_record.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = AnfrageSerializer(objekt) if type == "anfrage" else FallSerializer(objekt)
+
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
