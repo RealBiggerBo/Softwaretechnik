@@ -81,6 +81,7 @@ function LetzteAnfrage({ caller }: Props) {
   const [role, setRole] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -142,9 +143,13 @@ function LetzteAnfrage({ caller }: Props) {
   async function handleSave() {
     try {
       if (!GetDataRecordValidity(record)) return;
-
-      const result = await Save();
-      setSaveResult(result);
+      if (!saved) {
+        const result = await Save();
+        const recordID = 1;
+        setSaveResult(result);
+        setSaved(result);
+        navigate(`?id=${recordID}`, { replace: true });
+      }
     } catch (err) {
       setSaveResult(false);
     }
@@ -157,6 +162,7 @@ function LetzteAnfrage({ caller }: Props) {
         f.id === updatedField.id ? updatedField : f,
       ),
     });
+    setSaved(false);
   }
 
   function handleCreateField(type: string) {
