@@ -477,6 +477,18 @@ export class ApiCaller implements IApiCaller {
     return res;
   }
 
+  async SetLastAnfrage(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "Not implemented!" };
+  }
+
+  async SetLastFall(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "Not implemented!" };
+  }
+
   private async SendApiCall(
     url: string,
     method: "GET" | "POST" | "PUT" | "DELETE",

@@ -122,6 +122,10 @@ export interface IApiCaller {
   TryCreateNewDataRecordAnfrage(
     updatedRecord: any,
   ): Promise<{ success: boolean; errorMsg: string }>;
+
+  SetLastAnfrage(id: number): Promise<{ success: boolean; errorMsg: string }>;
+
+  SetLastFall(id: number): Promise<{ success: boolean; errorMsg: string }>;
 }
 
 export class MockApiCaller implements IApiCaller {
@@ -386,6 +390,18 @@ export class MockApiCaller implements IApiCaller {
 
   async TryCreateNewDataRecordAnfrage(
     updatedRecord: any,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "Not implemented in mock!" };
+  }
+
+  async SetLastAnfrage(
+    id: number,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    return { success: false, errorMsg: "Not implemented in mock!" };
+  }
+
+  async SetLastFall(
+    id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return { success: false, errorMsg: "Not implemented in mock!" };
   }
