@@ -34,8 +34,8 @@ function MainPage({ caller }: Props) {
           color="lastUsed"
           buttons={["Letzter Fall", "Letzte Anfrage"]}
           links={[
-            "/dataview?type=letzter-fall",
-            "/dataview?type=letzte-anfrage",
+            "/dataview?type=letzter-fall&id=5",
+            "/dataview?type=letzte-anfrage&id=5",
           ]}
         />
         <MainPageContainer
