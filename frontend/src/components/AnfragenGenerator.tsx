@@ -235,8 +235,14 @@ function AnfragenGenerator({ caller }: Props) {
   function hasRecordChanged(): boolean {
     if (!record || !originalRecord) return false;
 
-    if (record.dataFields.length !== originalRecord.dataFields.length) {
-      return true; // Feld hinzugefügt oder entfernt
+    const currentIds = record.dataFields.map((f) => f.id);
+    const originalIds = originalRecord.dataFields.map((f) => f.id);
+
+    // IDs vergleichen
+    for (let i = 0; i < currentIds.length; i++) {
+      if (currentIds[i] !== originalIds[i]) {
+        return true; // Struktur geändert
+      }
     }
 
     for (let i = 0; i < record.dataFields.length; i++) {
