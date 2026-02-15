@@ -20,7 +20,34 @@ function Navbar({ caller }: Props) {
   const [userName, setUserName] = useState("");
 
   const openHelp = () => {
-    window.open("/docs/Nutzerhandbuch.pdf", "_blank");
+    switch (location.pathname) {
+      case "/login":
+        window.open("/docs/Benutzerhandbuch.pdf#nameddest=login", "_blank");
+        return;
+      case "/main":
+        window.open(
+          "/docs/Benutzerhandbuch.pdf#nameddest=hauptansicht",
+          "_blank",
+        );
+        return;
+      case "/settings":
+        window.open(
+          "/docs/Benutzerhandbuch.pdf#nameddest=einstellungen",
+          "_blank",
+        );
+        return;
+      case "/search":
+        window.open("/docs/Benutzerhandbuch.pdf#nameddest=suche", "_blank");
+        return;
+      case "/statistics":
+        window.open("/docs/Benutzerhandbuch.pdf#nameddest=statistik", "_blank");
+        return;
+      case "/dataview":
+        window.open("/docs/Benutzerhandbuch.pdf#nameddest=neu", "_blank");
+        return;
+      default:
+        window.open("/docs/Benutzerhandbuch.pdf", "_blank");
+    }
   };
 
   useEffect(() => {
