@@ -26,6 +26,7 @@ import ToggleDataField from "./ToggleDataField";
 import IntegerDataField from "./IntegerDataField";
 import DateDataField from "./DateDataField";
 import TextDataField from "./TextDataField";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   caller: IApiCaller;
@@ -80,6 +81,7 @@ function LetzteAnfrage({ caller }: Props) {
   const [role, setRole] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadData() {
@@ -281,6 +283,19 @@ function LetzteAnfrage({ caller }: Props) {
   function cancelDelete() {
     setDeleteId(null);
     setOpenDeleteDialog(false);
+  }
+
+  function deletable() {
+    if (!isNaN(urlid) && isEditMode) return true;
+    else return false;
+  }
+
+  async function handleDeleteRecord() {
+    const suc = (await caller.TryDeleteAnfrage(urlid)).success;
+    if (suc) {
+      alert("Anfrage erfolgreich gelöscht");
+      navigate("/main");
+    }
   }
 
   return (
