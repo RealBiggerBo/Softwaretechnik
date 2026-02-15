@@ -17,13 +17,13 @@ def _validate_payload(payload: Dict[str, Any]) -> Optional[str]:
     # Minimalvalidierung: Queries vorhanden
     if not isinstance(payload, dict):
         return "Payload muss ein JSON-Objekt sein."
+    
     if "Queries" not in payload:
         return "Payload muss ein Feld 'Queries' enthalten."
+    
     if not isinstance(payload.get("Queries"), list) or len(payload["Queries"]) == 0:
         return "'Queries' muss eine nicht-leere Liste sein."
-    # Optional: PresetTitle vorhanden
-    if "PresetTitle" not in payload or not isinstance(payload["PresetTitle"], str) or not payload["PresetTitle"].strip():
-        return "Payload muss 'PresetTitle' (string) enthalten."
+    
     return None
 
 @csrf_exempt
@@ -33,30 +33,47 @@ def presets_create(request: HttpRequest):
     if body is None:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    # Erlaube zwei Varianten:
-    # - Voller Stats-Payload; Titel aus PresetTitle
-    # - Expliziter Titel + payload
     title = body.get("title") or body.get("PresetTitle")
-    payload = body if "Queries" in body else body.get("payload")
-
     if not isinstance(title, str) or not title.strip():
         return JsonResponse({"error": "title/PresetTitle ist erforderlich."}, status=400)
+    
+
+    payload = body if "Queries" in body else body.get("payload")
     if not isinstance(payload, dict):
         return JsonResponse({"error": "payload muss ein JSON-Objekt sein."}, status=400)
+
+
+    payload.pop("PresetTitle", None)
+    if "GlobalFilterOptions" in payload:
+        for fo in payload["GlobalFilterOptions"]:
+            fo.pop("possibleValues", None)
+
+    from .models import StatsPreset
+    if StatsPreset.objects.filter(title=title.strip()).exists():
+        return JsonResponse({"error": "Preset mit diesem Namen existiert bereits."}, status=409)
+
+    
 
     msg = _validate_payload(payload)
     if msg:
         return JsonResponse({"error": msg}, status=400)
+
 
     preset = StatsPreset.objects.create(
         title=title.strip(),
         payload=payload,
         created_by=getattr(request, "user", None) if getattr(request, "user", None) and getattr(request.user, "is_authenticated", False) else None,
     )
-    return JsonResponse(
-        {"id": preset.id, "title": preset.title, "payload": preset.payload, "created_at": preset.created_at.isoformat()},
-        status=201,
-    )
+
+    # return JsonResponse(
+    #     {"title": preset.title, 
+    #      "Query": preset.payload, 
+    #      "created_at": preset.created_at.isoformat()},
+    #     status=201,
+    # )
+
+    return JsonResponse({"Queries": preset.payload.get("Queries", [])}, status=201)
+
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -108,6 +125,12 @@ def presets_update(request: HttpRequest, preset_id: int):
     if payload is not None:
         if not isinstance(payload, dict):
             return JsonResponse({"error": "payload muss ein JSON-Objekt sein."}, status=400)
+        
+        payload.pop("PresetTitle", None)
+        if "GlobalFilterOptions" in payload:
+            for fo in payload["GlobalFilterOptions"]:
+                fo.pop("possibleValues", None)
+
         msg = _validate_payload(payload)
         if msg:
             return JsonResponse({"error": msg}, status=400)
