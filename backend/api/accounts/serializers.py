@@ -45,7 +45,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         base_group = Group.objects.get(name="base_user")
         # Durch set() wird garantiert das es genau eine Rolle gibt.
         user.groups.set([base_group])
-
         return user
     
 class ChangePasswordSerializer(serializers.Serializer):
@@ -61,3 +60,6 @@ class ChangePasswordSerializer(serializers.Serializer):
         if data['new_password'] != data['new_password2']:
             raise serializers.ValidationError("Passwörter stimmen nicht überein.")
         return data
+    
+class LastRequestSerializer(serializers.Serializer):
+    last_request_id = serializers.IntegerField()
