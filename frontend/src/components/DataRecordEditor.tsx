@@ -309,7 +309,7 @@ function DataRecordEditor({ caller }: Props) {
         DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
       res = await caller.TryCreateAnfrage(rectosaavejson);
       sucsaved = res.success;
-      saveid = Number(res.json["pk"]);
+      saveid = -1 /*Number(res.json["pk"])*/;
       if (sucsaved === undefined || sucsaved === false) {
         openSnackbar("Anfrage konnte nicht gespeichert werden!", false);
         return { success: false };
@@ -327,7 +327,7 @@ function DataRecordEditor({ caller }: Props) {
         DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
       res = await caller.TryCreateFall(rectosaavejson);
       sucsaved = res.success;
-      saveid = Number(res.json["pk"]);
+      saveid = -1 /*Number(res.json["pk"])*/;
       if (sucsaved === undefined || sucsaved === false) {
         openSnackbar("Fall konnte nicht gespeichert werden!", false);
         return { success: false };
