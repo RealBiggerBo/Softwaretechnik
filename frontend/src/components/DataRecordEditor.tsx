@@ -172,16 +172,20 @@ async function CreateNewDataRecord(
   switch (type) {
     case "anfrage":
     case "letzte-anfrage":
-      await caller.TryCreateNewDataRecordAnfrage(
-        DataRecordConverter.ConvertDataRecordToFormat2(toSave),
-      );
-      break;
+      let suc = (
+        await caller.TryCreateNewDataRecordAnfrage(
+          DataRecordConverter.ConvertDataRecordToFormat2(toSave),
+        )
+      ).success;
+      return suc;
     case "fall":
     case "letzter-fall":
-      await caller.TryCreateNewDataRecordFall(
-        DataRecordConverter.ConvertDataRecordToFormat2(toSave),
-      );
-      break;
+      suc = (
+        await caller.TryCreateNewDataRecordFall(
+          DataRecordConverter.ConvertDataRecordToFormat2(toSave),
+        )
+      ).success;
+      return suc;
   }
 }
 
