@@ -217,125 +217,6 @@ async function UpdateDataRecord(
   return false;
 }
 
-async function Save(
-  type: dataRecordType,
-  recordId: number,
-  recordToSave: DataRecord,
-  lastSavedRecord: DataRecord,
-  caller: IApiCaller,
-): Promise<{ success: boolean; snackbar: void }> {
-  //wenn es keinen record zum speichern gibt, snackbar öffnen und abbrechen
-  if (!recordToSave)
-    return { success: false, snackbar: openSnackbar("Nichts zum Speichern!") };
-
-  let succhanged: boolean | undefined = false;
-  let sucsaved: boolean | undefined = false;
-  let res: { success: boolean; errorMsg: string; json: any };
-  let saveid: number = -1;
-  const navigate = useNavigate();
-
-  // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
-  if (hasRecordChanged(recordToSave, lastSavedRecord)) {
-    succhanged = await CreateNewDataRecord(type, recordToSave, caller);
-    if (succhanged === undefined || succhanged === false)
-      return {
-        success: false,
-        snackbar: openSnackbar(
-          "Neue Struktur konnte nicht gespeichert werden!",
-        ),
-      };
-  }
-
-  //wenn die Struktur erfolgreich geändert wurde, snackbar öffnen
-  if (succhanged === true) {
-    openSnackbar("Strukturänderung erfolgreich gespeichert!");
-  }
-
-  //neue Anfrage estellen und snackbar öffnen
-  if (type === "neue-anfrage") {
-    const rectosaavejson =
-      DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
-    res = await caller.TryCreateAnfrage(rectosaavejson);
-    sucsaved = res.success;
-    saveid = Number(res.json["pk"]);
-    if (sucsaved === undefined || sucsaved === false) {
-      return {
-        success: false,
-        snackbar: openSnackbar("Anfrage konnte nicht gespeichert werden!"),
-      };
-    }
-    if (sucsaved === true) {
-      navigate(`/anfrage/${saveid}`, { replace: true });
-      return {
-        success: true,
-        snackbar: openSnackbar("Anfrage erfolgreich gespeichert!"),
-      };
-    }
-  }
-
-  //neuen Fall erstellen und snackbar öffnen
-  if (type === "neuer-fall") {
-    const rectosaavejson =
-      DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
-    res = await caller.TryCreateFall(rectosaavejson);
-    sucsaved = res.success;
-    saveid = Number(res.json["pk"]);
-    if (sucsaved === undefined || sucsaved === false) {
-      return {
-        success: false,
-        snackbar: openSnackbar("Fall konnte nicht gespeichert werden!"),
-      };
-    }
-    if (sucsaved === true) {
-      navigate(`/fall/${saveid}`, { replace: true });
-      return {
-        success: true,
-        snackbar: openSnackbar("Fall erfolgreich gespeichert!"),
-      };
-    }
-  }
-
-  //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
-  if ((await UpdateDataRecord(type, recordToSave, recordId, caller)) === true) {
-    return {
-      success: true,
-      snackbar: openSnackbar("Datensatz erfolgreich aktualisiert!"),
-    };
-  } else {
-    return {
-      success: false,
-      snackbar: openSnackbar("Datensatz konnte nicht aktualisiert werden!"),
-    };
-  }
-}
-
-async function handleSave(
-  type: dataRecordType,
-  recordId: number,
-  recordToSave: DataRecord,
-  lastSavedRecord: DataRecord,
-  caller: IApiCaller,
-  setLastSaved: (lastSaved: DataRecord) => void,
-) {
-  try {
-    if (!GetDataRecordValidity(recordToSave)) return;
-    alert("save");
-    const result = await Save(
-      type,
-      recordId,
-      recordToSave,
-      lastSavedRecord,
-      caller,
-    );
-
-    if (result) setLastSaved(recordToSave);
-  } catch (err) {}
-}
-
-function openSnackbar(message: string) {
-  alert(message);
-}
-
 function DataRecordEditor({ caller }: Props) {
   const searchParams = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams[0].get("type"));
@@ -347,6 +228,9 @@ function DataRecordEditor({ caller }: Props) {
   });
   const [record, setRecord] = useState<DataRecord>({ dataFields: [] });
   const [isEditMode, setIsEditMode] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [saveResult, setSaveResult] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -382,6 +266,143 @@ function DataRecordEditor({ caller }: Props) {
     loadData();
   }, [caller]);
 
+  //saves the datarecord
+  async function Save(
+    type: dataRecordType,
+    recordId: number,
+    recordToSave: DataRecord,
+    lastSavedRecord: DataRecord,
+    caller: IApiCaller,
+  ): Promise<{ success: boolean; snackbar: void }> {
+    //wenn es keinen record zum speichern gibt, snackbar öffnen und abbrechen
+    if (!recordToSave)
+      return {
+        success: false,
+        snackbar: openSnackbar("Nichts zum Speichern!", false),
+      };
+
+    let succhanged: boolean | undefined = false;
+    let sucsaved: boolean | undefined = false;
+    let res: { success: boolean; errorMsg: string; json: any };
+    let saveid: number = -1;
+    const navigate = useNavigate();
+
+    // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
+    if (hasRecordChanged(recordToSave, lastSavedRecord)) {
+      succhanged = await CreateNewDataRecord(type, recordToSave, caller);
+      if (succhanged === undefined || succhanged === false)
+        return {
+          success: false,
+          snackbar: openSnackbar(
+            "Neue Struktur konnte nicht gespeichert werden!",
+            false,
+          ),
+        };
+    }
+
+    //wenn die Struktur erfolgreich geändert wurde, snackbar öffnen
+    if (succhanged === true) {
+      openSnackbar("Strukturänderung erfolgreich gespeichert!", true);
+    }
+
+    //neue Anfrage estellen, snackbar öffnen und url ändern
+    if (type === "neue-anfrage") {
+      const rectosaavejson =
+        DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
+      res = await caller.TryCreateAnfrage(rectosaavejson);
+      sucsaved = res.success;
+      saveid = Number(res.json["pk"]);
+      if (sucsaved === undefined || sucsaved === false) {
+        return {
+          success: false,
+          snackbar: openSnackbar(
+            "Anfrage konnte nicht gespeichert werden!",
+            false,
+          ),
+        };
+      }
+      if (sucsaved === true) {
+        navigate(`/anfrage?id=${saveid}`, { replace: true });
+        return {
+          success: true,
+          snackbar: openSnackbar("Anfrage erfolgreich gespeichert!", true),
+        };
+      }
+    }
+
+    //neuen Fall erstellen, snackbar öffnen und url ändern
+    if (type === "neuer-fall") {
+      const rectosaavejson =
+        DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
+      res = await caller.TryCreateFall(rectosaavejson);
+      sucsaved = res.success;
+      saveid = Number(res.json["pk"]);
+      if (sucsaved === undefined || sucsaved === false) {
+        return {
+          success: false,
+          snackbar: openSnackbar(
+            "Fall konnte nicht gespeichert werden!",
+            false,
+          ),
+        };
+      }
+      if (sucsaved === true) {
+        navigate(`/fall?id=${saveid}`, { replace: true });
+        return {
+          success: true,
+          snackbar: openSnackbar("Fall erfolgreich gespeichert!", true),
+        };
+      }
+    }
+
+    //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
+    if (
+      (await UpdateDataRecord(type, recordToSave, recordId, caller)) === true
+    ) {
+      return {
+        success: true,
+        snackbar: openSnackbar("Datensatz erfolgreich aktualisiert!", true),
+      };
+    } else {
+      return {
+        success: false,
+        snackbar: openSnackbar(
+          "Datensatz konnte nicht aktualisiert werden!",
+          false,
+        ),
+      };
+    }
+  }
+
+  //handles save
+  async function handleSave(
+    type: dataRecordType,
+    recordId: number,
+    recordToSave: DataRecord,
+    lastSavedRecord: DataRecord,
+    caller: IApiCaller,
+    setLastSaved: (lastSaved: DataRecord) => void,
+  ) {
+    try {
+      if (!GetDataRecordValidity(recordToSave)) return;
+      const result = await Save(
+        type,
+        recordId,
+        recordToSave,
+        lastSavedRecord,
+        caller,
+      );
+
+      if (result.success) setLastSaved(recordToSave);
+    } catch (err) {}
+  }
+
+  //opens snackbar with message and success sets color of snackbar
+  function openSnackbar(message: string, success: boolean) {
+    setSnackbarOpen(true);
+    setSnackbarMessage(message);
+    setSaveResult(success);
+  }
   return (
     <div>
       <h1>
@@ -427,19 +448,19 @@ function DataRecordEditor({ caller }: Props) {
       >
         Speichern
       </Button>
-      {/* <Snackbar
-        open={saveResult !== null}
+      <Snackbar
+        open={snackbarOpen}
         autoHideDuration={3000}
-        onClose={() => setSaveResult(null)}
+        onClose={() => setSnackbarOpen(false)}
       >
         <Alert
           severity={saveResult ? "success" : "error"}
-          onClose={() => setSaveResult(null)}
+          onClose={() => setSnackbarOpen(false)}
         >
-          {saveResult ? "Speichern erfolgreich!" : "Speichern fehlgeschlagen!"}
+          {snackbarMessage}
         </Alert>
       </Snackbar>
-      <Dialog open={openDeleteDialog} onClose={cancelDelete}>
+      {/*<Dialog open={openDeleteDialog} onClose={cancelDelete}>
         <DialogTitle>Feld löschen?</DialogTitle>
         <DialogContent>Möchten Sie dieses Feld wirklich löschen?</DialogContent>
         <DialogActions>
@@ -448,7 +469,7 @@ function DataRecordEditor({ caller }: Props) {
             Löschen
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>*/}
     </div>
   );
 }
