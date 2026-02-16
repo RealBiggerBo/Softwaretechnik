@@ -136,8 +136,19 @@ async function GetRole(
 // check if two datarecords are different
 // if they have different number of fields or at least one field has a different name, return true, otherwise return false
 function hasRecordChanged(record1: DataRecord, record2: DataRecord): boolean {
+  if (!record1 || !record2) return false;
+
   if (record1.dataFields.length !== record2.dataFields.length) {
-    return true; // Feld hinzugefügt oder entfernt
+    return true; // Feld hinzugefügt oder entfernt (unterschiedlich viele Felder)
+  }
+
+  const record1ids = record1.dataFields.map((field) => field.id);
+  const record2ids = record2.dataFields.map((field) => field.id);
+
+  for (let i = 0; i < record1ids.length; i++) {
+    if (record1ids[i] !== record2ids[i]) {
+      return true; // überprüft ob alle ids gleich sind (z.B. ein Feld hinzugefügt und entfernt => eine id zwischendrin fehlt, aber Anzahl der Felder gleich))
+    }
   }
 
   for (let i = 0; i < record1.dataFields.length; i++) {
