@@ -234,6 +234,8 @@ function DataRecordEditor({ caller }: Props) {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     async function loadData() {
       //check login status
@@ -275,31 +277,25 @@ function DataRecordEditor({ caller }: Props) {
     recordToSave: DataRecord,
     lastSavedRecord: DataRecord,
     caller: IApiCaller,
-  ): Promise<{ success: boolean; snackbar: void }> {
+  ): Promise<{ success: boolean }> {
     //wenn es keinen record zum speichern gibt, snackbar öffnen und abbrechen
-    if (!recordToSave)
-      return {
-        success: false,
-        snackbar: openSnackbar("Nichts zum Speichern!", false),
-      };
+    if (!recordToSave) {
+      openSnackbar("Nichts zum Speichern!", false);
+      return { success: false };
+    }
 
     let succhanged: boolean | undefined = false;
     let sucsaved: boolean | undefined = false;
     let res: { success: boolean; errorMsg: string; json: any };
     let saveid: number = -1;
-    const navigate = useNavigate();
 
     // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
     if (hasRecordChanged(recordToSave, lastSavedRecord)) {
       succhanged = await CreateNewDataRecord(type, recordToSave, caller);
-      if (succhanged === undefined || succhanged === false)
-        return {
-          success: false,
-          snackbar: openSnackbar(
-            "Neue Struktur konnte nicht gespeichert werden!",
-            false,
-          ),
-        };
+      if (succhanged === undefined || succhanged === false) {
+        openSnackbar("Neue Struktur konnte nicht gespeichert werden!", false);
+        return { success: false };
+      }
     }
 
     //wenn die Struktur erfolgreich geändert wurde, snackbar öffnen
@@ -315,20 +311,13 @@ function DataRecordEditor({ caller }: Props) {
       sucsaved = res.success;
       saveid = Number(res.json["pk"]);
       if (sucsaved === undefined || sucsaved === false) {
-        return {
-          success: false,
-          snackbar: openSnackbar(
-            "Anfrage konnte nicht gespeichert werden!",
-            false,
-          ),
-        };
+        openSnackbar("Anfrage konnte nicht gespeichert werden!", false);
+        return { success: false };
       }
       if (sucsaved === true) {
         navigate(`/anfrage?id=${saveid}`, { replace: true });
-        return {
-          success: true,
-          snackbar: openSnackbar("Anfrage erfolgreich gespeichert!", true),
-        };
+        openSnackbar("Anfrage erfolgreich gespeichert!", true);
+        return { success: true };
       }
     }
 
@@ -340,20 +329,13 @@ function DataRecordEditor({ caller }: Props) {
       sucsaved = res.success;
       saveid = Number(res.json["pk"]);
       if (sucsaved === undefined || sucsaved === false) {
-        return {
-          success: false,
-          snackbar: openSnackbar(
-            "Fall konnte nicht gespeichert werden!",
-            false,
-          ),
-        };
+        openSnackbar("Fall konnte nicht gespeichert werden!", false);
+        return { success: false };
       }
       if (sucsaved === true) {
         navigate(`/fall?id=${saveid}`, { replace: true });
-        return {
-          success: true,
-          snackbar: openSnackbar("Fall erfolgreich gespeichert!", true),
-        };
+        openSnackbar("Fall erfolgreich gespeichert!", true);
+        return { success: true };
       }
     }
 
@@ -361,18 +343,11 @@ function DataRecordEditor({ caller }: Props) {
     if (
       (await UpdateDataRecord(type, recordToSave, recordId, caller)) === true
     ) {
-      return {
-        success: true,
-        snackbar: openSnackbar("Datensatz erfolgreich aktualisiert!", true),
-      };
+      openSnackbar("Datensatz erfolgreich aktualisiert!", true);
+      return { success: true };
     } else {
-      return {
-        success: false,
-        snackbar: openSnackbar(
-          "Datensatz konnte nicht aktualisiert werden!",
-          false,
-        ),
-      };
+      openSnackbar("Datensatz konnte nicht aktualisiert werden!", false);
+      return { success: false };
     }
   }
 
@@ -404,6 +379,7 @@ function DataRecordEditor({ caller }: Props) {
     setSnackbarOpen(true);
     setSnackbarMessage(message);
     setSaveResult(success);
+    return;
   }
 
   function deletable() {
