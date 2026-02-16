@@ -28,14 +28,10 @@ class FallSerializer(serializers.ModelSerializer):
 class DataSetSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataSet
-        fields = ["data_record",
+        fields = ["pk",
+                    "data_record",
                     "version",
                     "values"]
-
-    def validate(self, data):
-        """
-        Prüft DataSet auf Korrektheit
-        """
 
 def datarecord_validation(data):
     field_names = data["structure"]

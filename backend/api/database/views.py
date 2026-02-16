@@ -59,8 +59,6 @@ class DataAPI(APIView):
 
         if not type_is_valid(type):
             return Response({"error": "ungültiges DataRecord"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        print(request.data)
 
         serializer = DataSetSerializer(data=request.data)
 
@@ -95,6 +93,7 @@ class DataRecordAPI(APIView):
         """
         Gibt die Struktur eines DataRecords zurück.
         """
+
         id = request.GET.get("id", None)
 
         return get_data_record(id, type)
