@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
@@ -192,17 +192,90 @@ async function Save(
   recordToSave: DataRecord,
   lastSavedRecord: DataRecord,
   caller: IApiCaller,
-) {
-  if (!recordToSave) return false;
+): Promise<{ success: boolean; snackbar: void }> {
+  //wenn es keinen record zum speichern gibt, snackbar öffnen und abbrechen
+  if (!recordToSave)
+    return { success: false, snackbar: openSnackbar("Nichts zum Speichern!") };
 
+  let succhanged: boolean | undefined = false;
+  let sucsaved: boolean | undefined = false;
+  let res: { success: boolean; errorMsg: string; json: any };
+  let saveid: number = -1;
+  const navigate = useNavigate();
+
+  // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
   if (hasRecordChanged(recordToSave, lastSavedRecord)) {
-    //TODO: check whethere action succeeded => if not return false
-    await CreateNewDataRecord(type, recordToSave, caller);
+    succhanged = await CreateNewDataRecord(type, recordToSave, caller);
+    if (succhanged === undefined || succhanged === false)
+      return {
+        success: false,
+        snackbar: openSnackbar(
+          "Neue Struktur konnte nicht gespeichert werden!",
+        ),
+      };
   }
 
-  UpdateDataRecord(type, recordToSave, recordId, caller);
+  //wenn die Struktur erfolgreich geändert wurde, snackbar öffnen
+  if (succhanged === true) {
+    openSnackbar("Strukturänderung erfolgreich gespeichert!");
+  }
 
-  return true;
+  //neue Anfrage estellen und snackbar öffnen
+  if (type === "neue-anfrage") {
+    const rectosaavejson =
+      DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
+    res = await caller.TryCreateAnfrage(rectosaavejson);
+    sucsaved = res.success;
+    saveid = Number(res.json["pk"]);
+    if (sucsaved === undefined || sucsaved === false) {
+      return {
+        success: false,
+        snackbar: openSnackbar("Anfrage konnte nicht gespeichert werden!"),
+      };
+    }
+    if (sucsaved === true) {
+      navigate(`/anfrage/${saveid}`, { replace: true });
+      return {
+        success: true,
+        snackbar: openSnackbar("Anfrage erfolgreich gespeichert!"),
+      };
+    }
+  }
+
+  //neuen Fall erstellen und snackbar öffnen
+  if (type === "neuer-fall") {
+    const rectosaavejson =
+      DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
+    res = await caller.TryCreateFall(rectosaavejson);
+    sucsaved = res.success;
+    saveid = Number(res.json["pk"]);
+    if (sucsaved === undefined || sucsaved === false) {
+      return {
+        success: false,
+        snackbar: openSnackbar("Fall konnte nicht gespeichert werden!"),
+      };
+    }
+    if (sucsaved === true) {
+      navigate(`/fall/${saveid}`, { replace: true });
+      return {
+        success: true,
+        snackbar: openSnackbar("Fall erfolgreich gespeichert!"),
+      };
+    }
+  }
+
+  //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
+  if ((await UpdateDataRecord(type, recordToSave, recordId, caller)) === true) {
+    return {
+      success: true,
+      snackbar: openSnackbar("Datensatz erfolgreich aktualisiert!"),
+    };
+  } else {
+    return {
+      success: false,
+      snackbar: openSnackbar("Datensatz konnte nicht aktualisiert werden!"),
+    };
+  }
 }
 
 async function handleSave(
