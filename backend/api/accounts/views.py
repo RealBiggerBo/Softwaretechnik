@@ -45,11 +45,14 @@ class MeAPIView(APIView):
             role = "admin_user"
         else:
             role = request.user.groups.values_list("name", flat=True).first()
+
+        last_request_id = getattr(request.user.profile, "last_request_id", None)
         # Die Basisinformationen des Nutzers werden zurückgegeben.
         return Response({
             "id": request.user.id, 
             "username": request.user.username, 
             "role": role,
+            "last_request_id": last_request_id,
             })
 
 # API für Passwort ändern.
