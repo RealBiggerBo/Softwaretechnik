@@ -195,23 +195,26 @@ async function UpdateDataRecord(
   toUpdate: DataRecord,
   recordId: number,
   caller: IApiCaller,
-) {
+): Promise<boolean> {
   switch (type) {
     case "anfrage":
     case "letzte-anfrage":
-      await caller.TryUpdateAnfrage(
-        DataRecordConverter.ConvertDataRecordToFormat3(toUpdate),
-        recordId,
-      );
-      break;
+      return (
+        await caller.TryUpdateAnfrage(
+          DataRecordConverter.ConvertDataRecordToFormat3(toUpdate),
+          recordId,
+        )
+      ).success;
     case "fall":
     case "letzter-fall":
-      await caller.TryUpdateFall(
-        DataRecordConverter.ConvertDataRecordToFormat3(toUpdate),
-        recordId,
-      );
-      break;
+      return (
+        await caller.TryUpdateFall(
+          DataRecordConverter.ConvertDataRecordToFormat3(toUpdate),
+          recordId,
+        )
+      ).success;
   }
+  return false;
 }
 
 async function Save(
