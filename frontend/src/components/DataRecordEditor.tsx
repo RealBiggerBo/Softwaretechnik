@@ -21,6 +21,8 @@ type dataRecordType =
   | "neuer-fall";
 type userRole = "base_user" | "extended_user" | "admin_user" | null;
 
+// check if datafield is required and valid
+// if it's not required, return true, otherwise check if it's valid based on its type and return the result
 function IsValid(field: DataField) {
   if (!field.required) return true;
   switch (field.type) {
@@ -46,6 +48,8 @@ function IsValid(field: DataField) {
   }
 }
 
+// check if datarecord is valid
+// if it's valid, all required fields are filled out correctly, otherwise alert which field is not valid
 function GetDataRecordValidity(record: DataRecord | null) {
   if (!record) {
     alert("Nichts zum Speichern");
@@ -61,6 +65,7 @@ function GetDataRecordValidity(record: DataRecord | null) {
   return true;
 }
 
+// get datarecord type based on url param, if type is invalid, alert and return default type "anfrage"
 function GetDataRecordType(str: string | null) {
   switch (str) {
     case "neue-anfrage":
@@ -76,11 +81,13 @@ function GetDataRecordType(str: string | null) {
   }
 }
 
+//convert string to number, if it's not a number return -1
 function GetDataRecordId(str: string | null) {
   const number = Number(str);
   return isNaN(number) ? -1 : number;
 }
 
+// get datarecord format based on type
 async function GetDataFormat(caller: IApiCaller, type: dataRecordType) {
   switch (type) {
     case "anfrage":
@@ -94,6 +101,7 @@ async function GetDataFormat(caller: IApiCaller, type: dataRecordType) {
   }
 }
 
+// get datarecord based on type and id, if type is "neue-anfrage" or "neuer-fall", return empty datarecord
 async function GetData(
   caller: IApiCaller,
   type: dataRecordType,
@@ -116,6 +124,7 @@ async function GetData(
   }
 }
 
+// get user role, if not logged in return null
 async function GetRole(
   caller: IApiCaller,
 ): Promise<"base_user" | "extended_user" | "admin_user" | null> {
@@ -124,6 +133,8 @@ async function GetRole(
   return res.json.role;
 }
 
+// check if two datarecords are different
+// if they have different number of fields or at least one field has a different name, return true, otherwise return false
 function hasRecordChanged(record1: DataRecord, record2: DataRecord): boolean {
   if (record1.dataFields.length !== record2.dataFields.length) {
     return true; // Feld hinzugefügt oder entfernt
@@ -141,6 +152,7 @@ function hasRecordChanged(record1: DataRecord, record2: DataRecord): boolean {
   return false;
 }
 
+// post new datarecord structure based on type
 async function CreateNewDataRecord(
   type: dataRecordType,
   toSave: DataRecord,
@@ -162,6 +174,7 @@ async function CreateNewDataRecord(
   }
 }
 
+// update datarecord if existing ,based on type and id
 async function UpdateDataRecord(
   type: dataRecordType,
   toUpdate: DataRecord,
