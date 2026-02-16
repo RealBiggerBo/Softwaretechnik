@@ -45,8 +45,10 @@ class MeAPIView(APIView):
             role = "admin_user"
         else:
             role = request.user.groups.values_list("name", flat=True).first()
-
+        
+        # Profil abrufen
         last_request_id = getattr(request.user.profile, "last_request_id", None)
+
         # Die Basisinformationen des Nutzers werden zurückgegeben.
         return Response({
             "id": request.user.id, 
@@ -88,7 +90,12 @@ class LastRequestAPIView(APIView):
     def get(self, request):
         """Letzte Anfrage/Fall-ID abrufen"""
         last_id = getattr(request.user.profile, "last_request_id", None)
-        return Response({"last_request_id": last_id})
+        return Response({
+            "id": request.user.id,
+            "username": request.user.username,
+            "role": request.user.groups.values_list("name", flat=True).first() if not request.user.is_superuser else "admin_user",
+            "last_request_id": last_id
+        })
 
     def post(self, request):
         """Letzte Anfrage/Fall-ID speichern"""
@@ -96,5 +103,13 @@ class LastRequestAPIView(APIView):
         if serializer.is_valid():
             request.user.profile.last_request_id = serializer.validated_data['last_request_id']
             request.user.profile.save()
-            return Response({"debug": "Last request ID gespeichert"})
+            # Nach dem Speichern wird direkt der aktuelle Status zurückgeben.
+            last_id = request.user.profile.last_request_id
+            return Response({
+                "id": request.user.id,
+                "username": request.user.username,
+                "role": request.user.groups.values_list("name", flat=True).first() if not request.user.is_superuser else "admin_user",
+                "last_request_id": last_id,
+                "debug": "Last request ID gespeichert"
+            })
         return Response(serializer.errors, status=400)
