@@ -237,26 +237,36 @@ export class ApiCaller implements IApiCaller {
 
   async TryCreateFall(
     caseToCreate: any,
-  ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    let result: any = null;
+    const res = await this.SendApiCall(
       "/api/data/data/fall",
       "POST",
       true,
       JSON.stringify(caseToCreate),
       "Erstellen fehlgeschlagen",
+      async (response) => {
+        result = await response.json();
+      },
     );
+    return { ...res, json: result };
   }
 
   async TryCreateAnfrage(
     anfrageToCreate: any,
-  ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    let result: any = null;
+    const res = await this.SendApiCall(
       "/api/data/data/anfrage",
       "POST",
       true,
       JSON.stringify(anfrageToCreate),
       "Erstellen fehlgeschlagen",
+      async (response) => {
+        result = await response.json();
+      },
     );
+    return { ...res, json: result };
   }
 
   async TrySearchFall(

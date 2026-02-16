@@ -71,11 +71,13 @@ export interface IApiCaller {
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TryCreateFall(newCase: any): Promise<{ success: boolean; errorMsg: string }>;
+  TryCreateFall(
+    newCase: any,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   TryCreateAnfrage(
     newAnfrage: any,
-  ): Promise<{ success: boolean; errorMsg: string }>;
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   TrySearchFall(
     caseToSearch: any,
@@ -300,12 +302,16 @@ export class MockApiCaller implements IApiCaller {
       errorMsg: "",
     };
   }
-  async TryCreateFall(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented in mock!" };
+  async TryCreateFall(
+    newCase: any,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
-  async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented in mock!" };
+  async TryCreateAnfrage(
+    newAnfrage: any,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
   async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
