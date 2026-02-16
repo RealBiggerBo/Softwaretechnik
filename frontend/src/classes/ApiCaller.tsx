@@ -351,7 +351,7 @@ export class ApiCaller implements IApiCaller {
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      `/api/data/data/fall/delete?id=${id}`,
+      `/api/data/data/fall?id=${id}`,
       "DELETE",
       true,
       undefined,
@@ -363,7 +363,7 @@ export class ApiCaller implements IApiCaller {
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      `/api/data/data/anfrage/delete?id=${id}`,
+      `/api/data/data/anfrage?id=${id}`,
       "DELETE",
       true,
       undefined,
