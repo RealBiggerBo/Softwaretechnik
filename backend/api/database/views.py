@@ -87,7 +87,7 @@ class DataAPI(APIView):
         return Response(serializer.data)
 
 class DataRecordAPI(APIView):
-    permission_classes = [IsExtendedUser]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, type):
         """
