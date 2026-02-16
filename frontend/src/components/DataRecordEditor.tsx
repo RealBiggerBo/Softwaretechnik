@@ -3,7 +3,7 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
-import { Button, Fab } from "@mui/material";
+import { Alert, Button, Fab, Snackbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import type { DataField } from "../classes/DataField";
 import DataRecordDisplay from "./DataRecordDisplay";
@@ -231,6 +231,8 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -403,6 +405,22 @@ function DataRecordEditor({ caller }: Props) {
     setSnackbarMessage(message);
     setSaveResult(success);
   }
+
+  function deletable() {
+    if (datRecordId && isEditMode) return true;
+    else return false;
+  }
+
+  async function handleDeleteRecord() {
+    const navigate = useNavigate();
+    const suc = (await caller.TryDeleteAnfrage(datRecordId)).success;
+    if (suc) {
+      openSnackbar(`${type} wurde erfolgreich gelöscht.`, suc);
+      navigate("/main");
+    }
+    openSnackbar(`${type} konnte nicht gelöscht werden`, suc);
+  }
+
   return (
     <div>
       <h1>
@@ -433,6 +451,11 @@ function DataRecordEditor({ caller }: Props) {
         onChange={setRecord}
       />
       <br />
+      {deletable() && (
+        <Button variant="contained" color="error" onClick={handleDeleteRecord}>
+          Datensatz löschen
+        </Button>
+      )}
       <Button
         variant="contained"
         onClick={() =>
