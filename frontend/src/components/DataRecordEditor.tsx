@@ -371,7 +371,9 @@ function DataRecordEditor({ caller }: Props) {
       );
 
       if (result.success) setLastSaved(recordToSave);
-    } catch (err) {}
+    } catch (err) {
+      alert(err);
+    }
   }
 
   //opens snackbar with message and success sets color of snackbar
@@ -434,8 +436,8 @@ function DataRecordEditor({ caller }: Props) {
       )}
       <Button
         variant="contained"
-        onClick={() =>
-          handleSave(
+        onClick={async () =>
+          await handleSave(
             type,
             datRecordId,
             record,
