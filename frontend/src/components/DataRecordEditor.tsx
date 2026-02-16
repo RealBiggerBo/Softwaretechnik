@@ -332,6 +332,10 @@ async function handleSave(
   } catch (err) {}
 }
 
+function openSnackbar(message: string) {
+  alert(message);
+}
+
 function DataRecordEditor({ caller }: Props) {
   const searchParams = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams[0].get("type"));
