@@ -62,9 +62,11 @@ function GetColorTheme(url: string, search: string): Theme {
 
 function App({ caller }: Props) {
   interface ProtectedRouteProps {
-    isAuthenticated: boolean;
+    isAuthenticated: boolean | "unChecked";
   }
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | "unChecked">(
+    "unChecked",
+  );
   const [theme, setTheme] = useState(
     GetColorTheme(useLocation().pathname, useLocation().search),
   );
@@ -97,7 +99,7 @@ function App({ caller }: Props) {
   function ProtectedRoute({
     isAuthenticated = isLoggedIn,
   }: ProtectedRouteProps) {
-    if (!isAuthenticated) {
+    if (isAuthenticated == false) {
       return <Navigate to="/login" replace />;
     }
 
