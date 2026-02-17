@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.accounts.permissions import IsExtendedUser
 from rest_framework.response import Response
@@ -64,6 +65,12 @@ class DataAPI(APIView):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        data = serializer.data
+        structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
+        values = serializer.data["values"]
+        
+        dataset_validation(structure, values)
 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -82,6 +89,12 @@ class DataAPI(APIView):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        data = serializer.data
+        structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
+        values = serializer.data["values"]
+        
+        dataset_validation(structure, values)
 
         serializer.save()
         return Response(serializer.data)
@@ -136,3 +149,36 @@ def get_data_record(id, type):
     serializer = AnfrageSerializer(objekt) if type == "anfrage" else FallSerializer(objekt)
 
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+def dataset_validation(structure, values):
+    match = {
+            "Boolean": bool,
+            "Date": str,
+            "Integer": int,
+            "List": list,
+            "String": str
+        }
+    
+    for field_id in structure:
+        field = structure[field_id]
+        field_name = field["name"]
+
+        if field_name in values:
+            field_type = field["type"]
+            value = values[field_name]
+
+            if not isinstance(value, match[field_type]):
+                raise serializers.ValidationError(f"Wert mit falschen Typ für {field_name} übergeben. Der richtige Typ ist {match[field_type]}.")
+            if field_type == "Date" and not (len(value) == 10 and
+                                                value[4] == "-" and
+                                                value[7] == "-" and
+                                                value[:4].isdigit() and
+                                                value[5:7].isdigit() and
+                                                value[8:].isdigit()):
+                raise serializers.ValidationError(f"Date-Wert in falschem Format übergeben. Das richtige Format ist YYYY-MM-DD.")
+            if field_type == "List":
+                for element in value:
+                    dataset_validation(field["element"], element)
+
+        elif field["required"]:
+            raise serializers.ValidationError(f"Erforderliches Feld, {field_name}, wurde nicht übergeben.")
