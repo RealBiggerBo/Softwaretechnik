@@ -1,3 +1,4 @@
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -6,7 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import type { Dayjs } from "dayjs";
-import { type ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
@@ -86,19 +87,24 @@ function StatisticsPage({ caller }: Props) {
   }
 
   async function handlePresetChange(
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: React.SyntheticEvent,
+    selectedTitle: string | null,
   ) {
-    const selectedTitle = event.target.value;
-    const presetMeta = presets.find((p) => p.title === selectedTitle);
-    if (!presetMeta) return;
+    setPreset(null);
+    setPresetTitle((selectedTitle ??= ""));
+
+    const existingPreset = presets
+      .filter((p) => p.type === statisticsType)
+      .find((p) => p.title === selectedTitle);
+
+    if (!existingPreset) return;
 
     const { success, preset: loadedPreset } = await caller.GetStatisticsPreset(
-      presetMeta.id,
+      existingPreset.id,
     );
 
     if (success) {
       setPreset(ToUiPreset(loadedPreset));
-      setPresetTitle(selectedTitle);
     }
   }
 
@@ -126,22 +132,19 @@ function StatisticsPage({ caller }: Props) {
                 <ToggleButton value="Fall">Fall</ToggleButton>
               </ToggleButtonGroup>
               <Stack spacing={2} direction="row">
-                <TextField
-                  select
+                <Autocomplete
                   fullWidth
-                  label="Vorlage"
-                  sx={{ "& .MuiSelect-select": { textAlign: "left" } }}
-                  value={presetTitle}
-                  onChange={handlePresetChange}
-                >
-                  {presets
+                  freeSolo
+                  options={presets
                     .filter((presetItem) => presetItem.type === statisticsType)
-                    .map((presetItem) => (
-                      <MenuItem key={presetItem.id} value={presetItem.title}>
-                        {presetItem.title}
-                      </MenuItem>
-                    ))}
-                </TextField>
+                    .map((presetItem) => presetItem.title)}
+                  value={presetTitle || null}
+                  onChange={handlePresetChange}
+                  onInputChange={handlePresetChange}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Vorlage" />
+                  )}
+                />
                 <StyledButton
                   text="Vorlage speichern"
                   onClick={() => setTemplatesDialogueOpen(true)}
