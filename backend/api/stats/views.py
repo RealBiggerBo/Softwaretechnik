@@ -458,31 +458,44 @@ def presets_export_file(request: HttpRequest, fileformat: str):
         return resp
 
     if fmt == "pdf":
-        try:
-            from reportlab.lib.pagesizes import A4
-            from reportlab.lib import colors
-            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-        except ImportError:
-            return HttpResponse("PDF-Export benötigt 'reportlab'. Bitte installieren: pip install reportlab", status=500, content_type="text/plain")
+    # Unformatierte PDF-Ausgabe: einfacher Text, Semikolon-separiert, eine Zeile pro Datensatz (inkl. Header)
+    try:
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import A4
+    except ImportError:
+        return HttpResponse("PDF-Export benötigt 'reportlab'. Bitte installieren: pip install reportlab", status=500, content_type="text/plain")
 
-        buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4)
-        data = [header] + rows
-        table = Table(data)
-        style = TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-            ("GRID", (0, 0), (-1, -1), 0.25, colors.black),
-            ("FONT", (0, 0), (-1, 0), "Helvetica-Bold"),
-            ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-        ])
-        table.setStyle(style)
-        doc.build([table])
-        pdf_bytes = buffer.getvalue()
-        buffer.close()
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
 
-        resp = HttpResponse(pdf_bytes, content_type="application/pdf")
-        resp["Content-Disposition"] = f'attachment; filename="{filename}"'
-        return resp
+    line_height = 14
+    margin = 40
+    y = height - margin
+
+    # Header-Zeile
+    header_line = ";".join(header)
+    c.setFont("Helvetica", 10)
+    c.drawString(margin, y, header_line)
+    y -= line_height
+
+    # Datenzeilen
+    for row in rows:
+        line = ";".join([str(x) if x is not None else "" for x in row])
+        if y < margin:
+            c.showPage()
+            y = height - margin
+            c.setFont("Helvetica", 10)
+        c.drawString(margin, y, line)
+        y -= line_height
+
+    c.save()
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+
+    resp = HttpResponse(pdf_bytes, content_type="application/pdf")
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return resp
 
     # CSV (Default)
     output = io.StringIO()
