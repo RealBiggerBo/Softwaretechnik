@@ -317,6 +317,7 @@ function DataRecordEditor({ caller }: Props) {
       if (sucsaved === true) {
         navigate(`/anfrage?id=${saveid}`, { replace: true });
         openSnackbar("Anfrage erfolgreich gespeichert!", true);
+        await setLast(saveid, type);
         return { success: true };
       }
     }
@@ -335,6 +336,7 @@ function DataRecordEditor({ caller }: Props) {
       if (sucsaved === true) {
         navigate(`/fall?id=${saveid}`, { replace: true });
         openSnackbar("Fall erfolgreich gespeichert!", true);
+        await setLast(saveid, type);
         return { success: true };
       }
     }
@@ -344,10 +346,22 @@ function DataRecordEditor({ caller }: Props) {
       (await UpdateDataRecord(type, recordToSave, recordId, caller)) === true
     ) {
       openSnackbar("Datensatz erfolgreich aktualisiert!", true);
+      await setLast(recordId, type)
       return { success: true };
     } else {
       openSnackbar("Datensatz konnte nicht aktualisiert werden!", false);
       return { success: false };
+    }
+  }
+
+  async function setLast(id: number, type: dataRecordType){
+    if (type === "anfrage" || type === "letzte-anfrage" || type === "neue-anfrage"){
+      await caller.SetLastAnfrage(id);
+      return;
+    }
+    if (type === "fall" || type === "letzter-fall" || type === "neuer-fall"){
+      await caller.SetLastFall(id);
+      return;
     }
   }
 
