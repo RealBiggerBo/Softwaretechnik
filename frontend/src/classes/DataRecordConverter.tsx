@@ -60,14 +60,24 @@ export class DataRecordConverter {
     return { dataFields: dataFields };
   }
 
+  //TODO: add version number
   public static ConvertDataRecordToFormat3(
+    dataRecordType: "Anfrage" | "Fall",
+    //version: number,
     dataRecord: DataRecord,
   ): Record<string, any> {
-    const obj: Record<string, any> = {};
+    const format: Record<string, any> = {};
+
+    format["data_record"] = dataRecordType;
+    format["version"] = -1; //version;
+
+    const values: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
-      obj[field.name] = this.GetValue(field);
+      values[field.name] = this.GetValue(field);
     });
-    return obj;
+
+    format["values"] = values;
+    return format;
   }
 
   public static ConvertDataRecordToFormat2(
@@ -124,6 +134,44 @@ export class DataRecordConverter {
     }
 
     return dataRecord;
+  }
+
+  public static ConvertSearchResultToDataRecord(
+    searchResult: unknown,
+  ): DataRecord[] {
+    const results: Record<string, any>[] = this.normalizeInput(searchResult);
+
+    return results.map((record) => this.GetDataRecord(record));
+  }
+
+  //tries to convert any input to arrays of records
+  private static normalizeInput(input: unknown): Record<string, any>[] {
+    if (typeof input === "string") {
+      try {
+        const parsed = JSON.parse(input);
+        return Array.isArray(parsed) ? parsed : [parsed];
+      } catch {
+        return [];
+      }
+    }
+    if (Array.isArray(input)) return input as Record<string, any>[];
+    if (input && typeof input === "object")
+      return [input as Record<string, any>];
+    return [];
+  }
+  private static GetDataRecord(record: Record<string, any>): DataRecord {
+    return {
+      dataFields: Object.entries(record).map(([key, value], index) => {
+        return {
+          type: "text",
+          name: key,
+          text: value as string,
+          id: index,
+          required: true,
+          maxLength: -1,
+        };
+      }),
+    };
   }
 
   private static SetValue(field: DataField, value: unknown): DataField {

@@ -3,6 +3,21 @@ import type { Preset } from "./Preset";
 import type { PresetItemListElement } from "./StatisticsTypes";
 
 export interface IApiCaller {
+  TryExportStatistic(
+    title: string,
+    format: "csv" | "xlsx" | "pdf",
+  ): Promise<{
+    success: boolean;
+    errorMsg: string;
+    url: string;
+    filename: string;
+  }>;
+  TryCreateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
   GetUsers(): Promise<{
     success: boolean;
     errorMsg: string;
@@ -38,7 +53,7 @@ export interface IApiCaller {
   GetStatisticsPresetList(): Promise<PresetItemListElement[]>;
 
   GetStatisticsPreset(
-    id: Number,
+    title: string,
   ): Promise<{ success: boolean; errorMsg: string; preset: Preset }>;
 
   TryChangePassword(
@@ -60,6 +75,7 @@ export interface IApiCaller {
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
       last_request_id: number | null;
+      last_case_id: number | null;
     };
   }>;
 
@@ -83,11 +99,11 @@ export interface IApiCaller {
 
   TrySearchFall(
     caseToSearch: FilterOption[],
-  ): Promise<{ success: boolean; errorMsg: string }>;
+  ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }>;
 
   TrySearchAnfrage(
     anfrageToSearch: FilterOption[],
-  ): Promise<{ success: boolean; errorMsg: string }>;
+  ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }>;
 
   TrySearchAnfrageByID(
     id: number,
@@ -133,8 +149,31 @@ export interface IApiCaller {
 }
 
 export class MockApiCaller implements IApiCaller {
+  TryExportStatistic(
+    _title: string,
+    _format: "csv" | "xlsx" | "pdf",
+  ): Promise<{
+    success: boolean;
+    errorMsg: string;
+    url: string;
+    filename: string;
+  }> {
+    return Promise.resolve({
+      success: true,
+      errorMsg: "",
+      url: "/mock/stats/export.csv",
+      filename: "export.csv",
+    });
+  }
+  TryCreateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
   GetStatisticsPreset(
-    id: Number,
+    title: string,
   ): Promise<{ success: boolean; errorMsg: string; preset: Preset }> {
     throw new Error("Method not implemented.");
   }
@@ -169,6 +208,7 @@ export class MockApiCaller implements IApiCaller {
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
       last_request_id: number | null;
+      last_case_id: number | null;
     };
   }> {
     return {
@@ -179,6 +219,7 @@ export class MockApiCaller implements IApiCaller {
         username: "superuse",
         role: "admin_user",
         last_request_id: -1,
+        last_case_id: -1,
       },
     };
   }
@@ -309,12 +350,28 @@ export class MockApiCaller implements IApiCaller {
     return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
-  async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented in mock!" };
+  async TrySearchFall(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    searchResult: unknown;
+  }> {
+    return {
+      success: false,
+      errorMsg: "Not implemented in mock!",
+      searchResult: {},
+    };
   }
 
-  async TrySearchAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented in mock!" };
+  async TrySearchAnfrage(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    searchResult: unknown;
+  }> {
+    return {
+      success: false,
+      errorMsg: "Not implemented in mock!",
+      searchResult: {},
+    };
   }
 
   async TryUpdateFall(): Promise<{ success: boolean; errorMsg: string }> {

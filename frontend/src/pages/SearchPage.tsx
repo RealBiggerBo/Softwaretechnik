@@ -55,7 +55,7 @@ function RemoveOption(
   return options.filter((uiOption) => uiOption.value !== optionToRemove.value);
 }
 
-function Search(
+async function Search(
   type: "fall" | "anfrage",
   options: UiItem<FilterOption>[],
   setSearchResult: (recordds: DataRecord[]) => void,
@@ -63,63 +63,26 @@ function Search(
 ) {
   let res;
   if (type == "fall")
-    res = caller.TrySearchFall(options.map((uiCase) => uiCase.value));
-  else res = caller.TrySearchAnfrage(options.map((uiOption) => uiOption.value));
+    res = await caller.TrySearchFall(options.map((uiCase) => uiCase.value));
+  else
+    res = await caller.TrySearchAnfrage(
+      options.map((uiOption) => uiOption.value),
+    );
 
-  alert(JSON.stringify(res));
+  const values: DataRecord[] =
+    DataRecordConverter.ConvertSearchResultToDataRecord(res.searchResult);
 
-  const dummyValues: DataRecord[] = [
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall1",
-          maxLength: -1,
-        },
-      ],
-    },
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall2",
-          maxLength: -1,
-        },
-      ],
-    },
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall3",
-          maxLength: -1,
-        },
-      ],
-    },
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall4",
-          maxLength: -1,
-        },
-      ],
-    },
-  ];
+  setSearchResult(values);
+}
 
-  setSearchResult(dummyValues);
+function GetIdFromDataRecord(dataRecord: DataRecord) {
+  const idFields = dataRecord.dataFields.filter(
+    (field) => field.name.toLowerCase() === "id",
+  );
+  if (idFields.length <= 0 || idFields[0].type !== "text") return -1;
+  const id = Number(idFields[0].text);
+
+  return isNaN(id) ? -1 : id;
 }
 
 function NavigateToDataPage(
@@ -127,7 +90,7 @@ function NavigateToDataPage(
   entry: DataRecord,
   navigate: NavigateFunction,
 ) {
-  navigate("/dataview?type=" + type + "&id=" + 1);
+  navigate("/dataview?type=" + type + "&id=" + GetIdFromDataRecord(entry));
 }
 
 async function DeleteDataRecord(
@@ -181,7 +144,9 @@ function SearchPage({ caller }: Props) {
       <br></br>
       <StyledButton
         text="Suchen"
-        onClick={() => Search(type, options, setSearchResult, caller)}
+        onClick={async () =>
+          await Search(type, options, setSearchResult, caller)
+        }
       />
       <br></br>
       <DataRecordList

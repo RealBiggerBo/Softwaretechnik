@@ -61,5 +61,6 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("Passwörter stimmen nicht überein.")
         return data
     
-class LastRequestSerializer(serializers.Serializer):
-    last_request_id = serializers.IntegerField()
+class LastCaseRequestSerializer(serializers.Serializer):
+    last_request_id = serializers.IntegerField(required=False)
+    last_case_id = serializers.IntegerField(required=False)

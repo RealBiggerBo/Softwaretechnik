@@ -4,7 +4,7 @@ from .views import (
     LogoutAPIView, 
     MeAPIView, 
     ChangePasswordAPI,
-    LastRequestAPIView,
+    LastCaseRequestAPIView,
 )
 from .admin_api import (
     AdminUserRegisterAPI,
@@ -20,7 +20,7 @@ urlpatterns = [
     path('logout/', LogoutAPIView.as_view()),
     path('me/', MeAPIView.as_view()),
     path('change-password/', ChangePasswordAPI.as_view()),
-    path('last-request/', LastRequestAPIView.as_view(), name='last-request'),
+    path('last-request/', LastCaseRequestAPIView.as_view(), name='last-request'),
 
     # Admin
     path('admin/users/register/', AdminUserRegisterAPI.as_view()),

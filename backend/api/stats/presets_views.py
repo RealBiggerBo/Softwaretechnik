@@ -26,7 +26,7 @@ def _parse_json(request: HttpRequest) -> Optional[Dict[str, Any]]:
 def _validate_payload(payload: Dict[str, Any]) -> Optional[str]:
     if not isinstance(payload, dict):
         return "Payload muss ein JSON-Objekt sein."
-    # akzeptiert 'queries' (camelCase) und 'Queries' (Legacy) – canonical ist 'queries'
+    # akzeptiert 'queries' (camelCase) und andere Schreibweisen via get_ci
     queries = get_ci(payload, "queries")
     if queries is None:
         return "Payload muss ein Feld 'queries' enthalten."
@@ -61,7 +61,7 @@ def presets_create(request: HttpRequest):
     if body is None:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    # Titel: canonical 'presetTitle', fallback 'title'/'PresetTitle'
+    # Titel: canonical 'presetTitle', fallback 'title'
     title = get_ci(body, "presetTitle") or get_ci(body, "title")
     if not isinstance(title, str) or not title.strip():
         return JsonResponse({"error": "presetTitle/title ist erforderlich."}, status=400)
@@ -103,20 +103,47 @@ def presets_create(request: HttpRequest):
     return JsonResponse({"id": preset.id, "title": preset.title, "payload": preset.payload, "updated_at": preset.updated_at.isoformat()}, status=201)
 
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def presets_list(request: HttpRequest):
+    # POST: einzelnes Preset per Body { presetTitle/title } abrufen
+    if request.method == "POST":
+        body = _parse_json(request)
+        if body is None:
+            return JsonResponse({"error": "Invalid JSON body."}, status=400)
+
+        title = get_ci(body, "presetTitle") or get_ci(body, "title")
+        if not isinstance(title, str) or not title.strip():
+            return JsonResponse({"error": "presetTitle ist erforderlich."}, status=400)
+
+        try:
+            p = StatsPreset.objects.get(title=title.strip())
+        except StatsPreset.DoesNotExist:
+            return JsonResponse({"error": "Preset nicht gefunden."}, status=404)
+
+        item = {
+            "id": p.id,
+            "title": p.title,
+            "recordType": _infer_record_type(p.payload),  # abgeleitet aus payload
+            "updated_at": p.updated_at.isoformat(),
+        }
+        return JsonResponse({"items": [item]}, status=200)
+
+    # GET: Liste aller Presets (optional: Filter via ?title=)
+    q_title = request.GET.get("title")
+    qs = StatsPreset.objects.all()
+    if q_title:
+        qs = qs.filter(title=q_title)
+
     items = []
-    for p in StatsPreset.objects.all():
-        rt = _infer_record_type(p.payload)
+    for p in qs:
         items.append({
             "id": p.id,
             "title": p.title,
-            "recordType": rt,  # neu: abgeleitet aus Payload
+            "recordType": _infer_record_type(p.payload),  # abgeleitet aus payload
             "updated_at": p.updated_at.isoformat(),
         })
     return JsonResponse({"items": items}, status=200)
 
-# Get per presetTitle via POST (statischer Endpoint)
 @csrf_exempt
 @require_http_methods(["POST"])
 def presets_get_by_title_post(request: HttpRequest):
@@ -135,7 +162,6 @@ def presets_get_by_title_post(request: HttpRequest):
 
     return JsonResponse({"id": p.id, "title": p.title, "payload": p.payload, "updated_at": p.updated_at.isoformat()}, status=200)
 
-# Update per presetTitle via statischem Endpoint
 @csrf_exempt
 @require_http_methods(["PUT", "PATCH", "POST"])
 def presets_update_by_title(request: HttpRequest):
@@ -179,7 +205,6 @@ def presets_update_by_title(request: HttpRequest):
 
     return JsonResponse({"id": p.id, "title": p.title, "payload": p.payload, "updated_at": p.updated_at.isoformat()}, status=200)
 
-# Delete per presetTitle via statischem Endpoint
 @csrf_exempt
 @require_http_methods(["DELETE", "POST"])
 def presets_delete_by_title(request: HttpRequest):

@@ -5,7 +5,10 @@ from django.dispatch import receiver
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    last_request_id = models.IntegerField(null=True, blank=True)
+    # Letzte Anfrage
+    last_request_id = models.IntegerField(null=True, blank=True) 
+    # Letzter Fall
+    last_case_id = models.IntegerField(null=True, blank=True)
 
 # Profil automatisch anlegen, wenn ein User erstellt wird
 @receiver(post_save, sender=User)
