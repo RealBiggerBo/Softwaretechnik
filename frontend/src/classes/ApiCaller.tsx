@@ -12,12 +12,15 @@ if (authToken) {
 }
 
 export class ApiCaller implements IApiCaller {
-
-
   async TryExportStatistic(
     title: string,
     format: "csv" | "xlsx" | "pdf",
-  ): Promise<{ success: boolean; errorMsg: string; url: string; filename: string }> {
+  ): Promise<{
+    success: boolean;
+    errorMsg: string;
+    url: string;
+    filename: string;
+  }> {
     let downloadUrl = "";
     let filename = "";
     const body = { presetTitle: title };
@@ -30,7 +33,8 @@ export class ApiCaller implements IApiCaller {
       "Export konnte nicht gestartet werden.",
       async (response: Response) => {
         const data = await response.json().catch(() => ({}));
-        downloadUrl = typeof data?.download_url === "string" ? data.download_url : "";
+        downloadUrl =
+          typeof data?.download_url === "string" ? data.download_url : "";
         filename = typeof data?.filename === "string" ? data.filename : "";
       },
     );
