@@ -53,7 +53,6 @@ export class DataRecordConverter {
 
   public static ConvertFormatToDataRecord(raw: unknown) {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
-    alert("HALLOOOO: " + JSON.stringify(fields));
 
     const dataFields: DataField[] = Object.entries(fields).map(
       ([fieldId, fieldValues]) => this.CreateDataField(fieldId, fieldValues),
@@ -132,29 +131,23 @@ export class DataRecordConverter {
 
     switch (field.type) {
       case "text":
-        if (typeof value === "string") {
-          return { ...field, text: value };
-        }
+        if (typeof value === "string") return { ...field, text: value };
         break;
       case "enum":
-        if (typeof value === "string") {
+        if (typeof value === "string")
           return { ...field, selectedValue: value };
-        }
         break;
       case "date":
-        if (typeof value === "string") {
-          return { ...field, date: value };
-        }
+        if (typeof value === "string") return { ...field, date: value };
         break;
       case "boolean":
-        if (typeof value === "boolean") {
-          return { ...field, isSelected: value };
-        }
+        if (typeof value === "boolean") return { ...field, isSelected: value };
         break;
       case "integer":
-        if (typeof value === "number") {
-          return { ...field, value: value };
-        }
+        if (typeof value === "number") return { ...field, value: value };
+        break;
+      case "list":
+        if (Array.isArray(value)) return { ...field, element: value };
         break;
       default:
         const _exhaustive: never = field;
@@ -162,7 +155,9 @@ export class DataRecordConverter {
     }
     return field;
   }
-  private static GetValue(field: DataField): string | number | boolean | null {
+  private static GetValue(
+    field: DataField,
+  ): string | number | boolean | DataField[] | null {
     switch (field.type) {
       case "text":
         return field.text;
@@ -174,6 +169,8 @@ export class DataRecordConverter {
         return field.isSelected;
       case "integer":
         return field.value;
+      case "list":
+        return field.element;
       default:
         const _exhaustive: never = field;
         return _exhaustive;
