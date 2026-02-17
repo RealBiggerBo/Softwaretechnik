@@ -20,6 +20,18 @@ interface Props {
   onChange: (action: UiItem<FilterOption>) => void;
 }
 
+function getCurrentDate() {
+  const date = new Date();
+  const year = date.getFullYear();
+
+  // Months are 0-indexed (0 = January), so we add 1
+  // padStart(2, '0') ensures "5" becomes "05"
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function FilterOptionEditor({ filterOption, onChange }: Props) {
   return (
     <>
@@ -34,7 +46,7 @@ function FilterOptionEditor({ filterOption, onChange }: Props) {
                   ...(filterOption.value as DateRangeFilter),
                   minValue: pickerVal
                     ? pickerVal.format("YYYY-MM-DD")
-                    : "0000-00-00",
+                    : getCurrentDate(),
                 },
               });
             }}
@@ -48,7 +60,7 @@ function FilterOptionEditor({ filterOption, onChange }: Props) {
                   ...(filterOption.value as DateRangeFilter),
                   maxValue: pickerVal
                     ? pickerVal.format("YYYY-MM-DD")
-                    : "0000-00-00",
+                    : getCurrentDate(),
                 },
               });
             }}
@@ -65,7 +77,7 @@ function FilterOptionEditor({ filterOption, onChange }: Props) {
                 ...(filterOption.value as DateValueFilter),
                 value: pickerVal
                   ? pickerVal.format("YYYY-MM-DD")
-                  : "0000-00-00",
+                  : getCurrentDate(),
               },
             });
           }}
