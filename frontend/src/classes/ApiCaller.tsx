@@ -1,3 +1,4 @@
+import type { FilterOption } from "./FilterOption";
 import type { IApiCaller } from "./IApiCaller";
 import type { Preset } from "./Preset";
 import type { PresetItemListElement } from "./StatisticsTypes";
@@ -279,27 +280,42 @@ export class ApiCaller implements IApiCaller {
   }
 
   async TrySearchFall(
-    caseToSearch: any,
-  ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
-      "/api/data/search/fall",
+    caseToSearch: FilterOption[],
+  ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }> {
+    let searchObject = { recordType: "Fall", filterOptions: caseToSearch };
+    let result: unknown;
+    const res = await this.SendApiCall(
+      "/api/search/execute",
       "POST",
       true,
-      JSON.stringify(caseToSearch),
+      JSON.stringify(searchObject),
       "Suche fehlgeschlagen",
+      async (response) => {
+        result = await response.json();
+      },
     );
+    return { ...res, searchResult: result };
   }
 
   async TrySearchAnfrage(
-    anfrageToSearch: any,
-  ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
-      "/api/data/search/anfrage",
+    anfrageToSearch: FilterOption[],
+  ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }> {
+    const searchObject = {
+      recordType: "Anfrage",
+      filterOptions: anfrageToSearch,
+    };
+    let result: unknown;
+    const res = await this.SendApiCall(
+      "/api/search/execute",
       "POST",
       true,
-      JSON.stringify(anfrageToSearch),
+      JSON.stringify(searchObject),
       "Suche fehlgeschlagen",
+      async (response) => {
+        result = await response.json();
+      },
     );
+    return { ...res, searchResult: result };
   }
 
   async TrySearchAnfrageByID(
@@ -414,7 +430,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      "/api/data/data_record/anfrage",
+      "/api/data/data_record/anfrage?id=3",
       "GET",
       true,
       undefined,
@@ -433,9 +449,9 @@ export class ApiCaller implements IApiCaller {
     json: any;
   }> {
     let result: any = null;
-
+    alert("GetFallJson not working right now");
     const res = await this.SendApiCall(
-      "/api/data/data_record/fall?id=1",
+      "/api/data/data_record/fall?id=5",
       "GET",
       true,
       undefined,

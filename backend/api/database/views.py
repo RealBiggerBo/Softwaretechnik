@@ -10,7 +10,7 @@ from .models import *
 from .serializers import *
 
 class DataAPI(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get_data(self, type, pk):
         if not type_is_valid(type):
@@ -80,7 +80,7 @@ class DataAPI(APIView):
         Überschreibt einen Datensatz.
         """
 
-        data = self.get_data(type, request.PUT.get("id", None))
+        data = self.get_data(type, request.GET.get("id", None))
 
         if isinstance(data, Response):
             return data

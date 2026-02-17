@@ -95,6 +95,7 @@ function DataRecordDisplay({
             onChange={(toUpdate) =>
               onChange(UpdateField(record, field, toUpdate))
             }
+            onAdd={(fieldToAdd) => onChange(AddNewField(record, fieldToAdd))}
             onDelete={() => handleDeleteClick(field)}
           />
           <br />

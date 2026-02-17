@@ -9,6 +9,7 @@ interface Props {
   field: DataField;
   isEditMode: boolean;
   onChange: (field: DataField) => void;
+  onAdd: (fieldToAdd: DataField) => void;
   onDelete: (id: number) => void;
 }
 
