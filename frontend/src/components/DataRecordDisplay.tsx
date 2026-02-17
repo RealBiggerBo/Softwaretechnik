@@ -4,7 +4,12 @@ import type { DataRecord } from "../classes/DataRecord";
 import type { IApiCaller } from "../classes/IApiCaller";
 import AddNewDataField from "./AddNewDataField";
 import { FieldRenderer } from "./Fieldrenderer";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import StyledButton from "./Styledbutton";
 
 interface Props {
@@ -19,9 +24,16 @@ function AddNewField(record: DataRecord, newField: DataField): DataRecord {
   if (record === null) {
     return { dataFields: [] };
   }
+  let id;
+  if (record.dataFields.length === 0) {
+    id = 1;
+  } else {
+    id = record.dataFields[record.dataFields.length - 1].id + 1;
+  }
+
   const fieldWithId = {
     ...newField,
-    id: record.dataFields[record.dataFields.length - 1].id + 1,
+    id,
   };
   return { ...record, dataFields: [...record.dataFields, fieldWithId] };
 }
@@ -54,7 +66,7 @@ function DataRecordDisplay({
 }: Props) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [fieldToDelete, setFieldToDelete] = useState<DataField | null>(null);
-  
+
   const handleDeleteClick = (field: DataField) => {
     setFieldToDelete(field);
     setOpenDeleteDialog(true);
@@ -101,8 +113,8 @@ function DataRecordDisplay({
           Möchten Sie das Feld "{fieldToDelete?.name}" wirklich löschen?
         </DialogContent>
         <DialogActions>
-          <StyledButton onClick={cancelDelete} text="Abbrechen"/>
-          <StyledButton color="error" onClick={confirmDelete} text="Löschen"/>
+          <StyledButton onClick={cancelDelete} text="Abbrechen" />
+          <StyledButton color="error" onClick={confirmDelete} text="Löschen" />
         </DialogActions>
       </Dialog>
     </>
