@@ -11,15 +11,8 @@ import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
-import {
-  ToNormalPreset,
-  ToUiPreset,
-  type UiItem,
-  type UiPreset,
-} from "../classes/UiItems";
+import { ToUiPreset, type UiItem, type UiPreset } from "../classes/UiItems";
 import PresetDisplay from "../components/PresetDisplay";
-import DatePickerRange from "../components/DatePickerRange";
-import TemplateDialog from "../components/TemplateDialog";
 import StyledButton from "../components/Styledbutton";
 
 interface Props {
@@ -53,13 +46,17 @@ function StatisticsPage({ caller }: Props) {
 
   useEffect(() => {
     const fetchFormat = async () => {
-      const result = await caller.GetFallJson();
-
-      setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      if (statisticsType === "Anfrage") {
+        const result = await caller.GetAnfrageJson();
+        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      } else if (statisticsType === "Fall") {
+        const result = await caller.GetFallJson();
+        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      }
     };
 
     void fetchFormat();
-  }, [caller]);
+  }, [caller, statisticsType]);
 
   const exportDisabled =
     !timeStart ||
