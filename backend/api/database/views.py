@@ -10,7 +10,7 @@ from .models import *
 from .serializers import *
 
 class DataAPI(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get_data(self, type, pk):
         if not type_is_valid(type):
