@@ -264,10 +264,10 @@ function DataRecordEditor({ caller }: Props) {
         );
 
         setRecord(datarecord);
-        setLastSavedRecord(datarecord);
+        setLastSavedRecord(structuredClone(datarecord));
         return;
       }
-      setLastSavedRecord(format);
+      setLastSavedRecord(structuredClone(format));
       setRecord(format);
     }
     loadData();
