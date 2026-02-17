@@ -289,7 +289,7 @@ export class DataRecordConverter {
           name: name,
           id: id,
           required,
-          date: "0000-00-00",
+          date: this.getCurrentDate(),
         };
 
       case "Boolean":
@@ -326,5 +326,17 @@ export class DataRecordConverter {
     if (propertyName in raw)
       return (raw as Record<string, unknown>)[propertyName];
     return undefined;
+  }
+
+  private static getCurrentDate() {
+    const date = new Date();
+    const year = date.getFullYear();
+
+    // Months are 0-indexed (0 = January), so we add 1
+    // padStart(2, '0') ensures "5" becomes "05"
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
   }
 }
