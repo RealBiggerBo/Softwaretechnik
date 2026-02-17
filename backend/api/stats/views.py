@@ -271,7 +271,7 @@ def presets_export(request: HttpRequest):
         return resp
 
     if fmt == "pdf":
-        # Unformatierter PDF-Text: Semikolon-separiert, eine Zeile pro Datensatz (inkl. Header)
+        # Unformatierte PDF-Ausgabe: einfacher Text, Semikolon-separiert, eine Zeile pro Datensatz (inkl. Header)
         try:
             from reportlab.pdfgen import canvas
             from reportlab.lib.pagesizes import A4
@@ -309,16 +309,6 @@ def presets_export(request: HttpRequest):
         resp = HttpResponse(pdf_bytes, content_type="application/pdf")
         resp["Content-Disposition"] = f'attachment; filename="{filename}"'
         return resp
-
-    # CSV (Default)
-    output = io.StringIO()
-    writer = csv.writer(output, delimiter=";")
-    writer.writerow(header)
-    writer.writerows(rows)
-
-    resp = HttpResponse(output.getvalue(), content_type="text/csv")
-    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
-    return resp
 
 # ----- Alte Export-API (belassen, unverändert) -----
 
@@ -459,11 +449,11 @@ def presets_export_file(request: HttpRequest, fileformat: str):
 
     if fmt == "pdf":
     # Unformatierte PDF-Ausgabe: einfacher Text, Semikolon-separiert, eine Zeile pro Datensatz (inkl. Header)
-    try:
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.pagesizes import A4
-    except ImportError:
-        return HttpResponse("PDF-Export benötigt 'reportlab'. Bitte installieren: pip install reportlab", status=500, content_type="text/plain")
+        try:
+            from reportlab.pdfgen import canvas
+            from reportlab.lib.pagesizes import A4
+        except ImportError:
+            return HttpResponse("PDF-Export benötigt 'reportlab'. Bitte installieren: pip install reportlab", status=500, content_type="text/plain")
 
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
