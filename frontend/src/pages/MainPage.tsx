@@ -8,13 +8,19 @@ interface Props {
 
 function MainPage({ caller }: Props) {
   const [lastRequestId, setLastRequestId] = useState(-1);
+  const [lastCaseId, setLastCaseId] = useState(-1);
 
   useEffect(() => {
     const fetchLastRequestId = async () => {
       const result = await caller.GetCurrentUserRights();
 
-      if (!result.success) setLastRequestId(-1);
-      else setLastRequestId(result.json.last_request_id ?? -1);
+      if (!result.success) {
+        setLastRequestId(-1);
+        setLastCaseId(-1);
+      } else {
+        setLastRequestId(result.json.last_request_id ?? -1);
+        setLastCaseId(result.json.last_case_id ?? -1);
+      }
     };
     fetchLastRequestId();
   }, [caller]);
@@ -47,10 +53,10 @@ function MainPage({ caller }: Props) {
           color="lastUsed"
           buttons={["Letzter Fall", "Letzte Anfrage"]}
           links={[
-            "/dataview?type=letzter-fall&id=5",
+            "/dataview?type=letzter-fall&id=" + lastCaseId,
             "/dataview?type=letzte-anfrage&id=" + lastRequestId,
           ]}
-          enabled={[false, lastRequestId >= 0]}
+          enabled={[lastCaseId >= 0, lastRequestId >= 0]}
         />
         <MainPageContainer
           heading="Neu erstellen"
