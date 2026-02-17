@@ -215,6 +215,7 @@ export class ApiCaller implements IApiCaller {
         presets = items.map((item: any) => ({
           id: Number(item?.id),
           title: String(item?.title ?? ""),
+          type: String(item?.type ?? ""),
           updated_at: String(item?.updated_at ?? ""),
         }));
       },

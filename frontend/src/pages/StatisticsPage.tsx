@@ -137,11 +137,13 @@ function StatisticsPage({ caller }: Props) {
                   value={presetTitle}
                   onChange={handlePresetChange}
                 >
-                  {presets.map((presetItem) => (
-                    <MenuItem key={presetItem.id} value={presetItem.title}>
-                      {presetItem.title}
-                    </MenuItem>
-                  ))}
+                  {presets
+                    .filter((presetItem) => presetItem.type === statisticsType)
+                    .map((presetItem) => (
+                      <MenuItem key={presetItem.id} value={presetItem.title}>
+                        {presetItem.title}
+                      </MenuItem>
+                    ))}
                 </TextField>
                 <StyledButton
                   text="Vorlage speichern"
