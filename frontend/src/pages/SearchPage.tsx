@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
-import { Button } from "@mui/material";
 import { ToUiItem, type UiItem } from "../classes/UiItems";
 import {
   useNavigate,
@@ -12,6 +11,7 @@ import {
 import FilterOptionList from "../components/FilterOptionList";
 import type { FilterOption } from "../classes/FilterOption";
 import DataRecordList from "../components/DataRecordList";
+import StyledButton from "../components/Styledbutton";
 
 interface Props {
   caller: IApiCaller;
@@ -181,25 +181,27 @@ function SearchPage({ caller }: Props) {
         }
       ></FilterOptionList>
       <br></br>
-      <Button onClick={() => Search(type, options, setSearchResult, caller)}>
-        Suchen
-      </Button>
+      <StyledButton
+        text="Suchen"
+        onClick={() => Search(type, options, setSearchResult, caller)}
+      />
       <br></br>
       <DataRecordList
         data={searchResult}
         mapEntry={(entry) => {
           return (
             <>
-              <Button onClick={() => NavigateToDataPage(type, entry, navigate)}>
-                Bearbeiten
-              </Button>
-              <Button
+              <StyledButton
+                text="Bearbeiten / Anzeigen"
+                onClick={() => NavigateToDataPage(type, entry, navigate)}
+              />
+              <StyledButton
+                color="error"
+                text="Löschen"
                 onClick={async () =>
                   await DeleteDataRecord(type, entry, caller, loadData)
                 }
-              >
-                Löschen
-              </Button>
+              />
             </>
           );
         }}

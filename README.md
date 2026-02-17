@@ -59,12 +59,17 @@ URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
 
 Zugriffsrecht: Standard
 
-Rückgabewert (Format III):
+Rückgabe:
 
 ```json
 {
-    "Name": Wert,
-    ...
+    "pk": Integer,
+    "data_record": "Anfrage"/"Fall",
+    "version": Integer,
+    "values": {
+        "Name": Wert,
+        ...
+    }
 }
 ```
 
@@ -76,12 +81,30 @@ URL: [/api/data/data/%T](http://127.0.0.1:8000/api/data/data/fall)
 
 Zugriffsrecht: Standard
 
-Parameter (Format III):
+Parameter:
 
 ```json
 {
-    "Name": Wert,
-    ...
+    "data_record": "Anfrage"/"Fall",
+    "version": Integer,
+    "values": {
+        "Name": Wert,
+        ...
+    }
+}
+```
+
+Rückgabe:
+
+```json
+{
+    "pk": Integer,
+    "data_record": "Anfrage"/"Fall",
+    "version": Integer,
+    "values": {
+        "Name": Wert,
+        ...
+    }
 }
 ```
 
@@ -93,12 +116,16 @@ URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
 
 Zugriffsrecht: Standard
 
-Parameter (Format III):
+Parameter:
 
 ```json
 {
-    "Name": Wert,
-    ...
+    "data_record": "Anfrage"/"Fall",
+    "version": Integer,
+    "values": {
+        "Name": Wert,
+        ...
+    }
 }
 ```
 
@@ -112,43 +139,45 @@ URL: [/api/data/data_record/%T?id=%N](http://127.0.0.1:8000/api/data/data_record
 
 Zugriffsrecht: Standard
 
-Rückgabewert (Format II):
+Rückgabe:
 
 ```json
 {   "structure": {
-        "Name": {
-            "id": Integer,
+        "1": {
+            "name": String,
             "type": String,
             "required": Boolean,
-            ...
+            "element": {} (wie "structure", für "type"="List"),
             "maxLength": Integer (für "type"="String"),
-            "possibleValues": [Typ äquivalent zu Feldtyp]
+            "possibleValues": [String] (für "type"="String"),
         },
 
         ...
     }
 }
 ```
+
+## DataRecordAdminAPI
 
 ### POST
 
 Erstellt eine neue Version eines DataRecords.
 
-URL: [/api/data/data_record/%T](http://127.0.0.1:8000/api/data/data_record)
+URL: [/api/data/data_record_admin/%T](http://127.0.0.1:8000/api/data/data_record)
 
-Zugriffsrecht: Standard
+Zugriffsrecht: Erweitert
 
-Rückgabewert (Format II):
+Rückgabe:
 
 ```json
 {   "structure": {
-        "Name": {
-            "id": Integer,
+        "1": {
+            "name": String,
             "type": String,
             "required": Boolean,
-            ...
+            "element": {} (wie "structure", für "type"="List"),
             "maxLength": Integer (für "type"="String"),
-            "possibleValues": [Typ äquivalent zu Feldtyp]
+            "possibleValues": [String] (für "type"="String"),
         },
 
         ...
@@ -156,37 +185,9 @@ Rückgabewert (Format II):
 }
 ```
 
-## ListAPI
-
-### GET
-
-Gibt alle Datensätze eines Types zurück.
-
-URL: [/api/data/list/%T](http://127.0.0.1:8000/api/data/list/fall)
-
-Zugriffsrecht: Standard
-
-Rückgabewert (Liste von Format III):
-
-```json
-[
-    {
-        "Name": Wert,
-        ...
-    },
-    ...
-]
-```
-
 ## SearchAPI
 
 noch nicht vorhanden (URL: /api/data/search/%T)
-
-# DataRecords
-
-- [Anfrage](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/anfrage.json)
-
-- [Fall](https://github.com/RealBiggerBo/Softwaretechnik/blob/master/backend/api/database/fall.json)
 
 ## Projekt lokal mit Docker starten
 

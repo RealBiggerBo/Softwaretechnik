@@ -4,7 +4,7 @@ from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import ChangePasswordSerializer
+from .serializers import ChangePasswordSerializer, LastRequestSerializer
 from api.accounts.permissions import IsBaseUser, IsExtendedUser
 
 # API für den Login.
@@ -45,11 +45,16 @@ class MeAPIView(APIView):
             role = "admin_user"
         else:
             role = request.user.groups.values_list("name", flat=True).first()
+        
+        # Profil abrufen
+        last_request_id = getattr(request.user.profile, "last_request_id", None)
+
         # Die Basisinformationen des Nutzers werden zurückgegeben.
         return Response({
             "id": request.user.id, 
             "username": request.user.username, 
             "role": role,
+            "last_request_id": last_request_id,
             })
 
 # API für Passwort ändern.
@@ -78,3 +83,33 @@ class ChangePasswordAPI(APIView):
 
         # Gibt eine Erfolgsmeldung zurück.
         return Response({"debug": "Passwort erfolgreich geändert"}, status=status.HTTP_200_OK)
+
+class LastRequestAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Letzte Anfrage/Fall-ID abrufen"""
+        last_id = getattr(request.user.profile, "last_request_id", None)
+        return Response({
+            "id": request.user.id,
+            "username": request.user.username,
+            "role": request.user.groups.values_list("name", flat=True).first() if not request.user.is_superuser else "admin_user",
+            "last_request_id": last_id
+        })
+
+    def post(self, request):
+        """Letzte Anfrage/Fall-ID speichern"""
+        serializer = LastRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            request.user.profile.last_request_id = serializer.validated_data['last_request_id']
+            request.user.profile.save()
+            # Nach dem Speichern wird direkt der aktuelle Status zurückgeben.
+            last_id = request.user.profile.last_request_id
+            return Response({
+                "id": request.user.id,
+                "username": request.user.username,
+                "role": request.user.groups.values_list("name", flat=True).first() if not request.user.is_superuser else "admin_user",
+                "last_request_id": last_id,
+                "debug": "Last request ID gespeichert"
+            })
+        return Response(serializer.errors, status=400)

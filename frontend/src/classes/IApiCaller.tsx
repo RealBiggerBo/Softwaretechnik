@@ -58,6 +58,7 @@ export interface IApiCaller {
       id: number;
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
+      last_request_id: number | null;
     };
   }>;
 
@@ -71,11 +72,13 @@ export interface IApiCaller {
     pswd2: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  TryCreateFall(newCase: any): Promise<{ success: boolean; errorMsg: string }>;
+  TryCreateFall(
+    newCase: any,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   TryCreateAnfrage(
     newAnfrage: any,
-  ): Promise<{ success: boolean; errorMsg: string }>;
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   TrySearchFall(
     caseToSearch: any,
@@ -164,12 +167,18 @@ export class MockApiCaller implements IApiCaller {
       id: number;
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
+      last_request_id: number | null;
     };
   }> {
     return {
       success: true,
       errorMsg: "",
-      json: { id: 1, username: "superuse", role: "admin_user" },
+      json: {
+        id: 1,
+        username: "superuse",
+        role: "admin_user",
+        last_request_id: -1,
+      },
     };
   }
   private users: string[] = ["Alf", "Horst", "James"];
@@ -300,12 +309,16 @@ export class MockApiCaller implements IApiCaller {
       errorMsg: "",
     };
   }
-  async TryCreateFall(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented in mock!" };
+  async TryCreateFall(
+    newCase: any,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
-  async TryCreateAnfrage(): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented in mock!" };
+  async TryCreateAnfrage(
+    newAnfrage: any,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    return { success: false, errorMsg: "Not implemented in mock!", json: null };
   }
 
   async TrySearchFall(): Promise<{ success: boolean; errorMsg: string }> {

@@ -81,6 +81,7 @@ function LetzteAnfrage({ caller }: Props) {
   const [role, setRole] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -142,9 +143,13 @@ function LetzteAnfrage({ caller }: Props) {
   async function handleSave() {
     try {
       if (!GetDataRecordValidity(record)) return;
-
-      const result = await Save();
-      setSaveResult(result);
+      if (!saved) {
+        const result = await Save();
+        const recordID = 1;
+        setSaveResult(result);
+        setSaved(result);
+        navigate(`?id=${recordID}`, { replace: true });
+      }
     } catch (err) {
       setSaveResult(false);
     }
@@ -157,6 +162,7 @@ function LetzteAnfrage({ caller }: Props) {
         f.id === updatedField.id ? updatedField : f,
       ),
     });
+    setSaved(false);
   }
 
   function handleCreateField(type: string) {
@@ -242,8 +248,14 @@ function LetzteAnfrage({ caller }: Props) {
   function hasRecordChanged(): boolean {
     if (!record || !originalRecord) return false;
 
-    if (record.dataFields.length !== originalRecord.dataFields.length) {
-      return true; // Feld hinzugefügt oder entfernt
+    const currentIds = record.dataFields.map((f) => f.id);
+    const originalIds = originalRecord.dataFields.map((f) => f.id);
+
+    // IDs vergleichen
+    for (let i = 0; i < currentIds.length; i++) {
+      if (currentIds[i] !== originalIds[i]) {
+        return true; // Struktur geändert
+      }
     }
 
     for (let i = 0; i < record.dataFields.length; i++) {
@@ -302,7 +314,7 @@ function LetzteAnfrage({ caller }: Props) {
 
   return (
     <div>
-      <h1>Hallo ich bin eine Anfrage</h1>
+      <h1>Anfrage bearbeiten</h1>
       {role !== "base_user" && (
         <Fab
           color="primary"

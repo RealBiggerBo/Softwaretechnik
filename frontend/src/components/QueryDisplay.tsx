@@ -1,10 +1,8 @@
 import { type DataRecord } from "../classes/DataRecord";
 import { type DisplayAction } from "../classes/DisplayAction";
-import { Button } from "@mui/material";
-import DisplayActionDisplay from "./DisplayActionDisplay";
+import { TextField } from "@mui/material";
 import { ToUiItem, type UiItem, type UiQuery } from "../classes/UiItems";
 import type { FilterOption } from "../classes/FilterOption";
-import FilterOptionDisplay from "./FilterOptionDisplay";
 import FilterOptionList from "./FilterOptionList";
 import DisplayActionList from "./DisplayActionList";
 
@@ -105,6 +103,17 @@ function RemoveFilterOption(
 function QueryDisplay({ query, format, onChange }: Props) {
   return (
     <>
+      <TextField
+        label={"Titel"}
+        value={query.value.queryTitle ? query.value.queryTitle : ""}
+        onChange={(e) =>
+          onChange({
+            ...query,
+            value: { ...query.value, queryTitle: e.target.value },
+          })
+        }
+      />
+
       <DisplayActionList
         displayActions={query.value.displayActions}
         format={format}

@@ -86,6 +86,7 @@ export class ApiCaller implements IApiCaller {
       id: number;
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
+      last_request_id: number | null;
     };
   }> {
     let result: any = null;
@@ -124,6 +125,7 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
+    alert(JSON.stringify(result));
     return { ...res, json: result };
   }
   async RegisterNewUser(
@@ -237,26 +239,36 @@ export class ApiCaller implements IApiCaller {
 
   async TryCreateFall(
     caseToCreate: any,
-  ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    let result: any = null;
+    const res = await this.SendApiCall(
       "/api/data/data/fall",
       "POST",
       true,
       JSON.stringify(caseToCreate),
       "Erstellen fehlgeschlagen",
+      async (response) => {
+        result = await response.json();
+      },
     );
+    return { ...res, json: result };
   }
 
   async TryCreateAnfrage(
     anfrageToCreate: any,
-  ): Promise<{ success: boolean; errorMsg: string }> {
-    return this.SendApiCall(
+  ): Promise<{ success: boolean; errorMsg: string; json: any }> {
+    let result: any = null;
+    const res = await this.SendApiCall(
       "/api/data/data/anfrage",
       "POST",
       true,
       JSON.stringify(anfrageToCreate),
       "Erstellen fehlgeschlagen",
+      async (response) => {
+        result = await response.json();
+      },
     );
+    return { ...res, json: result };
   }
 
   async TrySearchFall(
@@ -351,7 +363,7 @@ export class ApiCaller implements IApiCaller {
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      `/api/data/data/fall/delete?id=${id}`,
+      `/api/data/data/fall?id=${id}`,
       "DELETE",
       true,
       undefined,
@@ -363,7 +375,7 @@ export class ApiCaller implements IApiCaller {
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return this.SendApiCall(
-      `/api/data/data/anfrage/delete?id=${id}`,
+      `/api/data/data/anfrage?id=${id}`,
       "DELETE",
       true,
       undefined,
@@ -425,7 +437,7 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-
+    console.log(JSON.stringify(result));
     return { ...res, json: result };
   }
 

@@ -42,6 +42,10 @@ function TextDataField({ textField, isEditMode, onChange, onDelete }: Props) {
           onBlur={() => setTouched(true)}
           error={isError}
           helperText={isError ? "Dieses Feld ist erforderlich" : ""}
+          multiline
+          maxRows={5}
+          minRows={1}
+          sx={{ width: 300 }}
         ></Tf>
       }
       {isEditMode && (

@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import type { Dayjs } from "dayjs";
@@ -19,6 +18,7 @@ import {
 import PresetDisplay from "../components/PresetDisplay";
 import DatePickerRange from "../components/DatePickerRange";
 import TemplateDialog from "../components/TemplateDialog";
+import StyledButton from "../components/Styledbutton";
 
 interface Props {
   caller: IApiCaller;
@@ -128,14 +128,12 @@ function StatisticsPage({ caller }: Props) {
                     </MenuItem>
                   ))}
                 </TextField>
-                <Button
+                <StyledButton
+                  text="Vorlage speichern"
                   onClick={() => setTemplatesDialogueOpen(true)}
-                  variant="contained"
                   size="large"
                   sx={{ px: 3 }}
-                >
-                  Vorlage speichern
-                </Button>
+                />
               </Stack>
               {preset && (
                 <PresetDisplay
@@ -155,16 +153,15 @@ function StatisticsPage({ caller }: Props) {
                 >
                   <MenuItem value="CSV">CSV</MenuItem>
                 </TextField>
-                <Button
+                <StyledButton
+                  text="Exportieren"
                   type="button"
                   variant="outlined"
                   size="large"
                   sx={{ px: 3 }}
                   disabled={exportDisabled}
                   onClick={handleExport}
-                >
-                  Exportieren
-                </Button>
+                />
               </Stack>
             </Stack>
           </form>
