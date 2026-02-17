@@ -239,20 +239,7 @@ export class MockApiCaller implements IApiCaller {
   }
 
   async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
-    return [
-      {
-        id: 1,
-        title:
-          "Statische Angaben zu den Fachberatungstellen Sexulaisierte Gewalt",
-        updated_at: "2026-01-02T17:21:19.189201Z",
-      },
-      {
-        id: 2,
-        title: "Alle Statisische Angaben die Wir haben",
-        updated_at: "2026-01-03T09:11:10.000000Z",
-      },
-      { id: 3, title: "Preset 3", updated_at: "2026-01-04T12:00:00.000000Z" },
-    ];
+    return [];
   }
 
   async GetExportUrl(
