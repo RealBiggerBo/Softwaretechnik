@@ -407,7 +407,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      "/api/data/data_record/anfrage?id=2",
+      "/api/data/data_record/anfrage",
       "GET",
       true,
       undefined,
