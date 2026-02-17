@@ -7,6 +7,16 @@ from django.views.decorators.http import require_http_methods
 
 from .models import StatsPreset
 
+# Case-insensitive Zugriff (canonical camelCase)
+def get_ci(d: Dict[str, Any], name: str, default: Any = None) -> Any:
+    if not isinstance(d, dict):
+        return default
+    lname = name.lower()
+    for k, v in d.items():
+        if isinstance(k, str) and k.lower() == lname:
+            return v
+    return default
+
 def _parse_json(request: HttpRequest) -> Optional[Dict[str, Any]]:
     try:
         return json.loads(request.body.decode("utf-8"))
@@ -16,10 +26,11 @@ def _parse_json(request: HttpRequest) -> Optional[Dict[str, Any]]:
 def _validate_payload(payload: Dict[str, Any]) -> Optional[str]:
     if not isinstance(payload, dict):
         return "Payload muss ein JSON-Objekt sein."
-    if "Queries" not in payload:
-        return "Payload muss ein Feld 'Queries' enthalten."
-    if not isinstance(payload.get("Queries"), list) or len(payload["Queries"]) == 0:
-        return "'Queries' muss eine nicht-leere Liste sein."
+    queries = get_ci(payload, "queries")
+    if queries is None:
+        return "Payload muss ein Feld 'queries' enthalten."
+    if not isinstance(queries, list) or len(queries) == 0:
+        return "'queries' muss eine nicht-leere Liste sein."
     return None
 
 @csrf_exempt
@@ -29,18 +40,31 @@ def presets_create(request: HttpRequest):
     if body is None:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    title = body.get("title") or body.get("PresetTitle")
+    # Titel case-insensitive, canonical camelCase
+    title = get_ci(body, "presetTitle") or get_ci(body, "title")
     if not isinstance(title, str) or not title.strip():
-        return JsonResponse({"error": "title/PresetTitle ist erforderlich."}, status=400)
+        return JsonResponse({"error": "presetTitle/title ist erforderlich."}, status=400)
 
-    payload = body if "Queries" in body else body.get("payload")
+    # payload entweder explizit oder Body selbst (wenn 'queries' vorhanden)
+    payload = get_ci(body, "payload")
+    if not isinstance(payload, dict):
+        payload = body if get_ci(body, "queries") is not None else None
     if not isinstance(payload, dict):
         return JsonResponse({"error": "payload muss ein JSON-Objekt sein."}, status=400)
 
-    payload.pop("PresetTitle", None)
-    if "GlobalFilterOptions" in payload:
-        for fo in payload["GlobalFilterOptions"]:
-            fo.pop("possibleValues", None)
+    # Payload säubern: presetTitle raus (egal welches Case)
+    for k in list(payload.keys()):
+        if isinstance(k, str) and k.lower() == "presettitle":
+            payload.pop(k, None)
+
+    # possibleValues aus globalFilterOptions entfernen (case-insensitive)
+    gfs = get_ci(payload, "globalFilterOptions") or []
+    if isinstance(gfs, list):
+        for fo in gfs:
+            if isinstance(fo, dict):
+                for k in list(fo.keys()):
+                    if isinstance(k, str) and k.lower() == "possiblevalues":
+                        fo.pop(k, None)
 
     if StatsPreset.objects.filter(title=title.strip()).exists():
         return JsonResponse({"error": "Preset mit diesem Namen existiert bereits."}, status=409)
@@ -54,7 +78,6 @@ def presets_create(request: HttpRequest):
         payload=payload,
         created_by=getattr(request, "user", None) if getattr(request, "user", None) and getattr(request.user, "is_authenticated", False) else None,
     )
-
     return JsonResponse({"id": preset.id, "title": preset.title, "payload": preset.payload, "updated_at": preset.updated_at.isoformat()}, status=201)
 
 @csrf_exempt
@@ -66,7 +89,6 @@ def presets_list(request: HttpRequest):
     ]
     return JsonResponse({"items": items}, status=200)
 
-# NEU: Get per PresetTitle via POST (statischer Endpoint)
 @csrf_exempt
 @require_http_methods(["POST"])
 def presets_get_by_title_post(request: HttpRequest):
@@ -74,9 +96,9 @@ def presets_get_by_title_post(request: HttpRequest):
     if body is None:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    title = body.get("PresetTitle") or body.get("title")
+    title = get_ci(body, "presetTitle") or get_ci(body, "title")
     if not isinstance(title, str) or not title.strip():
-        return JsonResponse({"error": "PresetTitle ist erforderlich."}, status=400)
+        return JsonResponse({"error": "presetTitle ist erforderlich."}, status=400)
 
     try:
         p = StatsPreset.objects.get(title=title.strip())
@@ -85,7 +107,6 @@ def presets_get_by_title_post(request: HttpRequest):
 
     return JsonResponse({"id": p.id, "title": p.title, "payload": p.payload, "updated_at": p.updated_at.isoformat()}, status=200)
 
-# NEU: Update per PresetTitle via statischem Endpoint
 @csrf_exempt
 @require_http_methods(["PUT", "PATCH", "POST"])
 def presets_update_by_title(request: HttpRequest):
@@ -93,19 +114,27 @@ def presets_update_by_title(request: HttpRequest):
     if body is None:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    title = body.get("PresetTitle") or body.get("title")
-    payload = body.get("payload") if "payload" in body and isinstance(body.get("payload"), dict) else (body if "Queries" in body else None)
+    title = get_ci(body, "presetTitle") or get_ci(body, "title")
+    candidate_payload = get_ci(body, "payload")
+    payload = candidate_payload if isinstance(candidate_payload, dict) else (body if get_ci(body, "queries") is not None else None)
 
     if not isinstance(title, str) or not title.strip():
-        return JsonResponse({"error": "PresetTitle ist erforderlich."}, status=400)
+        return JsonResponse({"error": "presetTitle ist erforderlich."}, status=400)
     if not isinstance(payload, dict):
         return JsonResponse({"error": "payload muss ein JSON-Objekt sein."}, status=400)
 
-    # Payload säubern
-    payload.pop("PresetTitle", None)
-    if "GlobalFilterOptions" in payload:
-        for fo in payload["GlobalFilterOptions"]:
-            fo.pop("possibleValues", None)
+    # Payload säubern und normalisieren
+    for k in list(payload.keys()):
+        if isinstance(k, str) and k.lower() == "presettitle":
+            payload.pop(k, None)
+
+    gfs = get_ci(payload, "globalFilterOptions") or []
+    if isinstance(gfs, list):
+        for fo in gfs:
+            if isinstance(fo, dict):
+                for k in list(fo.keys()):
+                    if isinstance(k, str) and k.lower() == "possiblevalues":
+                        fo.pop(k, None)
 
     msg = _validate_payload(payload)
     if msg:
@@ -116,13 +145,11 @@ def presets_update_by_title(request: HttpRequest):
     except StatsPreset.DoesNotExist:
         return JsonResponse({"error": "Preset nicht gefunden."}, status=404)
 
-    # Titel bleibt gleich (wie gewünscht). Nur Payload aktualisieren.
     p.payload = payload
     p.save()
 
     return JsonResponse({"id": p.id, "title": p.title, "payload": p.payload, "updated_at": p.updated_at.isoformat()}, status=200)
 
-# NEU: Delete per PresetTitle via statischem Endpoint
 @csrf_exempt
 @require_http_methods(["DELETE", "POST"])
 def presets_delete_by_title(request: HttpRequest):
@@ -130,9 +157,9 @@ def presets_delete_by_title(request: HttpRequest):
     if body is None:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    title = body.get("PresetTitle") or body.get("title")
+    title = get_ci(body, "presetTitle") or get_ci(body, "title")
     if not isinstance(title, str) or not title.strip():
-        return JsonResponse({"error": "PresetTitle ist erforderlich."}, status=400)
+        return JsonResponse({"error": "presetTitle ist erforderlich."}, status=400)
 
     try:
         p = StatsPreset.objects.get(title=title.strip())
@@ -140,5 +167,4 @@ def presets_delete_by_title(request: HttpRequest):
         return JsonResponse({"error": "Preset nicht gefunden."}, status=404)
 
     p.delete()
-    # 204 No Content ist üblich, hier geben wir eine Bestätigung zurück.
     return JsonResponse({"message": f"Preset '{title.strip()}' gelöscht."}, status=200)
