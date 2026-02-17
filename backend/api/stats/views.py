@@ -54,6 +54,7 @@ def _rows_from_results(results: List[Dict[str, Any]]) -> List[List[Any]]:
     rows: List[List[Any]] = []
     for query in results:
         qt = get_ci(query, "queryTitle", "")
+        rt = get_ci(query, "recordType", "")
         for output_entry in get_ci(query, "outputs", []) or []:
             da = get_ci(output_entry, "displayAction", "")
             dat = get_ci(output_entry, "displayActionTitle", "")
@@ -282,10 +283,10 @@ def presets_export_file(request: HttpRequest, fileformat: str):
             else:
                 outputs.append({"displayAction": str(atype), "displayActionTitle": title, "output": {}})
 
-        results.append({"queryTitle": query_title, "outputs": outputs})
+        results.append({"queryTitle": query_title, "recordType": record_type, "outputs": outputs})
 
     # Ausgabe nach Format (camelCase Header)
-    header = ["queryTitle", "displayAction", "displayActionTitle", "key", "value"]
+    header = ["queryTitle", "recordType", "displayAction", "displayActionTitle", "key", "value"]
     rows = _rows_from_results(results)
 
     title = get_ci(payload, "title") or get_ci(payload, "presetTitle") or preset_title or "statistik"
