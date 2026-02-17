@@ -100,8 +100,9 @@ async function DeleteDataRecord(
   updateData: () => void,
 ) {
   let res;
-  if (type == "fall") res = await caller.TryDeleteFall(-1);
-  else res = await caller.TryDeleteAnfrage(-1);
+  if (type == "fall")
+    res = await caller.TryDeleteFall(GetIdFromDataRecord(entry));
+  else res = await caller.TryDeleteAnfrage(GetIdFromDataRecord(entry));
 
   if (res.success) alert("Löschen erfolgreich");
   else alert(res.errorMsg);
