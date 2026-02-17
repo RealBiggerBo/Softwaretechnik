@@ -53,10 +53,10 @@ export class DataRecordConverter {
 
   public static ConvertFormatToDataRecord(raw: unknown) {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
+    alert("HALLOOOO: " + JSON.stringify(fields));
 
     const dataFields: DataField[] = Object.entries(fields).map(
-      ([fieldName, fieldValues]) =>
-        this.CreateDataField(fieldName, fieldValues),
+      ([fieldId, fieldValues]) => this.CreateDataField(fieldId, fieldValues),
     );
     return { dataFields: dataFields };
   }
@@ -197,15 +197,16 @@ export class DataRecordConverter {
   }
 
   private static CreateDataField(
-    fieldName: string,
+    fieldId: string,
     fieldValues: Record<string, unknown>,
   ): DataField {
-    const id = this.GetValueFromRecord(fieldValues, "id") as number;
+    const name = this.GetValueFromRecord(fieldValues, "name") as string;
     const required = this.GetValueFromRecord(
       fieldValues,
       "required",
     ) as boolean;
     const type = this.GetValueFromRecord(fieldValues, "type") as string;
+    const id = isNaN(Number(fieldId)) ? -1 : Number(fieldId);
 
     switch (type) {
       case "String": {
@@ -217,8 +218,8 @@ export class DataRecordConverter {
         if (possibleValues == null) {
           return {
             type: "text",
-            name: fieldName,
-            id,
+            name: name,
+            id: id,
             required,
             text: "",
             maxLength:
@@ -229,8 +230,8 @@ export class DataRecordConverter {
 
         return {
           type: "enum",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
           selectedValue: "",
           possibleValues,
@@ -240,8 +241,8 @@ export class DataRecordConverter {
       case "Date":
         return {
           type: "date",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
           date: "0000-00-00",
         };
@@ -249,8 +250,8 @@ export class DataRecordConverter {
       case "Boolean":
         return {
           type: "boolean",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
           isSelected: false,
         };
@@ -258,8 +259,8 @@ export class DataRecordConverter {
       case "Integer":
         return {
           type: "integer",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
           value: (this.GetValueFromRecord(fieldValues, "value") as number) ?? 0,
           minValue:
