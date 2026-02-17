@@ -232,8 +232,6 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const navigate = useNavigate();
 
@@ -476,16 +474,6 @@ function DataRecordEditor({ caller }: Props) {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      {/*<Dialog open={openDeleteDialog} onClose={cancelDelete}>
-        <DialogTitle>Feld löschen?</DialogTitle>
-        <DialogContent>Möchten Sie dieses Feld wirklich löschen?</DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete}>Abbrechen</Button>
-          <Button onClick={handleDelete} color="error" variant="contained">
-            Löschen
-          </Button>
-        </DialogActions>
-      </Dialog>*/}
     </div>
   );
 }
