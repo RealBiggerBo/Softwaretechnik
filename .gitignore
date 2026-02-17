@@ -372,3 +372,11 @@ venv/
 backend/db.sqlite3
 backend/test_stats_shell.py
 backend/test_stats_shell_minimal.py
+backend/frontend_example_request.ts
+backend/frontend_request_example.json
+backend/preset-test-fall.csv
+backend/create_preset.json
+backend/delete_preset.json
+backend/get_preset.json
+backend/request_export.json
+backend/update_preset.json
