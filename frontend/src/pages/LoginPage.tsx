@@ -1,7 +1,8 @@
-import { Alert, Button, Paper, Stack, TextField } from "@mui/material";
+import { Alert, Paper, Stack, TextField } from "@mui/material";
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
+import StyledButton from "../components/Styledbutton";
 
 interface Props {
   caller: IApiCaller;
@@ -62,15 +63,13 @@ function LoginPage({ caller, onLogin }: Props) {
           required
         />
         {error && <Alert severity="error">{error}</Alert>}
-        <Button
+        <StyledButton
+          text="Login"
           type="submit"
-          variant="contained"
           size="large"
           fullWidth
           disabled={isSubmitting}
-        >
-          Login
-        </Button>
+        />
       </Stack>
     </Paper>
   );

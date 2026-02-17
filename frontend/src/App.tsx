@@ -20,12 +20,13 @@ import SearchPage from "./pages/SearchPage";
 import { useEffect, useState } from "react";
 import { ThemeProvider, type Theme } from "@emotion/react";
 import { createTheme } from "@mui/material";
+import { purple } from "@mui/material/colors";
 
 interface Props {
   caller: IApiCaller;
 }
 
-function GetMainColor(url: string, search: string) {
+function GetBrightColor(url: string, search: string) {
   const searchParams = new URLSearchParams(search);
 
   switch (url) {
@@ -44,14 +45,17 @@ function GetMainColor(url: string, search: string) {
   return "#ff00ff";
 }
 
+function GetDimColor() {}
+
 function GetColorTheme(url: string, search: string): Theme {
-  const mainCol = GetMainColor(url, search);
+  const mainCol = GetBrightColor(url, search);
 
   return createTheme({
     palette: {
       primary: {
         main: mainCol,
       },
+      secondary: purple,
     },
   });
 }

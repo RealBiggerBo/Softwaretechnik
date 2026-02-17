@@ -1,11 +1,24 @@
 import MainPageContainer from "../components/MainPageContainer";
 import type { IApiCaller } from "../classes/IApiCaller";
+import { useEffect, useState } from "react";
 
 interface Props {
   caller: IApiCaller;
 }
 
 function MainPage({ caller }: Props) {
+  const [lastRequestId, setLastRequestId] = useState(-1);
+
+  useEffect(() => {
+    const fetchLastRequestId = async () => {
+      const result = await caller.GetCurrentUserRights();
+
+      if (!result.success) setLastRequestId(-1);
+      else setLastRequestId(result.json.last_request_id ?? -1);
+    };
+    fetchLastRequestId();
+  }, [caller]);
+
   return (
     <div className="pageContainer">
       <img
@@ -35,8 +48,9 @@ function MainPage({ caller }: Props) {
           buttons={["Letzter Fall", "Letzte Anfrage"]}
           links={[
             "/dataview?type=letzter-fall&id=5",
-            "/dataview?type=letzte-anfrage&id=5",
+            "/dataview?type=letzte-anfrage&id=" + lastRequestId,
           ]}
+          enabled={[false, lastRequestId >= 0]}
         />
         <MainPageContainer
           heading="Neu erstellen"

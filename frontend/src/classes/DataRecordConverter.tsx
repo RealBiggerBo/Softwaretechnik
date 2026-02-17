@@ -111,11 +111,12 @@ export class DataRecordConverter {
     dataRecord: DataRecord,
     raw: any,
   ): DataRecord {
-    let rawkey = Object.keys(raw);
+    if (!raw) return { dataFields: [] };
+    const rawkey = Object.keys(raw);
     let i = 0;
     while (i < rawkey.length) {
-      let fieldName = rawkey[i];
-      let fieldValues = raw[fieldName];
+      const fieldName = rawkey[i];
+      const fieldValues = raw[fieldName];
       dataRecord.dataFields[i] = this.SetValue(
         dataRecord.dataFields[i],
         fieldValues,

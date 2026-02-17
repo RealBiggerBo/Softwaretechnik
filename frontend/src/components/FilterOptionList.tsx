@@ -1,8 +1,8 @@
-import { Button } from "@mui/material";
 import type { DataRecord } from "../classes/DataRecord";
 import type { UiItem } from "../classes/UiItems";
 import FilterOptionDisplay from "./FilterOptionDisplay";
 import type { FilterOption } from "../classes/FilterOption";
+import StyledButton from "./Styledbutton";
 
 interface Props {
   filterOptions: UiItem<FilterOption>[];
@@ -37,13 +37,14 @@ function FilterOptionList({
               updateFilterOption(option, newOption);
             }}
           ></FilterOptionDisplay>
-          <Button onClick={() => removeFilterOption(option)}>
-            {removeText}
-          </Button>
+          <StyledButton
+            text={removeText}
+            onClick={() => removeFilterOption(option)}
+          />
         </div>
       ))}
       <br></br>
-      <Button onClick={() => addNewFilterOption()}>{addText}</Button>
+      <StyledButton text={addText} onClick={() => addNewFilterOption()} />
     </>
   );
 }

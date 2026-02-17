@@ -3,10 +3,11 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
-import { Alert, Button, Fab, Snackbar } from "@mui/material";
+import { Alert, Fab, Snackbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import type { DataField } from "../classes/DataField";
 import DataRecordDisplay from "./DataRecordDisplay";
+import StyledButton from "./Styledbutton";
 
 interface Props {
   caller: IApiCaller;
@@ -430,12 +431,14 @@ function DataRecordEditor({ caller }: Props) {
       />
       <br />
       {deletable() && (
-        <Button variant="contained" color="error" onClick={handleDeleteRecord}>
-          Datensatz löschen
-        </Button>
+        <StyledButton
+          text="Datensatz löschen"
+          color="error"
+          onClick={handleDeleteRecord}
+        />
       )}
-      <Button
-        variant="contained"
+      <StyledButton
+        text="Speichern"
         onClick={async () =>
           await handleSave(
             type,
@@ -446,9 +449,7 @@ function DataRecordEditor({ caller }: Props) {
             setLastSavedRecord,
           )
         }
-      >
-        Speichern
-      </Button>
+      />
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
