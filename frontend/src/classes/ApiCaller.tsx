@@ -83,7 +83,7 @@ export class ApiCaller implements IApiCaller {
           globalFilterOptions: Array.isArray(payload.globalFilterOptions)
             ? payload.globalFilterOptions
             : [],
-          queries: Array.isArray(payload.Queries) ? payload.Queries : [],
+          queries: Array.isArray(payload.queries) ? payload.queries : [],
         };
       },
     );

@@ -106,6 +106,7 @@ function StatisticsPage({ caller }: Props) {
     if (existingPreset) {
       const { success, preset: loadedPreset } =
         await caller.GetStatisticsPreset(existingPreset.title);
+      alert(JSON.stringify(loadedPreset));
 
       if (success) {
         setPreset(ToUiPreset(loadedPreset));
