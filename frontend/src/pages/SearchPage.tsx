@@ -62,13 +62,11 @@ function Search(
   caller: IApiCaller,
 ) {
   let res;
-  if (type == "fall") res = caller.TrySearchFall(options);
-  else res = caller.TrySearchAnfrage(options);
+  if (type == "fall")
+    res = caller.TrySearchFall(options.map((uiCase) => uiCase.value));
+  else res = caller.TrySearchAnfrage(options.map((uiOption) => uiOption.value));
 
-  alert(
-    "Not yet implemented. Dummy values provided. FilterOptions were: " +
-      JSON.stringify(options),
-  );
+  alert(JSON.stringify(res));
 
   const dummyValues: DataRecord[] = [
     {

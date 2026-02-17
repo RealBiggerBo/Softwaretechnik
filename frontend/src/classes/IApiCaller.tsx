@@ -1,3 +1,4 @@
+import type { FilterOption } from "./FilterOption";
 import type { Preset } from "./Preset";
 import type { PresetItemListElement } from "./StatisticsTypes";
 
@@ -81,11 +82,11 @@ export interface IApiCaller {
   ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   TrySearchFall(
-    caseToSearch: any,
+    caseToSearch: FilterOption[],
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TrySearchAnfrage(
-    anfrageToSearch: any,
+    anfrageToSearch: FilterOption[],
   ): Promise<{ success: boolean; errorMsg: string }>;
 
   TrySearchAnfrageByID(
