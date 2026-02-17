@@ -144,6 +144,17 @@ function StatisticsPage({ caller }: Props) {
     setStatisticsType(value);
   }
 
+  async function handleSave() {
+    if (!preset) return;
+
+    await caller.TryCreateStatisticPreset(
+      statisticsType,
+      presetTitle,
+      ToNormalPreset(preset),
+    );
+    console.log(ToNormalPreset(preset).PresetTitle);
+  }
+
   return (
     <Box>
       <Grid container spacing={2}>
@@ -182,16 +193,7 @@ function StatisticsPage({ caller }: Props) {
                 />
                 <StyledButton
                   text="Vorlage speichern"
-                  onClick={() => {
-                    if (preset) {
-                      caller.TryCreateStatisticPreset(
-                        statisticsType,
-                        presetTitle,
-                        ToNormalPreset(preset),
-                      );
-                      console.log(ToNormalPreset(preset).PresetTitle);
-                    }
-                  }}
+                  onClick={handleSave}
                   sx={{ px: 3 }}
                 />
               </Stack>
