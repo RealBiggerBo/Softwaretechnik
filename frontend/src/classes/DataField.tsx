@@ -33,12 +33,18 @@ export type ToggleField = BaseField & {
   isSelected: boolean;
 };
 
+export type ListField = BaseField & {
+  type: "list";
+  element: DataField[];
+};
+
 export type DataField =
   | TextField
   | DateField
   | IntegerField
   | EnumField
-  | ToggleField;
+  | ToggleField
+  | ListField;
 
 // export abstract class DataField {
 //   readonly type: string = "";
