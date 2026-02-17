@@ -60,6 +60,7 @@ export interface IApiCaller {
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
       last_request_id: number | null;
+      last_case_id: number | null;
     };
   }>;
 
@@ -169,6 +170,7 @@ export class MockApiCaller implements IApiCaller {
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
       last_request_id: number | null;
+      last_case_id: number | null;
     };
   }> {
     return {
@@ -179,6 +181,7 @@ export class MockApiCaller implements IApiCaller {
         username: "superuse",
         role: "admin_user",
         last_request_id: -1,
+        last_case_id: -1,
       },
     };
   }

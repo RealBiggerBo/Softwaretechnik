@@ -94,6 +94,7 @@ export class ApiCaller implements IApiCaller {
       username: string;
       role: "base_user" | "extended_user" | "admin_user";
       last_request_id: number | null;
+      last_case_id: number | null;
     };
   }> {
     let result: any = null;
@@ -132,7 +133,6 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-    alert(JSON.stringify(result));
     return { ...res, json: result };
   }
   async RegisterNewUser(
@@ -459,7 +459,6 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-    console.log(JSON.stringify(result));
     return { ...res, json: result };
   }
 

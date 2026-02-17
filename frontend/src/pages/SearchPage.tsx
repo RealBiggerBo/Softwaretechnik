@@ -66,8 +66,6 @@ function Search(
     res = caller.TrySearchFall(options.map((uiCase) => uiCase.value));
   else res = caller.TrySearchAnfrage(options.map((uiOption) => uiOption.value));
 
-  alert(JSON.stringify(res));
-
   const dummyValues: DataRecord[] = [
     {
       dataFields: [
