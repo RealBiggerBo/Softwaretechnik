@@ -89,26 +89,52 @@ function StatisticsPage({ caller }: Props) {
     link.remove();
   }
 
-  async function handlePresetChange(
-    event: React.SyntheticEvent,
-    selectedTitle: string | null,
+  function handlePresetTitleChange(
+    _event: React.SyntheticEvent,
+    value: string | null,
   ) {
-    setPreset(null);
-    setPresetTitle((selectedTitle ??= ""));
+    setPresetTitle(value ?? "");
+  }
+
+  async function handlePresetShowOrCreate() {
+    if (!presetTitle) return;
 
     const existingPreset = presets
       .filter((p) => p.type === statisticsType)
-      .find((p) => p.title === selectedTitle);
+      .find((p) => p.title === presetTitle);
 
-    if (!existingPreset) return;
+    if (existingPreset) {
+      const { success, preset: loadedPreset } =
+        await caller.GetStatisticsPreset(existingPreset.title);
 
-    const { success, preset: loadedPreset } = await caller.GetStatisticsPreset(
-      existingPreset.title,
-    );
+      if (success) {
+        setPreset(ToUiPreset(loadedPreset));
+      }
 
-    if (success) {
-      setPreset(ToUiPreset(loadedPreset));
+      return;
     }
+
+    const newPreset = ToUiPreset({
+      PresetTitle: presetTitle,
+      globalRecordType: statisticsType,
+      globalFilterOptions: [],
+      queries: [],
+    });
+
+    setPreset(newPreset);
+    setPresets((prev) => {
+      const maxId = prev.reduce((max, p) => Math.max(max, p.id), 0);
+
+      return [
+        ...prev,
+        {
+          id: maxId + 1,
+          title: presetTitle,
+          type: statisticsType,
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    });
   }
 
   function handleStatisticsTypeChange(
@@ -142,11 +168,17 @@ function StatisticsPage({ caller }: Props) {
                     .filter((presetItem) => presetItem.type === statisticsType)
                     .map((presetItem) => presetItem.title)}
                   value={presetTitle || null}
-                  onChange={handlePresetChange}
-                  onInputChange={handlePresetChange}
+                  onChange={handlePresetTitleChange}
+                  onInputChange={handlePresetTitleChange}
                   renderInput={(params) => (
                     <TextField {...params} label="Vorlage" />
                   )}
+                />
+                <StyledButton
+                  text="Vorlage anzeigen/erstellen"
+                  onClick={handlePresetShowOrCreate}
+                  variant="outlined"
+                  sx={{ px: 7 }}
                 />
                 <StyledButton
                   text="Vorlage speichern"
@@ -160,7 +192,6 @@ function StatisticsPage({ caller }: Props) {
                       console.log(ToNormalPreset(preset).PresetTitle);
                     }
                   }}
-                  size="large"
                   sx={{ px: 3 }}
                 />
               </Stack>
