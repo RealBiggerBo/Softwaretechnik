@@ -232,8 +232,6 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const navigate = useNavigate();
 
@@ -253,23 +251,27 @@ function DataRecordEditor({ caller }: Props) {
         formatRes.json,
       );
 
-      //Get data
-      const dataRes = await GetData(caller, type, datRecordId);
+      if (type !== "neue-anfrage" && type !== "neuer-fall") {
+        //Get data
+        const dataRes = await GetData(caller, type, datRecordId);
+        if (!dataRes.success) {
+          return;
+        }
+        //merge data and data
+        const datarecord = DataRecordConverter.MergeDataRecordWithData(
+          format,
+          dataRes.json["values"],
+        );
 
-      if (!dataRes.success) {
+        setRecord(datarecord);
+        setLastSavedRecord(datarecord);
         return;
       }
-
-      //merge data and data
-      const datarecord = DataRecordConverter.MergeDataRecordWithData(
-        format,
-        dataRes.json["values"],
-      );
-      setRecord(datarecord);
-      setLastSavedRecord(datarecord);
+      setLastSavedRecord(format);
+      setRecord(format);
     }
     loadData();
-  }, [caller]);
+  }, [caller, type, datRecordId]);
 
   //saves the datarecord
   async function Save(
@@ -318,6 +320,7 @@ function DataRecordEditor({ caller }: Props) {
       if (sucsaved === true) {
         navigate(`/anfrage?id=${saveid}`, { replace: true });
         openSnackbar("Anfrage erfolgreich gespeichert!", true);
+        await setLast(saveid, type);
         return { success: true };
       }
     }
@@ -336,6 +339,7 @@ function DataRecordEditor({ caller }: Props) {
       if (sucsaved === true) {
         navigate(`/fall?id=${saveid}`, { replace: true });
         openSnackbar("Fall erfolgreich gespeichert!", true);
+        await setLast(saveid, type);
         return { success: true };
       }
     }
@@ -345,10 +349,26 @@ function DataRecordEditor({ caller }: Props) {
       (await UpdateDataRecord(type, recordToSave, recordId, caller)) === true
     ) {
       openSnackbar("Datensatz erfolgreich aktualisiert!", true);
+      await setLast(recordId, type);
       return { success: true };
     } else {
       openSnackbar("Datensatz konnte nicht aktualisiert werden!", false);
       return { success: false };
+    }
+  }
+
+  async function setLast(id: number, type: dataRecordType) {
+    if (
+      type === "anfrage" ||
+      type === "letzte-anfrage" ||
+      type === "neue-anfrage"
+    ) {
+      await caller.SetLastAnfrage(id);
+      return;
+    }
+    if (type === "fall" || type === "letzter-fall" || type === "neuer-fall") {
+      await caller.SetLastFall(id);
+      return;
     }
   }
 
@@ -391,13 +411,13 @@ function DataRecordEditor({ caller }: Props) {
   }
 
   async function handleDeleteRecord() {
-    const navigate = useNavigate();
     const suc = (await caller.TryDeleteAnfrage(datRecordId)).success;
     if (suc) {
       openSnackbar(`${type} wurde erfolgreich gelöscht.`, suc);
       navigate("/main");
+    } else {
+      openSnackbar(`${type} konnte nicht gelöscht werden`, suc);
     }
-    openSnackbar(`${type} konnte nicht gelöscht werden`, suc);
   }
 
   return (
@@ -462,16 +482,6 @@ function DataRecordEditor({ caller }: Props) {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      {/*<Dialog open={openDeleteDialog} onClose={cancelDelete}>
-        <DialogTitle>Feld löschen?</DialogTitle>
-        <DialogContent>Möchten Sie dieses Feld wirklich löschen?</DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete}>Abbrechen</Button>
-          <Button onClick={handleDelete} color="error" variant="contained">
-            Löschen
-          </Button>
-        </DialogActions>
-      </Dialog>*/}
     </div>
   );
 }

@@ -1,8 +1,16 @@
+import { useState } from "react";
 import type { DataField } from "../classes/DataField";
 import type { DataRecord } from "../classes/DataRecord";
 import type { IApiCaller } from "../classes/IApiCaller";
 import AddNewDataField from "./AddNewDataField";
 import { FieldRenderer } from "./Fieldrenderer";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import StyledButton from "./Styledbutton";
 
 interface Props {
   record: DataRecord;
@@ -13,9 +21,19 @@ interface Props {
 }
 
 function AddNewField(record: DataRecord, newField: DataField): DataRecord {
+  if (record === null) {
+    return { dataFields: [] };
+  }
+  let id;
+  if (record.dataFields.length === 0) {
+    id = 1;
+  } else {
+    id = record.dataFields[record.dataFields.length - 1].id + 1;
+  }
+
   const fieldWithId = {
     ...newField,
-    id: record.dataFields[record.dataFields.length - 1].id + 1,
+    id,
   };
   return { ...record, dataFields: [...record.dataFields, fieldWithId] };
 }
@@ -46,6 +64,27 @@ function DataRecordDisplay({
   isEditMode,
   onChange,
 }: Props) {
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [fieldToDelete, setFieldToDelete] = useState<DataField | null>(null);
+
+  const handleDeleteClick = (field: DataField) => {
+    setFieldToDelete(field);
+    setOpenDeleteDialog(true);
+  };
+
+  const confirmDelete = () => {
+    if (fieldToDelete) {
+      onChange(RemoveField(record, fieldToDelete.id));
+    }
+    setOpenDeleteDialog(false);
+    setFieldToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setOpenDeleteDialog(false);
+    setFieldToDelete(null);
+  };
+
   return (
     <>
       {record?.dataFields.map((field) => (
@@ -56,7 +95,7 @@ function DataRecordDisplay({
             onChange={(toUpdate) =>
               onChange(UpdateField(record, field, toUpdate))
             }
-            onDelete={(idToRemove) => onChange(RemoveField(record, idToRemove))}
+            onDelete={() => handleDeleteClick(field)}
           />
           <br />
         </div>
@@ -67,6 +106,17 @@ function DataRecordDisplay({
           addNewField={(newField) => onChange(AddNewField(record, newField))}
         />
       )}
+
+      <Dialog open={openDeleteDialog} onClose={cancelDelete}>
+        <DialogTitle>Feld löschen?</DialogTitle>
+        <DialogContent>
+          Möchten Sie das Feld "{fieldToDelete?.name}" wirklich löschen?
+        </DialogContent>
+        <DialogActions>
+          <StyledButton onClick={cancelDelete} text="Abbrechen" />
+          <StyledButton color="error" onClick={confirmDelete} text="Löschen" />
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
