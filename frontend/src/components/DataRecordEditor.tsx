@@ -219,9 +219,9 @@ async function UpdateDataRecord(
 }
 
 function DataRecordEditor({ caller }: Props) {
-  const searchParams = useSearchParams();
-  const type: dataRecordType = GetDataRecordType(searchParams[0].get("type"));
-  const datRecordId: number = GetDataRecordId(searchParams[0].get("id"));
+  const [searchParams] = useSearchParams();
+  const type: dataRecordType = GetDataRecordType(searchParams.get("type"));
+  const datRecordId: number = GetDataRecordId(searchParams.get("id"));
 
   const [role, setRole] = useState<userRole>(null);
   const [lastSavedRecord, setLastSavedRecord] = useState<DataRecord>({
@@ -264,10 +264,10 @@ function DataRecordEditor({ caller }: Props) {
         );
 
         setRecord(datarecord);
-        setLastSavedRecord(datarecord);
+        setLastSavedRecord(structuredClone(datarecord));
         return;
       }
-      setLastSavedRecord(format);
+      setLastSavedRecord(structuredClone(format));
       setRecord(format);
     }
     loadData();
