@@ -74,16 +74,12 @@ function StatisticsPage({ caller }: Props) {
   }
 
   async function handleExport() {
-    const url = await caller.GetExportUrl(
-      formatDateForApi(timeStart),
-      formatDateForApi(timeEnd),
-      "preset",
-      fileFormat,
-    );
+    const url = (await caller.TryExportStatistic(presetTitle, "csv")).url;
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "";
+    link.target = "_blank";
+    link.download = "csv";
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -188,7 +184,7 @@ function StatisticsPage({ caller }: Props) {
                   variant="outlined"
                   size="large"
                   sx={{ px: 3 }}
-                  disabled={exportDisabled}
+                  //disabled={exportDisabled}
                   onClick={handleExport}
                 />
               </Stack>

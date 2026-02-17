@@ -12,29 +12,32 @@ if (authToken) {
 }
 
 export class ApiCaller implements IApiCaller {
-
-
   async TryExportStatistic(
     title: string,
     format: "csv" | "xlsx" | "pdf",
-  ): Promise<{ success: boolean; errorMsg: string; url: string; filename: string }> {
+  ): Promise<{
+    success: boolean;
+    errorMsg: string;
+    url: string;
+    filename: string;
+  }> {
     let downloadUrl = "";
     let filename = "";
-    const body = { presetTitle: title };
+    const body = { PresetTitle: title };
 
     const res = await this.SendApiCall(
-      `/api/stats/presets/export/${format}`,
+      `/api/stats/presets/export/csv`,
       "POST",
       true,
       JSON.stringify(body),
       "Export konnte nicht gestartet werden.",
       async (response: Response) => {
         const data = await response.json().catch(() => ({}));
-        downloadUrl = typeof data?.download_url === "string" ? data.download_url : "";
-        filename = typeof data?.filename === "string" ? data.filename : "";
+        downloadUrl = `http://localhost:8000${data?.download_url ? data.download_url : ""}`;
+        filename = data?.filename === "string" ? data.filename : "";
       },
     );
-
+    console.log(downloadUrl);
     return { ...res, url: downloadUrl, filename };
   }
 
