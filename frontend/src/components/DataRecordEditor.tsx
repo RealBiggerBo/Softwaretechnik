@@ -202,7 +202,7 @@ async function UpdateDataRecord(
     case "letzte-anfrage":
       return (
         await caller.TryUpdateAnfrage(
-          DataRecordConverter.ConvertDataRecordToFormat3(toUpdate),
+          DataRecordConverter.ConvertDataRecordToFormat3("Anfrage", toUpdate),
           recordId,
         )
       ).success;
@@ -210,7 +210,7 @@ async function UpdateDataRecord(
     case "letzter-fall":
       return (
         await caller.TryUpdateFall(
-          DataRecordConverter.ConvertDataRecordToFormat3(toUpdate),
+          DataRecordConverter.ConvertDataRecordToFormat3("Fall", toUpdate),
           recordId,
         )
       ).success;
@@ -308,8 +308,11 @@ function DataRecordEditor({ caller }: Props) {
 
     //neue Anfrage estellen, snackbar öffnen und url ändern
     if (type === "neue-anfrage") {
-      const rectosaavejson =
-        DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
+      const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
+        "Anfrage",
+
+        recordToSave,
+      );
       res = await caller.TryCreateAnfrage(rectosaavejson);
       sucsaved = res.success;
       saveid = -1 /*Number(res.json["pk"])*/;
@@ -327,8 +330,10 @@ function DataRecordEditor({ caller }: Props) {
 
     //neuen Fall erstellen, snackbar öffnen und url ändern
     if (type === "neuer-fall") {
-      const rectosaavejson =
-        DataRecordConverter.ConvertDataRecordToFormat3(recordToSave);
+      const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
+        "Fall",
+        recordToSave,
+      );
       res = await caller.TryCreateFall(rectosaavejson);
       sucsaved = res.success;
       saveid = -1 /*Number(res.json["pk"])*/;

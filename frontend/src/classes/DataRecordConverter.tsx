@@ -60,14 +60,24 @@ export class DataRecordConverter {
     return { dataFields: dataFields };
   }
 
+  //TODO: add version number
   public static ConvertDataRecordToFormat3(
+    dataRecordType: "Anfrage" | "Fall",
+    //version: number,
     dataRecord: DataRecord,
   ): Record<string, any> {
-    const obj: Record<string, any> = {};
+    const format: Record<string, any> = {};
+
+    format["data_record"] = dataRecordType;
+    format["version"] = -1; //version;
+
+    const values: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
-      obj[field.name] = this.GetValue(field);
+      values[field.name] = this.GetValue(field);
     });
-    return obj;
+
+    format["values"] = values;
+    return format;
   }
 
   public static ConvertDataRecordToFormat2(
