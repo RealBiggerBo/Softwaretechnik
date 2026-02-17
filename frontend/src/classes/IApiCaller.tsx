@@ -3,6 +3,16 @@ import type { Preset } from "./Preset";
 import type { PresetItemListElement } from "./StatisticsTypes";
 
 export interface IApiCaller {
+  TryExportStatistic(
+    title: string,
+    format: "csv" | "xlsx" | "pdf",
+  ): Promise<{ success: boolean; errorMsg: string; url: string; filename: string }>;
+  TryCreateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
   GetUsers(): Promise<{
     success: boolean;
     errorMsg: string;
@@ -38,7 +48,7 @@ export interface IApiCaller {
   GetStatisticsPresetList(): Promise<PresetItemListElement[]>;
 
   GetStatisticsPreset(
-    id: Number,
+    title: string,
   ): Promise<{ success: boolean; errorMsg: string; preset: Preset }>;
 
   TryChangePassword(
@@ -134,8 +144,29 @@ export interface IApiCaller {
 }
 
 export class MockApiCaller implements IApiCaller {
+  TryExportStatistic(
+    _title: string,
+    _format: "csv" | "xlsx" | "pdf",
+  ): Promise<{ success: boolean; errorMsg: string; url: string; filename: string }> {
+    return Promise.resolve({
+      success: true,
+      errorMsg: "",
+      url: "/mock/stats/export.csv",
+      filename: "export.csv",
+    });
+  }
+  GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
+    throw new Error("Method not implemented.");
+  }
+  TryCreateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
   GetStatisticsPreset(
-    id: Number,
+    title: string,
   ): Promise<{ success: boolean; errorMsg: string; preset: Preset }> {
     throw new Error("Method not implemented.");
   }

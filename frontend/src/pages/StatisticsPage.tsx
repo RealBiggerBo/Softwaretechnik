@@ -12,7 +12,12 @@ import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
-import { ToUiPreset, type UiItem, type UiPreset } from "../classes/UiItems";
+import {
+  ToNormalPreset,
+  ToUiPreset,
+  type UiItem,
+  type UiPreset,
+} from "../classes/UiItems";
 import PresetDisplay from "../components/PresetDisplay";
 import StyledButton from "../components/Styledbutton";
 
@@ -28,8 +33,6 @@ function StatisticsPage({ caller }: Props) {
   const [presetTitle, setPresetTitle] = useState<string>("");
   const [fileFormat, setFileFormat] = useState<string>("CSV");
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
-  const [TemplatesDialogueOpen, setTemplatesDialogueOpen] =
-    useState<boolean>(false);
   const [statisticsType, setStatisticsType] = useState<"Anfrage" | "Fall">(
     "Fall",
   );
@@ -100,7 +103,7 @@ function StatisticsPage({ caller }: Props) {
     if (!existingPreset) return;
 
     const { success, preset: loadedPreset } = await caller.GetStatisticsPreset(
-      existingPreset.id,
+      existingPreset.title,
     );
 
     if (success) {
@@ -147,7 +150,16 @@ function StatisticsPage({ caller }: Props) {
                 />
                 <StyledButton
                   text="Vorlage speichern"
-                  onClick={() => setTemplatesDialogueOpen(true)}
+                  onClick={() => {
+                    if (preset) {
+                      caller.TryCreateStatisticPreset(
+                        statisticsType,
+                        presetTitle,
+                        ToNormalPreset(preset),
+                      );
+                      console.log(ToNormalPreset(preset).PresetTitle);
+                    }
+                  }}
                   size="large"
                   sx={{ px: 3 }}
                 />
