@@ -1,3 +1,4 @@
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -6,20 +7,13 @@ import MenuItem from "@mui/material/MenuItem";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import type { Dayjs } from "dayjs";
-import { type ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
-import {
-  ToNormalPreset,
-  ToUiPreset,
-  type UiItem,
-  type UiPreset,
-} from "../classes/UiItems";
+import { ToUiPreset, type UiItem, type UiPreset } from "../classes/UiItems";
 import PresetDisplay from "../components/PresetDisplay";
-import DatePickerRange from "../components/DatePickerRange";
-import TemplateDialog from "../components/TemplateDialog";
 import StyledButton from "../components/Styledbutton";
 
 interface Props {
@@ -53,13 +47,17 @@ function StatisticsPage({ caller }: Props) {
 
   useEffect(() => {
     const fetchFormat = async () => {
-      const result = await caller.GetFallJson();
-
-      setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      if (statisticsType === "Anfrage") {
+        const result = await caller.GetAnfrageJson();
+        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      } else if (statisticsType === "Fall") {
+        const result = await caller.GetFallJson();
+        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      }
     };
 
     void fetchFormat();
-  }, [caller]);
+  }, [caller, statisticsType]);
 
   const exportDisabled =
     !timeStart ||
@@ -89,19 +87,24 @@ function StatisticsPage({ caller }: Props) {
   }
 
   async function handlePresetChange(
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: React.SyntheticEvent,
+    selectedTitle: string | null,
   ) {
-    const selectedTitle = event.target.value;
-    const presetMeta = presets.find((p) => p.title === selectedTitle);
-    if (!presetMeta) return;
+    setPreset(null);
+    setPresetTitle((selectedTitle ??= ""));
+
+    const existingPreset = presets
+      .filter((p) => p.type === statisticsType)
+      .find((p) => p.title === selectedTitle);
+
+    if (!existingPreset) return;
 
     const { success, preset: loadedPreset } = await caller.GetStatisticsPreset(
-      presetMeta.id,
+      existingPreset.id,
     );
 
     if (success) {
       setPreset(ToUiPreset(loadedPreset));
-      setPresetTitle(selectedTitle);
     }
   }
 
@@ -129,20 +132,19 @@ function StatisticsPage({ caller }: Props) {
                 <ToggleButton value="Fall">Fall</ToggleButton>
               </ToggleButtonGroup>
               <Stack spacing={2} direction="row">
-                <TextField
-                  select
+                <Autocomplete
                   fullWidth
-                  label="Vorlage"
-                  sx={{ "& .MuiSelect-select": { textAlign: "left" } }}
-                  value={presetTitle}
+                  freeSolo
+                  options={presets
+                    .filter((presetItem) => presetItem.type === statisticsType)
+                    .map((presetItem) => presetItem.title)}
+                  value={presetTitle || null}
                   onChange={handlePresetChange}
-                >
-                  {presets.map((presetItem) => (
-                    <MenuItem key={presetItem.id} value={presetItem.title}>
-                      {presetItem.title}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                  onInputChange={handlePresetChange}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Vorlage" />
+                  )}
+                />
                 <StyledButton
                   text="Vorlage speichern"
                   onClick={() => setTemplatesDialogueOpen(true)}
