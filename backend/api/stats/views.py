@@ -21,18 +21,43 @@ from .utils import (
 
 ALLOWED_RECORD_TYPES = {"Anfrage", "Fall"}
 
+# ----- Hilfsfunktionen -----
+
+def _b64_urlsafe_encode(s: str) -> str:
+    return base64.urlsafe_b64encode(s.encode("utf-8")).decode("ascii").rstrip("=")
+
 def _b64_urlsafe_decode(s: str) -> str:
     padding = "=" * (-len(s) % 4)
     return base64.urlsafe_b64decode((s + padding).encode("ascii")).decode("utf-8")
 
+def get_ci(d: Dict[str, Any], name: str, default: Any = None) -> Any:
+    """
+    Case-insensitive Zugriff: Holt d[name], unabhängig von Groß-/Kleinschreibung.
+    Canonical ist camelCase (z. B. 'globalFilterOptions', 'queries').
+    """
+    if not isinstance(d, dict):
+        return default
+    lname = name.lower()
+    for k, v in d.items():
+        if isinstance(k, str) and k.lower() == lname:
+            return v
+    return default
+
 def _rows_from_results(results: List[Dict[str, Any]]) -> List[List[Any]]:
+    """
+    Baut Tabellenzeilen aus den berechneten Ergebnissen.
+    Erwartet camelCase-Schlüssel in results:
+      - queryTitle
+      - outputs: [{ displayAction, displayActionTitle, output }]
+      - output kann Dict oder Skalar sein
+    """
     rows: List[List[Any]] = []
     for query in results:
-        qt = query.get("queryTitle", "") or query.get("QueryTitle", "")
-        for output_entry in query.get("outputs", []) or query.get("Outputs", []):
-            da = output_entry.get("displayAction", "") or output_entry.get("DisplayAction", "")
-            dat = output_entry.get("displayActionTitle", "") or output_entry.get("DisplayActionTitle", "")
-            out = output_entry.get("output", {}) or output_entry.get("Output", {})
+        qt = get_ci(query, "queryTitle", "")
+        for output_entry in get_ci(query, "outputs", []) or []:
+            da = get_ci(output_entry, "displayAction", "")
+            dat = get_ci(output_entry, "displayActionTitle", "")
+            out = get_ci(output_entry, "output", {})
             if isinstance(out, dict):
                 for key, value in out.items():
                     rows.append([qt, da, dat, key, value])
@@ -44,43 +69,46 @@ def _normalize_format(fileformat: str) -> Optional[str]:
     f = (fileformat or "").strip().lower()
     if f in ("csv",):
         return "csv"
-    if f in ("xlsx", "xls", "xlsl"):
+    if f in ("xlsx", "xls", "xlsl"):  # 'xlsl' tolerierter Alias
         return "xlsx"
     if f in ("pdf",):
         return "pdf"
     return None
 
 def _build_download_link_by_title(preset_title: str, fmt: str) -> Tuple[str, str]:
+    # Link mit preset_title (Server lädt Preset beim GET)
     filename = f"{slugify(preset_title)}.{fmt}"
     encoded_title = quote(preset_title)
     download_url = f"/api/stats/presets/export/{fmt.upper()}?preset_title={encoded_title}"
     return download_url, filename
 
-def get_ci(d: Dict[str, Any], name: str, default: Any = None) -> Any:
-    if not isinstance(d, dict):
-        return default
-    lname = name.lower()
-    for k, v in d.items():
-        if isinstance(k, str) and k.lower() == lname:
-            return v
-    return default
+# ----- Statistik-JSON -----
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def stats_execute(request: HttpRequest):
     """
-    Canonical camelCase, aber case-insensitive akzeptiert.
-    Top-Level: globalRecordType, globalFilterOptions, queries
-    Inner-Keys: queryTitle, recordType, displayActions, filterOptions, displayActionTitle, fieldId, type
+    Führt Statistik-Berechnungen aus und liefert die Ergebnisse als JSON.
+    Canonical Felder (camelCase), case-insensitive akzeptiert:
+      Top-Level: globalRecordType, globalFilterOptions, queries
+      Query: queryTitle, recordType, displayActions, filterOptions
+      Action: displayActionTitle, type, fieldId
+    Rückgabe: Liste mit Einträgen { queryTitle, outputs: [{ displayAction, displayActionTitle, output }] }
     """
     try:
         payload: Dict[str, Any] = json.loads(request.body.decode("utf-8"))
     except Exception:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    global_filters: List[Dict[str, Any]] = get_ci(payload, "globalFilterOptions", []) or get_ci(payload, "GlobalFilterOptions", []) or []
-    queries: List[Dict[str, Any]] = get_ci(payload, "queries", []) or get_ci(payload, "Queries", []) or []
-    global_record_type: Optional[str] = get_ci(payload, "globalRecordType") or payload.get("globalRecordType")
+    global_filters: List[Dict[str, Any]] = (
+        get_ci(payload, "globalFilterOptions", []) or get_ci(payload, "GlobalFilterOptions", []) or []
+    )
+    queries: List[Dict[str, Any]] = (
+        get_ci(payload, "queries", []) or get_ci(payload, "Queries", []) or []
+    )
+    global_record_type: Optional[str] = (
+        get_ci(payload, "globalRecordType") or payload.get("globalRecordType")
+    )
 
     if global_record_type is not None and global_record_type not in ALLOWED_RECORD_TYPES:
         return JsonResponse({"error": f"Ungültiger globalRecordType '{global_record_type}'."}, status=400)
@@ -106,7 +134,7 @@ def stats_execute(request: HttpRequest):
 
         record_global_filters = [
             gf for gf in global_filters
-            if isinstance(gf.get("id"), int) and id_to_field(record_type, gf["id"], maps)
+            if isinstance(get_ci(gf, "id"), int) and id_to_field(record_type, get_ci(gf, "id"), maps)
         ]
 
         recs = filter_records_for(record_type, record_global_filters, qfilters, maps)
@@ -136,26 +164,39 @@ def stats_execute(request: HttpRequest):
 
     return JsonResponse(results, safe=False, status=200)
 
+# ----- Export über statische URL /presets/export/<FORMAT> -----
+
 @csrf_exempt
 @require_http_methods(["POST", "GET"])
 def presets_export_file(request: HttpRequest, fileformat: str):
+    """
+    Statischer Export per PresetTitle:
+    - POST /api/stats/presets/export/<FORMAT> → JSON mit download_url + filename (FORMAT: CSV/XLSX/PDF)
+      Body akzeptiert case-insensitive: presetTitle/title/PresetTitle
+    - GET  /api/stats/presets/export/<FORMAT>?preset_title=... → Datei streamen (FORMAT bestimmt)
+    - GET  /api/stats/presets/export/<FORMAT>?payload_b64=... → Datei streamen basierend auf Payload-Snapshot
+    """
     fmt = _normalize_format(fileformat)
     if fmt is None:
         return HttpResponse("Ungültiges Format. Erlaubt: CSV, XLSX, PDF", status=400, content_type="text/plain")
 
+    # POST → Link per PresetTitle zurückgeben
     if request.method == "POST":
         try:
             body = json.loads(request.body.decode("utf-8"))
         except Exception:
             return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-        preset_title = get_ci(body, "presetTitle") or get_ci(body, "title") or get_ci(body, "PresetTitle")
+        preset_title = (
+            get_ci(body, "presetTitle") or get_ci(body, "title") or get_ci(body, "PresetTitle")
+        )
         if not isinstance(preset_title, str) or not preset_title.strip():
             return JsonResponse({"error": "presetTitle ist erforderlich."}, status=400)
 
         url, filename = _build_download_link_by_title(preset_title.strip(), fmt)
         return JsonResponse({"download_url": url, "filename": filename}, status=200)
 
+    # GET → Datei streamen (entweder aus preset_title oder payload_b64)
     payload: Optional[Dict[str, Any]] = None
     preset_title = request.GET.get("preset_title")
     payload_b64 = request.GET.get("payload_b64")
@@ -173,14 +214,23 @@ def presets_export_file(request: HttpRequest, fileformat: str):
             payload = p.payload
             if not isinstance(payload, dict):
                 return HttpResponse("Preset payload ist ungültig.", status=400, content_type="text/plain")
-        except Exception:
+        except StatsPreset.DoesNotExist:
             return HttpResponse("Preset nicht gefunden.", status=404, content_type="text/plain")
+        except Exception:
+            return HttpResponse("Fehler beim Laden des Presets.", status=500, content_type="text/plain")
     else:
         return HttpResponse("Erforderlich: preset_title oder payload_b64.", status=400, content_type="text/plain")
 
-    global_filters: List[Dict[str, Any]] = get_ci(payload, "globalFilterOptions", []) or get_ci(payload, "GlobalFilterOptions", []) or []
-    queries: List[Dict[str, Any]] = get_ci(payload, "queries", []) or get_ci(payload, "Queries", []) or []
-    global_record_type: Optional[str] = get_ci(payload, "globalRecordType") or payload.get("globalRecordType")
+    # Berechnungslogik (analog stats_execute) mit camelCase + tolerantem Lesen
+    global_filters: List[Dict[str, Any]] = (
+        get_ci(payload, "globalFilterOptions", []) or get_ci(payload, "GlobalFilterOptions", []) or []
+    )
+    queries: List[Dict[str, Any]] = (
+        get_ci(payload, "queries", []) or get_ci(payload, "Queries", []) or []
+    )
+    global_record_type: Optional[str] = (
+        get_ci(payload, "globalRecordType") or payload.get("globalRecordType")
+    )
 
     if global_record_type is not None and global_record_type not in ALLOWED_RECORD_TYPES:
         return HttpResponse(f"Ungültiger globalRecordType '{global_record_type}'.", status=400, content_type="text/plain")
@@ -206,7 +256,7 @@ def presets_export_file(request: HttpRequest, fileformat: str):
 
         record_global_filters = [
             gf for gf in global_filters
-            if isinstance(gf.get("id"), int) and id_to_field(record_type, gf["id"], maps)
+            if isinstance(get_ci(gf, "id"), int) and id_to_field(record_type, get_ci(gf, "id"), maps)
         ]
 
         recs = filter_records_for(record_type, record_global_filters, qfilters, maps)
@@ -234,7 +284,7 @@ def presets_export_file(request: HttpRequest, fileformat: str):
 
         results.append({"queryTitle": query_title, "outputs": outputs})
 
-    # CamelCase Header für CSV/PDF/XLSX
+    # Ausgabe nach Format (camelCase Header)
     header = ["queryTitle", "displayAction", "displayActionTitle", "key", "value"]
     rows = _rows_from_results(results)
 
@@ -259,7 +309,7 @@ def presets_export_file(request: HttpRequest, fileformat: str):
         bio.seek(0)
 
         resp = HttpResponse(bio.getvalue(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        resp["Content-Disposition"] = f'attachment; filename=\"{filename}\""
+        resp["Content-Disposition"] = f'attachment; filename="{filename}"'
         return resp
 
     if fmt == "pdf":
@@ -286,14 +336,15 @@ def presets_export_file(request: HttpRequest, fileformat: str):
         buffer.close()
 
         resp = HttpResponse(pdf_bytes, content_type="application/pdf")
-        resp["Content-Disposition"] = f'attachment; filename=\"{filename}\""
+        resp["Content-Disposition"] = f'attachment; filename="{filename}"'
         return resp
 
+    # CSV (Default)
     output = io.StringIO()
     writer = csv.writer(output, delimiter=";")
     writer.writerow(header)
     writer.writerows(rows)
 
     resp = HttpResponse(output.getvalue(), content_type="text/csv")
-    resp["Content-Disposition"] = f'attachment; filename=\"{filename}\""
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
     return resp
