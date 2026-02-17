@@ -95,10 +95,6 @@ def stats_execute(request: HttpRequest):
 
     return JsonResponse(results, safe=False, status=200)
 
-
-
-
-
 @csrf_exempt
 @require_POST
 def stats_execute_csv(request: HttpRequest):
@@ -110,9 +106,6 @@ def stats_execute_csv(request: HttpRequest):
         payload: Dict[str, Any] = json.loads(request.body.decode("utf-8"))
     except Exception:
         return HttpResponse("Invalid JSON body.", status=400, content_type="text/plain")
-
-    
-
 
     global_filters: List[Dict[str, Any]] = payload.get("GlobalFilterOptions", [])
     queries: List[Dict[str, Any]] = payload.get("Queries", [])
@@ -146,7 +139,6 @@ def stats_execute_csv(request: HttpRequest):
             gf for gf in global_filters
             if isinstance(gf.get("id"), int) and id_to_field(record_type, gf["id"], maps)
         ]
-
 
         # Datensätze für den Record filtern
         recs = filter_records_for(record_type, record_global_filters, qfilters, maps)
@@ -190,10 +182,8 @@ def stats_execute_csv(request: HttpRequest):
             else:
                 writer.writerow([qt, da, dat, "", out])
 
-
     title = payload.get("title") or payload.get("PresetTitle") or "statistik"
     filename = slugify(title) + ".csv"
-
 
     resp = HttpResponse(output.getvalue(), content_type="text/csv")
     resp["Content-Disposition"] = f"attachment; filename={filename}"

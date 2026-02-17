@@ -370,3 +370,5 @@ venv/
 .~lock.*backend/db.sqlite3
 
 backend/db.sqlite3
+backend/test_stats_shell.py
+backend/test_stats_shell_minimal.py

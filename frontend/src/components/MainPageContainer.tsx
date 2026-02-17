@@ -5,10 +5,18 @@ interface Props {
   body: string;
   buttons: string[];
   links: string[];
+  enabled?: boolean[];
   color: "search" | "statistics" | "lastUsed" | "createNew";
 }
 //Generiert einen großen Bereich auf der MainPage
-function MainPageContainer({ heading, body, buttons, links, color }: Props) {
+function MainPageContainer({
+  heading,
+  body,
+  buttons,
+  links,
+  enabled,
+  color,
+}: Props) {
   return (
     <div className={"mainPageContainer " + "mainPageContainer-" + color}>
       <div className="textContainer">
@@ -22,6 +30,14 @@ function MainPageContainer({ heading, body, buttons, links, color }: Props) {
             to={links[index]}
             key={index}
             className={"mainPageContainerBtn mainPageContainerBtn-" + color}
+            style={{
+              pointerEvents:
+                enabled !== undefined &&
+                enabled.length > index &&
+                !enabled[index]
+                  ? "none"
+                  : "auto",
+            }}
           >
             {val}
           </Link>

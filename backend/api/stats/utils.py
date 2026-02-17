@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Literal
 
 from django.db.models import QuerySet
-from api.database.models import DataSet
+from api.database.models import DataSet, Anfrage, Fall
 
 RecordName = Literal["Anfrage", "Fall"]
 
@@ -25,15 +25,36 @@ def load_all_formats() -> Dict[RecordName, Dict[str, Any]]:
     return fmts
 
 def build_id_to_field_maps() -> Dict[RecordName, Dict[int, str]]:
-    fmts = load_all_formats()
+    """
+    Baut das Mapping ID -> Feldname aus den in der DB hinterlegten DataRecord-Strukturen (Fall/Anfrage).
+    Nimmt jeweils die neueste Struktur-Version (latest('id')).
+    """
     result: Dict[RecordName, Dict[int, str]] = {}
-    for rec, spec in fmts.items():
-        id_map: Dict[int, str] = {}
-        for field_name, meta in spec.items():
-            field_id = meta.get("id")
-            if isinstance(field_id, int):
-                id_map[field_id] = field_name
-        result[rec] = id_map
+
+    # Fall-Struktur
+    try:
+        fall_struct = Fall.objects.latest('id').structure or {}
+        fall_map: Dict[int, str] = {}
+        for field_name, meta in fall_struct.items():
+            fid = meta.get("id")
+            if isinstance(fid, int):
+                fall_map[fid] = field_name
+        result["Fall"] = fall_map
+    except Exception:
+        result["Fall"] = {}
+
+    # Anfrage-Struktur
+    try:
+        anfrage_struct = Anfrage.objects.latest('id').structure or {}
+        anfrage_map: Dict[int, str] = {}
+        for field_name, meta in anfrage_struct.items():
+            fid = meta.get("id")
+            if isinstance(fid, int):
+                anfrage_map[fid] = field_name
+        result["Anfrage"] = anfrage_map
+    except Exception:
+        result["Anfrage"] = {}
+
     return result
 
 def get_dataset_qs(record: RecordName) -> QuerySet[DataSet]:

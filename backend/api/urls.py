@@ -5,4 +5,5 @@ urlpatterns = [
     path('hello/', hello_world, name='hello-world'),
     path("stats/", include("api.stats.urls")),
     path('auth/ping/', ping),
+    path('search/', include('api.search.urls')),
 ]
