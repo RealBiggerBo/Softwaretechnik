@@ -10,7 +10,7 @@ from .models import *
 from .serializers import *
 
 class DataAPI(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get_data(self, type, pk):
         if not type_is_valid(type):
@@ -66,9 +66,9 @@ class DataAPI(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        data = serializer.data
+        data = serializer.validated_data
         structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
-        values = serializer.data["values"]
+        values = data["values"]
         
         dataset_validation(structure, values)
 
@@ -80,7 +80,7 @@ class DataAPI(APIView):
         Überschreibt einen Datensatz.
         """
 
-        data = self.get_data(type, request.PUT.get("id", None))
+        data = self.get_data(type, request.GET.get("id", None))
 
         if isinstance(data, Response):
             return data
@@ -90,9 +90,9 @@ class DataAPI(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        data = serializer.data
+        data = serializer.validated_data
         structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
-        values = serializer.data["values"]
+        values = data["values"]
         
         dataset_validation(structure, values)
 

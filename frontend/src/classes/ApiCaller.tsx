@@ -5,6 +5,10 @@ import type { PresetItemListElement } from "./StatisticsTypes";
 const baseurl = "http://127.0.0.1:8000";
 const headers = new Headers();
 headers.set("Content-Type", "application/json");
+const authToken = sessionStorage.getItem("authToken");
+if (authToken) {
+  headers.set("Authorization", `token ${authToken}`);
+}
 
 export class ApiCaller implements IApiCaller {
   async GetStatisticsPreset(
@@ -39,6 +43,7 @@ export class ApiCaller implements IApiCaller {
 
   Logout(): void {
     headers.delete("Authorization");
+    sessionStorage.removeItem("authToken");
   }
   private async request(path: string, init: RequestInit): Promise<Response> {
     return fetch(`${baseurl}${path}`, { ...init, headers });
@@ -76,6 +81,7 @@ export class ApiCaller implements IApiCaller {
       (response) =>
         response.json().then((data) => {
           headers.set("Authorization", `token ${data.token}`);
+          sessionStorage.setItem("authToken", data.token);
         }),
     );
   }

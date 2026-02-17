@@ -3,6 +3,8 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import type { Dayjs } from "dayjs";
 import { type ChangeEvent, useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
@@ -34,6 +36,9 @@ function StatisticsPage({ caller }: Props) {
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [TemplatesDialogueOpen, setTemplatesDialogueOpen] =
     useState<boolean>(false);
+  const [statisticsType, setStatisticsType] = useState<"Anfrage" | "Fall">(
+    "Fall",
+  );
 
   useEffect(() => {
     const fetchPresets = async () => {
@@ -100,6 +105,13 @@ function StatisticsPage({ caller }: Props) {
     }
   }
 
+  function handleStatisticsTypeChange(
+    event: React.MouseEvent<HTMLElement>,
+    value: "Anfrage" | "Fall",
+  ): void {
+    setStatisticsType(value);
+  }
+
   return (
     <Box>
       <Grid container spacing={2}>
@@ -107,12 +119,15 @@ function StatisticsPage({ caller }: Props) {
           <h1>Auswahlmenü</h1>
           <form>
             <Stack direction="column" spacing={2}>
-              <DatePickerRange
-                start={timeStart}
-                end={timeEnd}
-                onStartChange={setTimeStart}
-                onEndChange={setTimeEnd}
-              />
+              <ToggleButtonGroup
+                color="primary"
+                value={statisticsType}
+                exclusive
+                onChange={handleStatisticsTypeChange}
+              >
+                <ToggleButton value="Anfrage">Anfrage</ToggleButton>
+                <ToggleButton value="Fall">Fall</ToggleButton>
+              </ToggleButtonGroup>
               <Stack spacing={2} direction="row">
                 <TextField
                   select
