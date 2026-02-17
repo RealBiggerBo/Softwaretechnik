@@ -80,7 +80,7 @@ class DataAPI(APIView):
         Überschreibt einen Datensatz.
         """
 
-        data = self.get_data(type, request.PUT.get("id", None))
+        data = self.get_data(type, request.GET.get("id", None))
 
         if isinstance(data, Response):
             return data
