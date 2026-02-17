@@ -13,6 +13,9 @@ interface Props {
 }
 
 function AddNewField(record: DataRecord, newField: DataField): DataRecord {
+  if (record === null) {
+    return { dataFields: [] };
+  }
   const fieldWithId = {
     ...newField,
     id: record.dataFields[record.dataFields.length - 1].id + 1,
