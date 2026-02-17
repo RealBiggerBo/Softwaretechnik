@@ -12,19 +12,64 @@ if (authToken) {
 }
 
 export class ApiCaller implements IApiCaller {
+
+
+  async TryExportStatistic(
+    title: string,
+    format: "csv" | "xlsx" | "pdf",
+  ): Promise<{ success: boolean; errorMsg: string; url: string; filename: string }> {
+    let downloadUrl = "";
+    let filename = "";
+    const body = { presetTitle: title };
+
+    const res = await this.SendApiCall(
+      `/api/stats/presets/export/${format}`,
+      "POST",
+      true,
+      JSON.stringify(body),
+      "Export konnte nicht gestartet werden.",
+      async (response: Response) => {
+        const data = await response.json().catch(() => ({}));
+        downloadUrl = typeof data?.download_url === "string" ? data.download_url : "";
+        filename = typeof data?.filename === "string" ? data.filename : "";
+      },
+    );
+
+    return { ...res, url: downloadUrl, filename };
+  }
+
+  async TryCreateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    preset.PresetTitle = title;
+    preset.globalRecordType = type;
+    const res = await this.SendApiCall(
+      `/api/stats/presets/create`,
+      "POST",
+      true,
+      JSON.stringify(preset),
+      "Vorlage konnte nicht erstellt werden.",
+    );
+    return res;
+  }
+
   async GetStatisticsPreset(
-    id: Number,
+    title: string,
   ): Promise<{ success: boolean; errorMsg: string; preset: Preset }> {
     let preset: Preset = {
       globalFilterOptions: [],
       queries: [],
     };
 
+    const body = { PresetTitle: title };
+
     const res = await this.SendApiCall(
-      `/api/stats/presets/${Number(id)}`,
-      "GET",
+      "/api/stats/presets/get",
+      "POST",
       true,
-      undefined,
+      JSON.stringify(body),
       "Vorlage konnte nicht geladen werden.",
       async (response) => {
         const data = await response.json();
@@ -38,6 +83,7 @@ export class ApiCaller implements IApiCaller {
         };
       },
     );
+    console.log(res);
 
     return { ...res, preset };
   }
@@ -216,7 +262,7 @@ export class ApiCaller implements IApiCaller {
         presets = items.map((item: any) => ({
           id: Number(item?.id),
           title: String(item?.title ?? ""),
-          type: String(item?.type ?? ""),
+          type: String(item?.recordType ?? ""),
           updated_at: String(item?.updated_at ?? ""),
         }));
       },
@@ -450,7 +496,7 @@ export class ApiCaller implements IApiCaller {
   }> {
     let result: any = null;
     const res = await this.SendApiCall(
-      "/api/data/data_record/fall?id=1",
+      "/api/data/data_record/fall",
       "GET",
       true,
       undefined,
@@ -546,7 +592,8 @@ export class ApiCaller implements IApiCaller {
       const errorMsg = error.error || fallbackErrorMsg;
 
       return { success: false, errorMsg };
-    } catch {
+    } catch (error) {
+      console.log(error);
       return { success: false, errorMsg: "Netzwerk Fehler" };
     }
   }
