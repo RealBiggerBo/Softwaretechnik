@@ -3,6 +3,7 @@ import DateDataField from "./DateDataField";
 import EnumDataField from "./EnumDataField";
 import IntegerDataField from "./IntegerDataField";
 import ToggleDataField from "./ToggleDataField";
+import ListDataField from "./ListDataField";
 import { type DataField } from "../classes/DataField";
 
 interface Props {
@@ -18,6 +19,7 @@ export function FieldRenderer({
   isEditMode,
   onChange,
   onDelete,
+  onAdd,
 }: Props) {
   switch (field.type) {
     case "text":
@@ -63,6 +65,16 @@ export function FieldRenderer({
           isEditMode={isEditMode}
           onChange={onChange}
           onDelete={onDelete}
+        />
+      );
+    case "list":
+      return (
+        <ListDataField
+          listField={field}
+          isEditMode={isEditMode}
+          onChange={onChange}
+          onDelete={onDelete}
+          onAdd={onAdd}
         />
       );
   }

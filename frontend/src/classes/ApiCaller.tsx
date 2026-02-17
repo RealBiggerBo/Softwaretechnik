@@ -216,6 +216,7 @@ export class ApiCaller implements IApiCaller {
         presets = items.map((item: any) => ({
           id: Number(item?.id),
           title: String(item?.title ?? ""),
+          type: String(item?.type ?? ""),
           updated_at: String(item?.updated_at ?? ""),
         }));
       },
@@ -448,9 +449,8 @@ export class ApiCaller implements IApiCaller {
     json: any;
   }> {
     let result: any = null;
-    alert("GetFallJson not working right now");
     const res = await this.SendApiCall(
-      "/api/data/data_record/fall?id=5",
+      "/api/data/data_record/fall?id=1",
       "GET",
       true,
       undefined,
