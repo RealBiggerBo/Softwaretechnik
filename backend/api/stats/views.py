@@ -458,7 +458,8 @@ def presets_export_file(request: HttpRequest, fileformat: str):
         return resp
 
     if fmt == "pdf":
-    # Unformatierte PDF-Ausgabe: einfacher Text, Semikolon-separiert, eine Zeile pro Datensatz (inkl. Header)
+        pass
+            # Unformatierte PDF-Ausgabe: einfacher Text, Semikolon-separiert, eine Zeile pro Datensatz (inkl. Header)
     try:
         from reportlab.pdfgen import canvas
         from reportlab.lib.pagesizes import A4

@@ -26,7 +26,7 @@ export class ApiCaller implements IApiCaller {
     const body = { PresetTitle: title };
 
     const res = await this.SendApiCall(
-      `/api/stats/presets/export/csv`,
+      `/api/stats/presets/export`,
       "POST",
       true,
       JSON.stringify(body),
