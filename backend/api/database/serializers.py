@@ -4,7 +4,8 @@ from .models import *
 class AnfrageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Anfrage
-        fields = ["structure"]
+        fields = ["pk",
+                    "structure"]
     
     def validate(self, data):
         """
@@ -16,7 +17,8 @@ class AnfrageSerializer(serializers.ModelSerializer):
 class FallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fall
-        fields = ["structure"]
+        fields = ["pk",
+                    "structure"]
     
     def validate(self, data):
         """
