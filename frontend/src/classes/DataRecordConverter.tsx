@@ -121,7 +121,7 @@ export class DataRecordConverter {
     raw: any,
   ): DataRecord {
     if (!raw) return { dataFields: [] };
-    const rawkey = Object.keys(raw);
+    const rawkey = Object.keys(raw["values"]);
     let i = 0;
     while (i < rawkey.length) {
       const fieldName = rawkey[i];
