@@ -240,8 +240,7 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
-
-  const formatVersion = -1;
+  const [formatVersion, setFormatVersion] = useState<number>(-1);
 
   const navigate = useNavigate();
 
@@ -257,8 +256,10 @@ function DataRecordEditor({ caller }: Props) {
 
       if (!formatRes.success) return;
 
-      const [formatVersion, format] =
-        DataRecordConverter.ConvertFormatToDataRecord(formatRes.json);
+      const [version, format] = DataRecordConverter.ConvertFormatToDataRecord(
+        formatRes.json,
+      );
+      setFormatVersion(version);
 
       if (type !== "neue-anfrage" && type !== "neuer-fall") {
         //Get data
@@ -324,7 +325,7 @@ function DataRecordEditor({ caller }: Props) {
       );
       res = await caller.TryCreateAnfrage(rectosaavejson);
       sucsaved = res.success;
-      saveid = -1 /*Number(res.json["pk"])*/;
+      saveid = Number(res.json["pk"]);
       if (sucsaved === undefined || sucsaved === false) {
         openSnackbar("Anfrage konnte nicht gespeichert werden!", false);
         return { success: false };
@@ -346,14 +347,14 @@ function DataRecordEditor({ caller }: Props) {
       );
       res = await caller.TryCreateFall(rectosaavejson);
       sucsaved = res.success;
-      saveid = -1 /*Number(res.json["pk"])*/;
+      saveid = Number(res.json["pk"]);
       if (sucsaved === undefined || sucsaved === false) {
         openSnackbar("Fall konnte nicht gespeichert werden!", false);
         return { success: false };
       }
       if (sucsaved === true) {
-        navigate(`/fall?id=${saveid}`, { replace: true });
         openSnackbar("Fall erfolgreich gespeichert!", true);
+        navigate(`/fall?id=${saveid}`, { replace: true });
         await setLast(saveid, type);
         return { success: true };
       }
