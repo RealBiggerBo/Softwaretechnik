@@ -555,13 +555,25 @@ export class ApiCaller implements IApiCaller {
   async SetLastAnfrage(
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented!" };
+    return await this.SendApiCall(
+      "last-request/",
+      "POST",
+      true,
+      { last_request_id: id },
+      "Letzte Anfrage konnte nicht aktualisiert werden.",
+    );
   }
 
   async SetLastFall(
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    return { success: false, errorMsg: "Not implemented!" };
+    return await this.SendApiCall(
+      "last-request/",
+      "POST",
+      true,
+      { last_case_id: id },
+      "Letzter Fall konnte nicht aktualisiert werden.",
+    );
   }
 
   private async SendApiCall(
