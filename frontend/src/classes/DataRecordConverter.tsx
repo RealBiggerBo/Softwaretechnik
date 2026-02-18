@@ -73,7 +73,7 @@ export class DataRecordConverter {
     const format: Record<string, any> = {};
 
     format["data_record"] = dataRecordType;
-    format["version"] = version;
+    format["pk"] = version;
 
     const values: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
