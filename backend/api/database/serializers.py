@@ -56,10 +56,7 @@ def datarecord_validation(data):
             raise serializers.ValidationError("Erforderliches Feld, required, wurde nicht übergeben.")
         elif not isinstance(field["required"], bool):
             raise serializers.ValidationError("Wert mit falschen Typ für required übergeben. Der richtige Typ ist Boolean.")
-        
-        if field["type"] == "String" and "maxLength" not in field:
-            raise serializers.ValidationError("Für String erforderliches Feld, maxLength, wurde nicht übergeben.")
-        
+
         if field["type"] in ["Group", "List"] and "element" not in field:
             raise serializers.ValidationError("Für Liste erforderliches Feld, element, wurde nicht übergeben.")
 
