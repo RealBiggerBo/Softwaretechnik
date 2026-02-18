@@ -331,7 +331,7 @@ function DataRecordEditor({ caller }: Props) {
         return { success: false };
       }
       if (sucsaved === true) {
-        navigate(`/anfrage?id=${saveid}`, { replace: true });
+        navigate(`?type=anfrage?id=${saveid}`, { replace: true });
         openSnackbar("Anfrage erfolgreich gespeichert!", true);
         await setLast(saveid, type);
         return { success: true };
@@ -354,7 +354,7 @@ function DataRecordEditor({ caller }: Props) {
       }
       if (sucsaved === true) {
         openSnackbar("Fall erfolgreich gespeichert!", true);
-        navigate(`/fall?id=${saveid}`, { replace: true });
+        navigate(`?type=fall?id=${saveid}`, { replace: true });
         await setLast(saveid, type);
         return { success: true };
       }
