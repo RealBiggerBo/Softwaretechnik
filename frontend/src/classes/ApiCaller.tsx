@@ -306,6 +306,7 @@ export class ApiCaller implements IApiCaller {
     anfrageToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string; json: any }> {
     let result: any = null;
+    console.log(JSON.stringify(anfrageToCreate));
     const res = await this.SendApiCall(
       "/api/data/data/anfrage",
       "POST",
