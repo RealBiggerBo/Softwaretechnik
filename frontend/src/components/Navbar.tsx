@@ -159,7 +159,7 @@ function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
           </>
         )}
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-          <DialogTitle>Feld löschen?</DialogTitle>
+          <DialogTitle>Seite verlassen?</DialogTitle>
           <DialogContent>
             Es wurde nicht gespeichert. Möchten Sie die Seite wirklich
             verlassen?
