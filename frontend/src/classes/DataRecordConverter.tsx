@@ -63,13 +63,13 @@ export class DataRecordConverter {
   //TODO: add version number
   public static ConvertDataRecordToFormat3(
     dataRecordType: "Anfrage" | "Fall",
-    //version: number,
+    version: number,
     dataRecord: DataRecord,
   ): Record<string, any> {
     const format: Record<string, any> = {};
 
     format["data_record"] = dataRecordType;
-    format["version"] = -1; //version;
+    format["version"] = version;
 
     const values: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {

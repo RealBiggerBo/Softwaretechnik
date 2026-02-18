@@ -77,7 +77,6 @@ function GetDataRecordType(str: string | null) {
     case "neuer-fall":
       return str;
     default:
-      alert("DEFUALT");
       return "anfrage";
   }
 }
@@ -195,6 +194,7 @@ async function UpdateDataRecord(
   type: dataRecordType,
   toUpdate: DataRecord,
   recordId: number,
+  formatVersion: number,
   caller: IApiCaller,
 ): Promise<boolean> {
   switch (type) {
@@ -202,7 +202,11 @@ async function UpdateDataRecord(
     case "letzte-anfrage":
       return (
         await caller.TryUpdateAnfrage(
-          DataRecordConverter.ConvertDataRecordToFormat3("Anfrage", toUpdate),
+          DataRecordConverter.ConvertDataRecordToFormat3(
+            "Anfrage",
+            formatVersion,
+            toUpdate,
+          ),
           recordId,
         )
       ).success;
@@ -210,7 +214,11 @@ async function UpdateDataRecord(
     case "letzter-fall":
       return (
         await caller.TryUpdateFall(
-          DataRecordConverter.ConvertDataRecordToFormat3("Fall", toUpdate),
+          DataRecordConverter.ConvertDataRecordToFormat3(
+            "Fall",
+            formatVersion,
+            toUpdate,
+          ),
           recordId,
         )
       ).success;
@@ -232,6 +240,8 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
+
+  const formatVersion = -1;
 
   const navigate = useNavigate();
 
@@ -309,7 +319,7 @@ function DataRecordEditor({ caller }: Props) {
     if (type === "neue-anfrage") {
       const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
         "Anfrage",
-
+        formatVersion,
         recordToSave,
       );
       res = await caller.TryCreateAnfrage(rectosaavejson);
@@ -331,6 +341,7 @@ function DataRecordEditor({ caller }: Props) {
     if (type === "neuer-fall") {
       const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
         "Fall",
+        formatVersion,
         recordToSave,
       );
       res = await caller.TryCreateFall(rectosaavejson);
@@ -350,7 +361,13 @@ function DataRecordEditor({ caller }: Props) {
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
     if (
-      (await UpdateDataRecord(type, recordToSave, recordId, caller)) === true
+      (await UpdateDataRecord(
+        type,
+        recordToSave,
+        recordId,
+        formatVersion,
+        caller,
+      )) === true
     ) {
       openSnackbar("Datensatz erfolgreich aktualisiert!", true);
       await setLast(recordId, type);
