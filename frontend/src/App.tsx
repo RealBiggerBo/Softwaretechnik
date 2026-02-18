@@ -70,6 +70,8 @@ function App({ caller }: Props) {
   const [theme, setTheme] = useState(
     GetColorTheme(useLocation().pathname, useLocation().search),
   );
+  const [hasDataChanges, setHasDataChanges] = useState(false);
+  const [hasFormatChanges, setHasFormatChanges] = useState(false);
 
   useEffect(() => {
     async function checkLogin() {
@@ -109,7 +111,11 @@ function App({ caller }: Props) {
   return (
     <div className="mainContainer">
       <ThemeProvider theme={theme}>
-        <Navbar caller={caller} />
+        <Navbar
+          caller={caller}
+          hasFormatChanges={hasFormatChanges}
+          hasDataChanges={hasDataChanges}
+        />
         <Container fixed>
           <Box>
             <Routes>
@@ -135,7 +141,15 @@ function App({ caller }: Props) {
                 />
                 <Route
                   path="/dataview"
-                  element={<DataviewPage caller={caller} />}
+                  element={
+                    <DataviewPage
+                      caller={caller}
+                      setHasFormatChanges={setHasFormatChanges}
+                      setHasDataChanges={setHasDataChanges}
+                      hasDataChanges={hasDataChanges}
+                      hasFormatChanges={hasFormatChanges}
+                    />
+                  }
                 />
               </Route>
               <Route path="*" element={<Navigate to="/login" replace />} />

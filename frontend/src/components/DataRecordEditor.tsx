@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
@@ -11,6 +11,10 @@ import StyledButton from "./Styledbutton";
 
 interface Props {
   caller: IApiCaller;
+  setHasDataChanges: (setHasDataChanges: boolean) => void;
+  setHasFormatChanges: (setHasFormatChanges: boolean) => void;
+  hasDataChanges: boolean;
+  hasFormatChanges: boolean;
 }
 
 type dataRecordType =
@@ -130,36 +134,6 @@ async function GetRole(
   return res.json.role;
 }
 
-// check if two datarecords are different
-// if they have different number of fields or at least one field has a different name, return true, otherwise return false
-function hasRecordChanged(record1: DataRecord, record2: DataRecord): boolean {
-  if (!record1 || !record2) return false;
-
-  if (record1.dataFields.length !== record2.dataFields.length) {
-    return true; // Feld hinzugefügt oder entfernt (unterschiedlich viele Felder)
-  }
-
-  const record1ids = record1.dataFields.map((field) => field.id);
-  const record2ids = record2.dataFields.map((field) => field.id);
-
-  for (let i = 0; i < record1ids.length; i++) {
-    if (record1ids[i] !== record2ids[i]) {
-      return true; // überprüft ob alle ids gleich sind (z.B. ein Feld hinzugefügt und entfernt => eine id zwischendrin fehlt, aber Anzahl der Felder gleich))
-    }
-  }
-
-  for (let i = 0; i < record1.dataFields.length; i++) {
-    const field1 = record1.dataFields[i];
-    const field2 = record2.dataFields[i];
-
-    if (field1.name !== field2.name) {
-      return true; // Name geändert
-    }
-  }
-
-  return false;
-}
-
 // post new datarecord structure based on type
 async function CreateNewDataRecord(
   type: dataRecordType,
@@ -223,7 +197,13 @@ async function UpdateDataRecord(
   return false;
 }
 
-function DataRecordEditor({ caller }: Props) {
+function DataRecordEditor({
+  caller,
+  setHasDataChanges,
+  setHasFormatChanges,
+  hasDataChanges,
+  hasFormatChanges,
+}: Props) {
   const [searchParams] = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams.get("type"));
   const datRecordId: number = GetDataRecordId(searchParams.get("id"));
@@ -238,7 +218,6 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [formatVersion, setFormatVersion] = useState<number>(-1);
-  const [hasChanges, setHasChanges] = useState(false);
 
   const navigate = useNavigate();
 
@@ -305,7 +284,7 @@ function DataRecordEditor({ caller }: Props) {
     let saveid: number = -1;
 
     // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
-    if (hasChanges) {
+    if (hasFormatChanges) {
       succhanged = await CreateNewDataRecord(type, recordToSave, caller);
       if (succhanged === undefined || succhanged === false) {
         openSnackbar("Neue Struktur konnte nicht gespeichert werden!", false);
@@ -365,21 +344,25 @@ function DataRecordEditor({ caller }: Props) {
     }
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
-    if (
-      (await UpdateDataRecord(
-        type,
-        recordToSave,
-        recordId,
-        formatVersion,
-        caller,
-      )) === true
-    ) {
-      openSnackbar("Datensatz erfolgreich aktualisiert!", true);
-      await setLast(recordId, type);
-      return { success: true };
+    if (hasDataChanges) {
+      if (
+        (await UpdateDataRecord(
+          type,
+          recordToSave,
+          recordId,
+          formatVersion,
+          caller,
+        )) === true
+      ) {
+        openSnackbar("Datensatz erfolgreich aktualisiert!", true);
+        await setLast(recordId, type);
+        return { success: true };
+      } else {
+        openSnackbar("Datensatz konnte nicht aktualisiert werden!", false);
+        return { success: false };
+      }
     } else {
-      openSnackbar("Datensatz konnte nicht aktualisiert werden!", false);
-      return { success: false };
+      return { success: true };
     }
   }
 
@@ -418,7 +401,8 @@ function DataRecordEditor({ caller }: Props) {
       );
 
       if (result.success) {
-        setHasChanges(false);
+        setHasFormatChanges(false);
+        setHasDataChanges(false);
         setLastSaved(recordToSave);
       }
     } catch (err) {
@@ -477,7 +461,11 @@ function DataRecordEditor({ caller }: Props) {
         isEditMode={isEditMode}
         caller={caller}
         onChange={(record) => {
-          setHasChanges(true);
+          if (isEditMode) {
+            setHasFormatChanges(true);
+          } else {
+            setHasDataChanges(true);
+          }
           setRecord(record);
         }}
       />

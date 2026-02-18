@@ -1,4 +1,13 @@
-import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
 import SessionTimer from "./SessionTimer";
@@ -8,16 +17,21 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useEffect, useState } from "react";
+import StyledButton from "./Styledbutton";
 
 interface Props {
   caller: IApiCaller;
+  hasFormatChanges: boolean;
+  hasDataChanges: boolean;
 }
 
-function Navbar({ caller }: Props) {
+function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
   const [userName, setUserName] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [urlstring, setUrlstring] = useState("");
 
   const openHelp = () => {
     switch (location.pathname) {
@@ -56,6 +70,19 @@ function Navbar({ caller }: Props) {
     !isLoginPage ? loadData() : setUserName("");
   }, [isLoginPage]);
 
+  function checkNavigate(urlstr: string) {
+    const stopNavigate = hasDataChanges || hasFormatChanges;
+    if (!stopNavigate) {
+      if (urlstr === "/login") {
+        caller.Logout();
+        navigate("/login");
+      }
+      navigate(urlstr);
+    } else {
+      setOpenDialog(true);
+    }
+  }
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -63,7 +90,10 @@ function Navbar({ caller }: Props) {
         <IconButton
           color="inherit"
           disabled={isLoginPage}
-          onClick={() => navigate("/main")}
+          onClick={() => {
+            checkNavigate("/main");
+            setUrlstring("/main");
+          }}
         >
           <HomeIcon />
         </IconButton>
@@ -71,7 +101,10 @@ function Navbar({ caller }: Props) {
         <IconButton
           color="inherit"
           disabled={isLoginPage}
-          onClick={() => navigate("/settings")}
+          onClick={() => {
+            checkNavigate("/settings");
+            setUrlstring("/settings");
+          }}
         >
           <SettingsIcon />
         </IconButton>
@@ -105,8 +138,8 @@ function Navbar({ caller }: Props) {
             <IconButton
               color="inherit"
               onClick={() => {
-                caller.Logout();
-                navigate("/login");
+                checkNavigate("/login");
+                setUrlstring("/login");
               }}
             >
               <LogoutIcon />
@@ -125,6 +158,24 @@ function Navbar({ caller }: Props) {
             </IconButton>
           </>
         )}
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle>Feld löschen?</DialogTitle>
+          <DialogContent>
+            Es wurde nicht gespeichert. Möchten Sie die Seite wirklich
+            verlassen?
+          </DialogContent>
+          <DialogActions>
+            <StyledButton
+              onClick={() => setOpenDialog(false)}
+              text="Abbrechen"
+            />
+            <StyledButton
+              color="error"
+              onClick={() => navigate(urlstring)}
+              text="Verlassen"
+            />
+          </DialogActions>
+        </Dialog>
       </Toolbar>
     </AppBar>
   );
