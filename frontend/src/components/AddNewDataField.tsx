@@ -8,17 +8,17 @@ interface Props {
   addNewField: (newField: DataField) => void;
 }
 
-function getCurrentDate(){
-    const date = new Date();
-    const year = date.getFullYear();
+function getCurrentDate() {
+  const date = new Date();
+  const year = date.getFullYear();
 
-    // Months are 0-indexed (0 = January), so we add 1
-    // padStart(2, '0') ensures "5" becomes "05"
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+  // Months are 0-indexed (0 = January), so we add 1
+  // padStart(2, '0') ensures "5" becomes "05"
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
 
-    return `${year}-${month}-${day}`;
-};
+  return `${year}-${month}-${day}`;
+}
 
 function AddNewDataField({ isEditMode, addNewField }: Props) {
   const [showFieldSelector, setShowFieldSelector] = useState(false);
@@ -45,7 +45,6 @@ function AddNewDataField({ isEditMode, addNewField }: Props) {
                 id: -1,
                 required: false,
                 text: "",
-                maxLength: -1,
               });
               setShowFieldSelector(false);
             }}
@@ -61,8 +60,8 @@ function AddNewDataField({ isEditMode, addNewField }: Props) {
                 type: "date",
                 name: "Neues Datumsfeld",
                 id: -1,
-                  required: false,
-                  date: getCurrentDate(),
+                required: false,
+                date: getCurrentDate(),
               });
               setShowFieldSelector(false);
             }}

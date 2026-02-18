@@ -2,12 +2,12 @@ type BaseField = {
   name: string;
   id: number;
   required: boolean;
+  sensitive: boolean;
 };
 
 export type TextField = BaseField & {
   type: "text";
   text: string;
-  maxLength: number; // -1 = no bound
 };
 
 export type DateField = BaseField & {
@@ -38,10 +38,16 @@ export type ListField = BaseField & {
   element: DataField[];
 };
 
+export type GroupField = BaseField & {
+  type: "group";
+  element: DataField[];
+};
+
 export type DataField =
   | TextField
   | DateField
   | IntegerField
   | EnumField
   | ToggleField
-  | ListField;
+  | ListField
+  | GroupField;

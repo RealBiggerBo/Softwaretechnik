@@ -5,6 +5,7 @@ import IntegerDataField from "./IntegerDataField";
 import ToggleDataField from "./ToggleDataField";
 import ListDataField from "./ListDataField";
 import { type DataField } from "../classes/DataField";
+import GroupDataField from "./GroupDataField";
 
 interface Props {
   field: DataField;
@@ -77,6 +78,15 @@ export function FieldRenderer({
           onChange={onChange}
           setOpenDialog={setOpenDialog}
           onAdd={onAdd}
+        />
+      );
+    case "group":
+      return (
+        <GroupDataField
+          groupField={field}
+          isEditMode={isEditMode}
+          onChange={onChange}
+          setOpenDialog={setOpenDialog}
         />
       );
   }

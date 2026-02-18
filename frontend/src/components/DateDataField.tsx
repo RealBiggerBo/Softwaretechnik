@@ -19,15 +19,6 @@ function DateDataField({ dateField, isEditMode, onChange, onDelete }: Props) {
         <Tf
           type="text"
           onChange={(e) => onChange({ ...dateField, name: e.target.value })}
-          // onChange={(e) => {
-          //   const updatedDateField = new DateField(
-          //     e.target.value,
-          //     dateField.id,
-          //     dateField.required,
-          //     dateField.date,
-          //   );
-          //   onChange(updatedDateField);
-          // }}
           value={dateField.name}
         ></Tf>
       )}

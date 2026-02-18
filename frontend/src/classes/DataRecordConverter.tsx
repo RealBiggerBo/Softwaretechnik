@@ -1,4 +1,4 @@
-import { type DataField } from "./DataField";
+import { type DataField, type GroupField } from "./DataField";
 import { type DataRecord } from "./DataRecord";
 
 export class DataRecordConverter {
@@ -19,6 +19,7 @@ export class DataRecordConverter {
             name: "id",
             id: 0,
             required: true,
+            sensitive: true,
             value: user.id,
             minValue: 0,
             maxValue: -1,
@@ -28,6 +29,7 @@ export class DataRecordConverter {
             name: "Benutzername",
             id: 1,
             required: true,
+            sensitive: true,
             text: user.username,
             maxLength: -1,
           },
@@ -36,6 +38,7 @@ export class DataRecordConverter {
             name: "Beitrittsdatum",
             id: 2,
             required: true,
+            sensitive: true,
             date: user.date_joined,
           },
           {
@@ -43,6 +46,7 @@ export class DataRecordConverter {
             name: "Rolle",
             id: 3,
             required: true,
+            sensitive: true,
             text: user.role,
             maxLength: -1,
           },
@@ -93,10 +97,6 @@ export class DataRecordConverter {
       };
 
       switch (field.type) {
-        case "text":
-          fieldObj.maxLength = field.maxLength;
-          break;
-
         case "integer":
           fieldObj.minValue = field.minValue;
           fieldObj.maxValue = field.maxValue;
@@ -168,6 +168,7 @@ export class DataRecordConverter {
           text: value as string,
           id: index,
           required: true,
+          sensitive: true,
           maxLength: -1,
         };
       }),
@@ -195,6 +196,7 @@ export class DataRecordConverter {
         if (typeof value === "number") return { ...field, value: value };
         break;
       case "list":
+      case "group":
         if (Array.isArray(value)) return { ...field, element: value };
         break;
       default:
@@ -205,7 +207,7 @@ export class DataRecordConverter {
   }
   private static GetValue(
     field: DataField,
-  ): string | number | boolean | DataField[] | null {
+  ): string | number | boolean | DataField[] | DataField | null {
     switch (field.type) {
       case "text":
         return field.text;
@@ -218,6 +220,7 @@ export class DataRecordConverter {
       case "integer":
         return field.value;
       case "list":
+      case "group":
         return field.element;
       default:
         const _exhaustive: never = field;
@@ -254,6 +257,19 @@ export class DataRecordConverter {
     return -1;
   }
 
+  private static IsDataField<T>(
+    value: unknown,
+    type: string,
+    properties: string[],
+  ): value is T {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      (value as any).type === type &&
+      properties.every((prop) => prop in (value as any))
+    );
+  }
+
   private static CreateDataField(
     fieldId: string,
     fieldValues: Record<string, unknown>,
@@ -262,6 +278,10 @@ export class DataRecordConverter {
     const required = this.GetValueFromRecord(
       fieldValues,
       "required",
+    ) as boolean;
+    const sensitive = this.GetValueFromRecord(
+      fieldValues,
+      "sensitive",
     ) as boolean;
     const type = this.GetValueFromRecord(fieldValues, "type") as string;
     const id = isNaN(Number(fieldId)) ? -1 : Number(fieldId);
@@ -279,10 +299,8 @@ export class DataRecordConverter {
             name: name,
             id: id,
             required,
+            sensitive,
             text: "",
-            maxLength:
-              (this.GetValueFromRecord(fieldValues, "maxLength") as number) ??
-              -1,
           };
         }
 
@@ -291,35 +309,36 @@ export class DataRecordConverter {
           name: name,
           id: id,
           required,
+          sensitive,
           selectedValue: "",
           possibleValues,
         };
       }
-
       case "Date":
         return {
           type: "date",
           name: name,
           id: id,
           required,
+          sensitive,
           date: this.getCurrentDate(),
         };
-
       case "Boolean":
         return {
           type: "boolean",
           name: name,
           id: id,
           required,
+          sensitive,
           isSelected: false,
         };
-
       case "Integer":
         return {
           type: "integer",
           name: name,
           id: id,
           required,
+          sensitive,
           value: (this.GetValueFromRecord(fieldValues, "value") as number) ?? 0,
           minValue:
             (this.GetValueFromRecord(fieldValues, "minValue") as number) ?? 0,
@@ -332,20 +351,38 @@ export class DataRecordConverter {
           "element",
         ) as Record<string, Record<string, unknown>>;
         const dataFields: DataField[] = Object.entries(element).map(
-          ([fieldId, fieldValues]) =>
-            this.CreateDataField(fieldId, fieldValues),
+          ([fieldId, fieldVals]) => this.CreateDataField(fieldId, fieldVals),
         );
         return {
           type: "list",
           name: name,
           id: id,
           required,
+          sensitive,
           element: dataFields,
         };
       }
+      case "Group": {
+        const element = this.GetValueFromRecord(
+          fieldValues,
+          "element",
+        ) as Record<string, Record<string, unknown>>;
+        const dataFields: DataField[] = Object.entries(element).map(
+          ([fieldId, fieldVals]) => this.CreateDataField(fieldId, fieldVals),
+        );
 
+        return {
+          type: "group",
+          name: name,
+          id: id,
+          required,
+          sensitive,
+          element: dataFields,
+        };
+      }
       default:
-        throw new Error(`Unknown DataField type: ${type}`);
+        console.log(fieldValues);
+        throw new Error("Unhandled type: " + type);
     }
   }
 

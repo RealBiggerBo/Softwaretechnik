@@ -55,7 +55,7 @@ function AddQuery(oldPreset: UiItem<UiPreset>): UiItem<UiPreset> {
       ...oldPreset.value,
       queries: [
         ...oldPreset.value.queries,
-        ToUiItem({ displayActions: [], filterOptions: [] }),
+        ToUiItem({ queryTitle: "", displayActions: [], filterOptions: [] }),
       ],
     },
   };
