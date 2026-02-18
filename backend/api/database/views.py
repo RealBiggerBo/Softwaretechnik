@@ -31,7 +31,7 @@ class DataAPI(APIView):
         Löscht einen Datensatz.
         """
 
-        data = self.get_data(type, request.DELETE.get("id", None))
+        data = self.get_data(type, request.GET.get("id", None))
 
         if isinstance(data, Response):
             return data
