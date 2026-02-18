@@ -1,4 +1,10 @@
-import { Autocomplete, Button, TextField } from "@mui/material";
+import {
+  Alert,
+  Autocomplete,
+  Button,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import type { IApiCaller } from "../classes/IApiCaller";
 import type { DataRecord } from "../classes/DataRecord";
 import React, { useState } from "react";
@@ -52,6 +58,14 @@ function UserEditor({ user, caller, updateData }: Props) {
   const initialUserRole = GetUserRole(user);
   const [role, setRole] = useState(initialUserRole ? initialUserRole : "");
   const [newPswd, setNewPswd] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [saveResult, setSaveResult] = useState(false);
+
+  function activateSnackbar(msg: string) {
+    setOpenSnackbar(true);
+    setSnackbarMessage(msg);
+  }
 
   return (
     <div className="settingsForm">
@@ -69,10 +83,14 @@ function UserEditor({ user, caller, updateData }: Props) {
             );
             if (res.success) {
               setRole(newOption);
-              alert("Nutzerberechtigung erfolgreich übernommen");
+              activateSnackbar("Nutzerberechtigung erfolgreich übernommen");
+              setOpenSnackbar(true);
+              setSaveResult(true);
             } else {
               setRole(role); //display previous role to show the failed change
-              alert(res.errorMsg);
+              activateSnackbar(res.errorMsg);
+              setOpenSnackbar(true);
+              setSaveResult(false);
             }
             updateData();
           }
@@ -94,8 +112,15 @@ function UserEditor({ user, caller, updateData }: Props) {
         onClick={async () => {
           const res = await caller.ResetUserPassword(GetUserId(user), newPswd);
           updateData();
-          if (res.success) alert("Passwort erfolgreich zurückgesetzt");
-          else alert(res.errorMsg);
+          if (res.success) {
+            activateSnackbar("Passwort erfolgreich zurückgesetzt");
+            setOpenSnackbar(true);
+            setSaveResult(true);
+          } else {
+            activateSnackbar(res.errorMsg);
+            setOpenSnackbar(true);
+            setSaveResult(false);
+          }
         }}
       >
         Passwort zurücksetzen
@@ -105,12 +130,31 @@ function UserEditor({ user, caller, updateData }: Props) {
         onClick={async () => {
           const res = await caller.DeleteUser(GetUserId(user));
           updateData();
-          if (res.success) alert("Löschen erfolgreich");
-          else alert(res.errorMsg);
+          if (res.success) {
+            activateSnackbar("Löschen erfolgreich");
+            setOpenSnackbar(true);
+            setSaveResult(true);
+          } else {
+            activateSnackbar(res.errorMsg);
+            setOpenSnackbar(true);
+            setSaveResult(false);
+          }
         }}
       >
         Nutzer löschen
       </Button>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          severity={saveResult ? "success" : "error"}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
