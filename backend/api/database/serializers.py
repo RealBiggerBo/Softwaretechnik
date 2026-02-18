@@ -39,6 +39,11 @@ def datarecord_validation(data):
     field_names = data["structure"]
     for field_name in field_names:
         field = field_names[field_name]
+        field_type = field["type"]
+
+        for attribute in field:
+            if attribute not in ["name", "type", "required", "possibleValues", "element"]:
+                field.pop(attribute)
 
         if "name" not in field:
             raise serializers.ValidationError("Erforderliches Feld, name, wurde nicht übergeben.")
@@ -47,17 +52,26 @@ def datarecord_validation(data):
         
         if "type" not in field:
             raise serializers.ValidationError("Erforderliches Feld, type, wurde nicht übergeben.")
-        elif not isinstance(field["type"], str):
+        elif not isinstance(field_type, str):
             raise serializers.ValidationError("Wert mit falschen Typ für type übergeben. Der richtige Typ ist String.")
-        elif field["type"] not in ["Boolean", "Date", "Group","Integer", "List", "String"]:
+        elif field_type not in ["Boolean", "Date", "Group", "Integer", "List", "String"]:
             raise serializers.ValidationError("Wert für type darf nur Boolean, Date, Group, Integer, List oder String sein.")
         
         if "required" not in field:
             raise serializers.ValidationError("Erforderliches Feld, required, wurde nicht übergeben.")
         elif not isinstance(field["required"], bool):
             raise serializers.ValidationError("Wert mit falschen Typ für required übergeben. Der richtige Typ ist Boolean.")
-
-        if field["type"] in ["Group", "List"] and "element" not in field:
-            raise serializers.ValidationError("Für Liste erforderliches Feld, element, wurde nicht übergeben.")
+        
+        if "possibleValues" in field and field_type != "String":
+            field.pop("possibleValue")
+        
+        if field_type == "Group" or field_type == "List":
+            if "element" not in field:
+                raise serializers.ValidationError("Für Group und List erforderliches Feld, element, wurde nicht übergeben.")
+            else:
+                pass #TODO
+        else:
+            if "element" in field:
+                field.pop("element")
 
     return data
