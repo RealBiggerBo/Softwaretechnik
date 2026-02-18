@@ -39,12 +39,6 @@ export interface IApiCaller {
     id: number,
     newRole: "base_user" | "extended_user" | "admin_user",
   ): Promise<{ success: boolean; errorMsg: string }>;
-  GetExportUrl(
-    timeStart: string,
-    timeEnd: string,
-    preset: string,
-    fileformat: string,
-  ): Promise<string>;
   ResetUserPassword(
     id: number,
     newPswd: string,
@@ -285,16 +279,6 @@ export class MockApiCaller implements IApiCaller {
 
   async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
     return [];
-  }
-
-  async GetExportUrl(
-    timeStart: string,
-    timeEnd: string,
-    preset: string,
-    fileformat: string,
-  ): Promise<string> {
-    console.log(timeStart, timeEnd, preset, fileformat);
-    return "/test.csv";
   }
 
   async TryChangePassword(

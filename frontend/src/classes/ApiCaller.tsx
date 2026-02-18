@@ -23,10 +23,10 @@ export class ApiCaller implements IApiCaller {
   }> {
     let downloadUrl = "";
     let filename = "";
-    const body = { presetTitle: title };
+    const body = { presetTitle: title, FileFormat: format };
 
     const res = await this.SendApiCall(
-      `/api/stats/presets/export/${format}`,
+      "/api/stats/presets/export",
       "POST",
       true,
       JSON.stringify(body),
@@ -38,7 +38,7 @@ export class ApiCaller implements IApiCaller {
         filename = typeof data?.filename === "string" ? data.filename : "";
       },
     );
-
+    downloadUrl = "http://localhost:8000" + downloadUrl;
     return { ...res, url: downloadUrl, filename };
   }
 
@@ -239,16 +239,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify({ new_password: newPswd }),
       "Zurücksetzen des Passworts fehlgeschlagen.",
     );
-  }
-
-  async GetExportUrl(
-    timeStart: string,
-    timeEnd: string,
-    preset: string,
-    fileformat: string,
-  ): Promise<string> {
-    // TODO: Implement actual API call
-    throw new Error("Method not implemented.");
   }
 
   async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {

@@ -39,6 +39,7 @@ function StatisticsPage({ caller }: Props) {
 
   useEffect(() => {
     const fetchPresets = async () => {
+      console.log("getStatisticsList");
       const availablePresets = await caller.GetStatisticsPresetList();
       setPresets(availablePresets);
       setPreset(null);
@@ -62,28 +63,20 @@ function StatisticsPage({ caller }: Props) {
     void fetchFormat();
   }, [caller, statisticsType]);
 
-  const exportDisabled =
-    !timeStart ||
-    !timeEnd ||
-    timeStart.isAfter(timeEnd) ||
-    !preset ||
-    !fileFormat;
+  const exportDisabled = !presetTitle;
 
   function formatDateForApi(value: Dayjs | null): string {
     return value?.toISOString() ?? "";
   }
 
   async function handleExport() {
-    const url = await caller.GetExportUrl(
-      formatDateForApi(timeStart),
-      formatDateForApi(timeEnd),
-      "preset",
-      fileFormat,
-    );
+    const res = await caller.TryExportStatistic(presetTitle, "csv");
 
     const link = document.createElement("a");
-    link.href = url;
-    link.download = "";
+    link.href = res.url;
+    console.log(res);
+
+    link.download = res.filename;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -147,12 +140,12 @@ function StatisticsPage({ caller }: Props) {
   async function handleSave() {
     if (!preset) return;
 
-    await caller.TryCreateStatisticPreset(
+    const res = await caller.TryCreateStatisticPreset(
       statisticsType,
       presetTitle,
       ToNormalPreset(preset),
     );
-    console.log(ToNormalPreset(preset).PresetTitle);
+    console.log(res.errorMsg);
   }
 
   return (
