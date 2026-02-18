@@ -555,20 +555,23 @@ export class ApiCaller implements IApiCaller {
   async SetLastAnfrage(
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
-    return await this.SendApiCall(
-      "last-request/",
+    const res = await this.SendApiCall(
+      "/api/auth/last-request/",
       "POST",
       true,
-      { last_request_id: id },
+      JSON.stringify({ last_request_id: id }),
       "Letzte Anfrage konnte nicht aktualisiert werden.",
     );
+    alert(res.success);
+    alert(res.errorMsg);
+    return res;
   }
 
   async SetLastFall(
     id: number,
   ): Promise<{ success: boolean; errorMsg: string }> {
     return await this.SendApiCall(
-      "last-request/",
+      "/api/auth/last-request/",
       "POST",
       true,
       { last_case_id: id },
