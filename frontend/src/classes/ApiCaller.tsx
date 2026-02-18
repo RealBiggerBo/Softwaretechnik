@@ -562,8 +562,6 @@ export class ApiCaller implements IApiCaller {
       JSON.stringify({ last_request_id: id }),
       "Letzte Anfrage konnte nicht aktualisiert werden.",
     );
-    alert(res.success);
-    alert(res.errorMsg);
     return res;
   }
 
@@ -574,7 +572,7 @@ export class ApiCaller implements IApiCaller {
       "/api/auth/last-request/",
       "POST",
       true,
-      { last_case_id: id },
+      JSON.stringify({ last_case_id: id }),
       "Letzter Fall konnte nicht aktualisiert werden.",
     );
   }
