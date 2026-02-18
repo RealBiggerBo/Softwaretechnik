@@ -244,6 +244,10 @@ function DataRecordEditor({ caller }: Props) {
 
   const navigate = useNavigate();
 
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   useEffect(() => {
     async function loadData() {
       //check login status
@@ -331,8 +335,9 @@ function DataRecordEditor({ caller }: Props) {
         return { success: false };
       }
       if (sucsaved === true) {
-        navigate(`?type=anfrage?id=${saveid}`, { replace: true });
         openSnackbar("Anfrage erfolgreich gespeichert!", true);
+        await sleep(1500);
+        navigate(`?type=anfrage?id=${saveid}`, { replace: true });
         await setLast(saveid, type);
         return { success: true };
       }
@@ -354,6 +359,7 @@ function DataRecordEditor({ caller }: Props) {
       }
       if (sucsaved === true) {
         openSnackbar("Fall erfolgreich gespeichert!", true);
+        await sleep(1500);
         navigate(`?type=fall?id=${saveid}`, { replace: true });
         await setLast(saveid, type);
         return { success: true };
