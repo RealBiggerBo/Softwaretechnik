@@ -91,7 +91,7 @@ function Navbar({
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="secondary">
       <Toolbar>
         {/* Linke Seite: Home + Settings */}
         <IconButton

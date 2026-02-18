@@ -26,7 +26,7 @@ interface Props {
   caller: IApiCaller;
 }
 
-function GetBrightColor(url: string, search: string) {
+function GetMainColor(url: string, search: string) {
   const searchParams = new URLSearchParams(search);
 
   switch (url) {
@@ -37,7 +37,7 @@ function GetBrightColor(url: string, search: string) {
     case "/statistics":
       return "#e5017bc1";
     case "/dataview":
-      if (searchParams.has("id")) return "#e5017c40";
+      if (searchParams.has("id")) return "rgba(229, 1, 124, 0.25)";
       return "#fd0";
     case "/settings":
       return "#bcbcbc";
@@ -45,17 +45,32 @@ function GetBrightColor(url: string, search: string) {
   return "#ff00ff";
 }
 
-function GetDimColor() {}
+function GetSecColor(url: string, search: string) {
+  switch (url) {
+    case "/main":
+    case "/login":
+    case "/search":
+    case "/dataview":
+    case "/settings":
+      return GetMainColor(url, search);
+    case "/statistics":
+      return "rgb(229, 1, 124)";
+  }
+  return "#ff00ff";
+}
 
 function GetColorTheme(url: string, search: string): Theme {
-  const mainCol = GetBrightColor(url, search);
+  const mainCol = GetMainColor(url, search);
+  const secCol = GetSecColor(url, search);
 
   return createTheme({
     palette: {
       primary: {
         main: mainCol,
       },
-      secondary: purple,
+      secondary: {
+        main: secCol,
+      },
     },
   });
 }
