@@ -241,7 +241,6 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [formatVersion, setFormatVersion] = useState<number>(-1);
-  const [hasChanges, setHasChanges] = useState(false);
 
   const navigate = useNavigate();
 
@@ -308,7 +307,7 @@ function DataRecordEditor({ caller }: Props) {
     let saveid: number = -1;
 
     // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
-    if (hasChanges) {
+    if (hasRecordChanged(recordToSave, lastSavedRecord)) {
       succhanged = await CreateNewDataRecord(type, recordToSave, caller);
       if (succhanged === undefined || succhanged === false) {
         openSnackbar("Neue Struktur konnte nicht gespeichert werden!", false);
@@ -339,6 +338,7 @@ function DataRecordEditor({ caller }: Props) {
         openSnackbar("Anfrage erfolgreich gespeichert!", true);
         await sleep(1500);
         navigate(`?type=anfrage?id=${saveid}`, { replace: true });
+        await setLast(saveid, type);
         return { success: true };
       }
     }
@@ -361,6 +361,7 @@ function DataRecordEditor({ caller }: Props) {
         openSnackbar("Fall erfolgreich gespeichert!", true);
         await sleep(1500);
         navigate(`?type=fall?id=${saveid}`, { replace: true });
+        await setLast(saveid, type);
         return { success: true };
       }
     }
@@ -376,10 +377,26 @@ function DataRecordEditor({ caller }: Props) {
       )) === true
     ) {
       openSnackbar("Datensatz erfolgreich aktualisiert!", true);
+      await setLast(recordId, type);
       return { success: true };
     } else {
       openSnackbar("Datensatz konnte nicht aktualisiert werden!", false);
       return { success: false };
+    }
+  }
+
+  async function setLast(id: number, type: dataRecordType) {
+    if (
+      type === "anfrage" ||
+      type === "letzte-anfrage" ||
+      type === "neue-anfrage"
+    ) {
+      await caller.SetLastAnfrage(id);
+      return;
+    }
+    if (type === "fall" || type === "letzter-fall" || type === "neuer-fall") {
+      await caller.SetLastFall(id);
+      return;
     }
   }
 
@@ -402,10 +419,7 @@ function DataRecordEditor({ caller }: Props) {
         caller,
       );
 
-      if (result.success) {
-        setHasChanges(false);
-        setLastSaved(recordToSave);
-      }
+      if (result.success) setLastSaved(recordToSave);
     } catch (err) {
       alert(err);
     }
@@ -461,10 +475,7 @@ function DataRecordEditor({ caller }: Props) {
         displayEditButtons={role !== null && role !== "base_user"}
         isEditMode={isEditMode}
         caller={caller}
-        onChange={(record) => {
-          setHasChanges(true);
-          setRecord(record);
-        }}
+        onChange={setRecord}
       />
       <br />
       {deletable() && (
