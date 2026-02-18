@@ -79,6 +79,8 @@ function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
       }
       navigate(urlstr);
     } else {
+      console.log("open");
+
       setOpenDialog(true);
     }
   }
@@ -171,7 +173,10 @@ function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
             />
             <StyledButton
               color="error"
-              onClick={() => navigate(urlstring)}
+              onClick={() => {
+                setOpenDialog(false);
+                navigate(urlstring);
+              }}
               text="Verlassen"
             />
           </DialogActions>
