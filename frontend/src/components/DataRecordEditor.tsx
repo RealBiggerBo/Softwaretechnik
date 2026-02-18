@@ -241,6 +241,7 @@ function DataRecordEditor({ caller }: Props) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [formatVersion, setFormatVersion] = useState<number>(-1);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const navigate = useNavigate();
 
@@ -307,7 +308,7 @@ function DataRecordEditor({ caller }: Props) {
     let saveid: number = -1;
 
     // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
-    if (hasRecordChanged(recordToSave, lastSavedRecord)) {
+    if (hasChanges) {
       succhanged = await CreateNewDataRecord(type, recordToSave, caller);
       if (succhanged === undefined || succhanged === false) {
         openSnackbar("Neue Struktur konnte nicht gespeichert werden!", false);
@@ -401,7 +402,10 @@ function DataRecordEditor({ caller }: Props) {
         caller,
       );
 
-      if (result.success) setLastSaved(recordToSave);
+      if (result.success) {
+        setHasChanges(false);
+        setLastSaved(recordToSave);
+      }
     } catch (err) {
       alert(err);
     }
@@ -457,7 +461,10 @@ function DataRecordEditor({ caller }: Props) {
         displayEditButtons={role !== null && role !== "base_user"}
         isEditMode={isEditMode}
         caller={caller}
-        onChange={setRecord}
+        onChange={(record) => {
+          setHasChanges(true);
+          setRecord(record);
+        }}
       />
       <br />
       {deletable() && (
