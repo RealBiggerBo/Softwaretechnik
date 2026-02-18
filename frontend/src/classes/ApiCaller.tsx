@@ -14,7 +14,7 @@ if (authToken) {
 export class ApiCaller implements IApiCaller {
   async TryExportStatistic(
     title: string,
-    format: "csv" | "xlsx" | "pdf",
+    format: string,
   ): Promise<{
     success: boolean;
     errorMsg: string;

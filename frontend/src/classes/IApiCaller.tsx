@@ -5,7 +5,7 @@ import type { PresetItemListElement } from "./StatisticsTypes";
 export interface IApiCaller {
   TryExportStatistic(
     title: string,
-    format: "csv" | "xlsx" | "pdf",
+    format: string,
   ): Promise<{
     success: boolean;
     errorMsg: string;

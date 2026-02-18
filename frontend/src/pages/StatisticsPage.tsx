@@ -31,7 +31,7 @@ function StatisticsPage({ caller }: Props) {
   const [timeEnd, setTimeEnd] = useState<Dayjs | null>(null);
   const [preset, setPreset] = useState<UiItem<UiPreset> | null>(null);
   const [presetTitle, setPresetTitle] = useState<string>("");
-  const [fileFormat, setFileFormat] = useState<string>("CSV");
+  const [fileFormat, setFileFormat] = useState<string>("csv");
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [statisticsType, setStatisticsType] = useState<"Anfrage" | "Fall">(
     "Fall",
@@ -53,10 +53,14 @@ function StatisticsPage({ caller }: Props) {
     const fetchFormat = async () => {
       if (statisticsType === "Anfrage") {
         const result = await caller.GetAnfrageJson();
-        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+        setFormat(
+          DataRecordConverter.ConvertFormatToDataRecord(result.json)[1],
+        );
       } else if (statisticsType === "Fall") {
         const result = await caller.GetFallJson();
-        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+        setFormat(
+          DataRecordConverter.ConvertFormatToDataRecord(result.json)[1],
+        );
       }
     };
 
@@ -70,7 +74,7 @@ function StatisticsPage({ caller }: Props) {
   }
 
   async function handleExport() {
-    const res = await caller.TryExportStatistic(presetTitle, "csv");
+    const res = await caller.TryExportStatistic(presetTitle, fileFormat);
 
     const link = document.createElement("a");
     link.href = res.url;
@@ -206,7 +210,9 @@ function StatisticsPage({ caller }: Props) {
                   value={fileFormat}
                   onChange={(event) => setFileFormat(event.target.value)}
                 >
-                  <MenuItem value="CSV">CSV</MenuItem>
+                  <MenuItem value="csv">csv</MenuItem>
+                  <MenuItem value="pdf">pdf</MenuItem>
+                  <MenuItem value="xlsx">xlsx</MenuItem>
                 </TextField>
                 <StyledButton
                   text="Exportieren"
