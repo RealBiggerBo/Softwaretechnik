@@ -23,9 +23,15 @@ interface Props {
   caller: IApiCaller;
   hasFormatChanges: boolean;
   hasDataChanges: boolean;
+  resetChangeFlags: () => void;
 }
 
-function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
+function Navbar({
+  caller,
+  hasDataChanges,
+  hasFormatChanges,
+  resetChangeFlags,
+}: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
@@ -72,6 +78,7 @@ function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
 
   function checkNavigate(urlstr: string) {
     const stopNavigate = hasDataChanges || hasFormatChanges;
+
     if (!stopNavigate) {
       if (urlstr === "/login") {
         caller.Logout();
@@ -79,8 +86,6 @@ function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
       }
       navigate(urlstr);
     } else {
-      console.log("open");
-
       setOpenDialog(true);
     }
   }
@@ -175,6 +180,7 @@ function Navbar({ caller, hasDataChanges, hasFormatChanges }: Props) {
               color="error"
               onClick={() => {
                 setOpenDialog(false);
+                resetChangeFlags();
                 navigate(urlstring);
               }}
               text="Verlassen"

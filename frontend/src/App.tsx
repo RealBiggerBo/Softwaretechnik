@@ -115,6 +115,11 @@ function App({ caller }: Props) {
           caller={caller}
           hasFormatChanges={hasFormatChanges}
           hasDataChanges={hasDataChanges}
+          resetChangeFlags={() => {
+            console.log("RESET");
+            setHasDataChanges(false);
+            setHasFormatChanges(false);
+          }}
         />
         <Container fixed>
           <Box>
