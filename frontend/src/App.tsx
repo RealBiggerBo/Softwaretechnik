@@ -116,7 +116,6 @@ function App({ caller }: Props) {
           hasFormatChanges={hasFormatChanges}
           hasDataChanges={hasDataChanges}
           resetChangeFlags={() => {
-            console.log("RESET");
             setHasDataChanges(false);
             setHasFormatChanges(false);
           }}
