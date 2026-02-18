@@ -35,7 +35,7 @@ function GetBrightColor(url: string, search: string) {
     case "/search":
       return "#294d9d";
     case "/statistics":
-      return "#e5017c";
+      return "#e5017bc1";
     case "/dataview":
       if (searchParams.has("id")) return "#e5017c40";
       return "#fd0";
