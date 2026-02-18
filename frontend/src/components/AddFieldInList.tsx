@@ -8,6 +8,7 @@ interface Props {
   onChange: (field: DataField) => void;
   onDelete: (id: number) => void;
   onAdd: (id: DataField) => void;
+  setOpenDialog: (showDialog: boolean) => void;
 }
 
 function AddFieldInList({
@@ -16,6 +17,7 @@ function AddFieldInList({
   onChange,
   onDelete,
   onAdd,
+  setOpenDialog,
 }: Props) {
   return (
     <>
@@ -27,6 +29,7 @@ function AddFieldInList({
             onChange={onChange}
             onDelete={onDelete}
             onAdd={onAdd}
+            setOpenDialog={setOpenDialog}
           />
           <br />
         </React.Fragment>

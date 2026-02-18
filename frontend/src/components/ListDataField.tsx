@@ -9,7 +9,7 @@ interface Props {
   listField: ListField;
   isEditMode: boolean;
   onChange: (field: DataField) => void;
-  onDelete: (id: number) => void;
+  setOpenDialog: (showDialog: boolean) => void;
   onAdd: (fieldToAdd: DataField) => void;
 }
 
@@ -17,7 +17,7 @@ function ListDataField({
   listField,
   isEditMode,
   onChange,
-  onDelete,
+  setOpenDialog,
   onAdd,
 }: Props) {
   const [value, setValue] = useState("");
@@ -57,14 +57,16 @@ function ListDataField({
             ),
           })
         }
-        onDelete={(fieldIdToDelete) =>
+        onDelete={(fieldIdToDelete) => {
           onChange({
             ...listField,
             element: listField.element.filter(
               (field) => field.id !== fieldIdToDelete,
             ),
-          })
-        }
+          });
+          setOpenDialog(true);
+        }}
+        setOpenDialog={setOpenDialog}
       />
       <br />
       <AddNewDataField

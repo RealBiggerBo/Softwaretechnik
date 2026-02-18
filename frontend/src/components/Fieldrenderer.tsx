@@ -12,6 +12,7 @@ interface Props {
   onChange: (field: DataField) => void;
   onAdd: (fieldToAdd: DataField) => void;
   onDelete: (id: number) => void;
+  setOpenDialog: (showDialog: boolean) => void;
 }
 
 export function FieldRenderer({
@@ -20,6 +21,7 @@ export function FieldRenderer({
   onChange,
   onDelete,
   onAdd,
+  setOpenDialog,
 }: Props) {
   switch (field.type) {
     case "text":
@@ -73,7 +75,7 @@ export function FieldRenderer({
           listField={field}
           isEditMode={isEditMode}
           onChange={onChange}
-          onDelete={onDelete}
+          setOpenDialog={setOpenDialog}
           onAdd={onAdd}
         />
       );

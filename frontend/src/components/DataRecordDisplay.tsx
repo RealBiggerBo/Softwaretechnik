@@ -97,6 +97,7 @@ function DataRecordDisplay({
             }
             onAdd={(fieldToAdd) => onChange(AddNewField(record, fieldToAdd))}
             onDelete={() => handleDeleteClick(field)}
+            setOpenDialog={setOpenDeleteDialog}
           />
           <br />
         </div>
