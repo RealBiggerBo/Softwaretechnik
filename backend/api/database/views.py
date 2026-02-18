@@ -130,12 +130,6 @@ class DataRecordAdminAPI(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class SearchAPI(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(request):
-        return Response({"message": "Hello from Django API"})
-
 def type_is_valid(type):
     return type in ["anfrage", "fall"]
 
