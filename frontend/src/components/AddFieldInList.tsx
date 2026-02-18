@@ -1,3 +1,4 @@
+import React from "react";
 import { type DataField, type ListField } from "../classes/DataField";
 import { FieldRenderer } from "./Fieldrenderer";
 
@@ -19,7 +20,7 @@ function AddFieldInList({
   return (
     <>
       {listField.element.map((e) => (
-        <>
+        <React.Fragment key={e.id}>
           <FieldRenderer
             field={e}
             isEditMode={isEditMode}
@@ -28,7 +29,7 @@ function AddFieldInList({
             onAdd={onAdd}
           />
           <br />
-        </>
+        </React.Fragment>
       ))}
     </>
   );

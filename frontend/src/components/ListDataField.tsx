@@ -49,8 +49,22 @@ function ListDataField({
         listField={listField}
         isEditMode={isEditMode}
         onAdd={onAdd}
-        onChange={onChange}
-        onDelete={onDelete}
+        onChange={(fieldToChange) =>
+          onChange({
+            ...listField,
+            element: listField.element.map((field) =>
+              field.id === fieldToChange.id ? fieldToChange : field,
+            ),
+          })
+        }
+        onDelete={(fieldIdToDelete) =>
+          onChange({
+            ...listField,
+            element: listField.element.filter(
+              (field) => field.id !== fieldIdToDelete,
+            ),
+          })
+        }
       />
       <br />
       <AddNewDataField
