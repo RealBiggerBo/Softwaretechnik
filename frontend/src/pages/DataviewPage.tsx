@@ -12,41 +12,5 @@ interface Props {
 
 function DataviewPage({ caller }: Props) {
   return <DataRecordEditor caller={caller} />;
-
-  return;
-  const [searchParams] = useSearchParams();
-  const type = searchParams.get("type");
-
-  if (type === "neue-anfrage" || type === "anfrage") {
-    return (
-      <div>
-        <AnfragenGenerator caller={caller} />
-      </div>
-    );
-  }
-
-  if (type === "neuer-fall" || type === "fall") {
-    return (
-      <div>
-        <FallGenerator caller={caller} />
-      </div>
-    );
-  }
-
-  if (type === "letzte-anfrage") {
-    return (
-      <div>
-        <LetzteAnfrage caller={caller} />
-      </div>
-    );
-  }
-
-  if (type === "letzter-fall") {
-    return (
-      <div>
-        <LetzterFall caller={caller} />
-      </div>
-    );
-  }
 }
 export default DataviewPage;

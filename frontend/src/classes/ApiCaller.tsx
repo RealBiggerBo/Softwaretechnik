@@ -383,7 +383,6 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-
     return { ...res, json: result };
   }
 
@@ -472,15 +471,16 @@ export class ApiCaller implements IApiCaller {
     return true;
   }
 
-  async GetAnfrageJson(): Promise<{
+  async GetAnfrageJson(id?: number): Promise<{
     success: boolean;
     errorMsg: string;
     json: any;
   }> {
     let result: any = null;
-
+    const idPath = id ? "?id=" + id : "";
     const res = await this.SendApiCall(
-      "/api/data/data_record/anfrage?id=3",
+      //"/api/data/data_record/anfrage?id=3",
+      "/api/data/data_record/anfrage" + idPath,
       "GET",
       true,
       undefined,
@@ -493,14 +493,15 @@ export class ApiCaller implements IApiCaller {
     return { ...res, json: result };
   }
 
-  async GetFallJson(): Promise<{
+  async GetFallJson(id?: number): Promise<{
     success: boolean;
     errorMsg: string;
     json: any;
   }> {
     let result: any = null;
+    const idPath = id ? "?id=" + id : "";
     const res = await this.SendApiCall(
-      "/api/data/data_record/fall",
+      "/api/data/data_record/fall" + idPath,
       "GET",
       true,
       undefined,

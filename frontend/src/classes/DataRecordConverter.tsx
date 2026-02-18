@@ -313,6 +313,23 @@ export class DataRecordConverter {
           maxValue:
             (this.GetValueFromRecord(fieldValues, "maxValue") as number) ?? -1,
         };
+      case "List": {
+        const element = this.GetValueFromRecord(
+          fieldValues,
+          "element",
+        ) as Record<string, Record<string, unknown>>;
+        const dataFields: DataField[] = Object.entries(element).map(
+          ([fieldId, fieldValues]) =>
+            this.CreateDataField(fieldId, fieldValues),
+        );
+        return {
+          type: "list",
+          name: name,
+          id: id,
+          required,
+          element: dataFields,
+        };
+      }
 
       default:
         throw new Error(`Unknown DataField type: ${type}`);
@@ -323,8 +340,7 @@ export class DataRecordConverter {
     raw: Record<string, unknown>,
     propertyName: string,
   ) {
-    if (propertyName in raw)
-      return (raw as Record<string, unknown>)[propertyName];
+    if (propertyName in raw) return raw[propertyName];
     return undefined;
   }
 

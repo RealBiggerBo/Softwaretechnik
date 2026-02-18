@@ -127,9 +127,13 @@ export interface IApiCaller {
 
   TryDeleteAnfrage(id: number): Promise<{ success: boolean; errorMsg: string }>;
 
-  GetAnfrageJson(): Promise<{ success: boolean; errorMsg: string; json: any }>;
+  GetAnfrageJson(
+    id?: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
-  GetFallJson(): Promise<{ success: boolean; errorMsg: string; json: any }>;
+  GetFallJson(
+    id?: number,
+  ): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
   GetLastAnfrage(): Promise<{ success: boolean; errorMsg: string; json: any }>;
 
