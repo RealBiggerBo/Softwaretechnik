@@ -28,7 +28,7 @@ function AddNewField(record: DataRecord, newField: DataField): DataRecord {
   if (record.dataFields.length === 0) {
     id = 1;
   } else {
-    id = record.dataFields[record.dataFields.length - 1].id + 1;
+    id = Math.max(...record.dataFields.map((f) => f.id)) + 1;
   }
 
   const fieldWithId = {
