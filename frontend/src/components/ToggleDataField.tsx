@@ -34,18 +34,21 @@ function ToggleDataField({
       )}
 
       {
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={toggleField.isSelected}
-              disabled={isEditMode}
-              onChange={(e) => {
-                onChange({ ...toggleField, isSelected: e.target.checked });
-              }}
-            />
-          }
-          label=""
-        />
+        <>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={toggleField.isSelected}
+                disabled={isEditMode}
+                onChange={(e) => {
+                  onChange({ ...toggleField, isSelected: e.target.checked });
+                }}
+              />
+            }
+            label=""
+          />
+          <br />
+        </>
       }
       {isEditMode && (
         <DeleteIcon color="error" onClick={() => onDelete(toggleField.id)} />

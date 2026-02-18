@@ -40,38 +40,41 @@ function EnumDataField({ enumField, isEditMode, onChange, onDelete }: Props) {
       )}
 
       {
-        <Autocomplete
-          disablePortal
-          options={enumField.possibleValues}
-          disabled={isEditMode}
-          onChange={(_, newValue) => {
-            //TODO: extract in seperate method ||
-            //(l. 20...)                       \/
-            // const updatedEnumField = new EnumField(
-            //   enumField.name,
-            //   enumField.id,
-            //   enumField.required,
-            //   enumField.possibleValues,
-            // );
-            // updatedEnumField.possibleValues = enumField.possibleValues;
-            // updatedEnumField.selectedValue = newValue || "";
-            // onChange(updatedEnumField);
-            onChange({ ...enumField, selectedValue: newValue || "" });
-            setValue(newValue || "");
-          }}
-          value={enumField.selectedValue}
-          renderInput={(params) => (
-            <Tf
-              {...params}
-              label={enumField.name}
-              onBlur={() => setTouched(true)}
-              error={isError}
-              helperText={isError ? "Dieses Feld ist erforderlich" : ""}
-            />
-          )}
-          size="small"
-          sx={{ width: 300 }}
-        />
+        <>
+          <Autocomplete
+            disablePortal
+            options={enumField.possibleValues}
+            disabled={isEditMode}
+            onChange={(_, newValue) => {
+              //TODO: extract in seperate method ||
+              //(l. 20...)                       \/
+              // const updatedEnumField = new EnumField(
+              //   enumField.name,
+              //   enumField.id,
+              //   enumField.required,
+              //   enumField.possibleValues,
+              // );
+              // updatedEnumField.possibleValues = enumField.possibleValues;
+              // updatedEnumField.selectedValue = newValue || "";
+              // onChange(updatedEnumField);
+              onChange({ ...enumField, selectedValue: newValue || "" });
+              setValue(newValue || "");
+            }}
+            value={enumField.selectedValue}
+            renderInput={(params) => (
+              <Tf
+                {...params}
+                label={enumField.name}
+                onBlur={() => setTouched(true)}
+                error={isError}
+                helperText={isError ? "Dieses Feld ist erforderlich" : ""}
+              />
+            )}
+            size="small"
+            sx={{ width: 300 }}
+          />
+          <br />
+        </>
       }
       {isEditMode && (
         <DeleteIcon color="error" onClick={() => onDelete(enumField.id)} />

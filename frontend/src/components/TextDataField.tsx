@@ -29,24 +29,27 @@ function TextDataField({ textField, isEditMode, onChange, onDelete }: Props) {
       )}
 
       {
-        <Tf
-          type="text"
-          disabled={isEditMode}
-          onChange={(e) => {
-            onChange({ ...textField, text: e.target.value });
-            setValue(e.target.value);
-          }}
-          placeholder={textField.name}
-          value={textField.text}
-          size="small"
-          onBlur={() => setTouched(true)}
-          error={isError}
-          helperText={isError ? "Dieses Feld ist erforderlich" : ""}
-          multiline
-          maxRows={5}
-          minRows={1}
-          sx={{ width: 300 }}
-        ></Tf>
+        <>
+          <Tf
+            type="text"
+            disabled={isEditMode}
+            onChange={(e) => {
+              onChange({ ...textField, text: e.target.value });
+              setValue(e.target.value);
+            }}
+            placeholder={textField.name}
+            value={textField.text}
+            size="small"
+            onBlur={() => setTouched(true)}
+            error={isError}
+            helperText={isError ? "Dieses Feld ist erforderlich" : ""}
+            multiline
+            maxRows={5}
+            minRows={1}
+            sx={{ width: 300 }}
+          ></Tf>
+          <br />
+        </>
       }
       {isEditMode && (
         <DeleteIcon color="error" onClick={() => onDelete(textField.id)} />

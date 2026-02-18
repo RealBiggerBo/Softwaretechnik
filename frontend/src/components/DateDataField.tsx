@@ -33,26 +33,29 @@ function DateDataField({ dateField, isEditMode, onChange, onDelete }: Props) {
       )}
 
       {
-        <DatePicker
-          label={dateField.name}
-          value={dateField.date ? dayjs(dateField.date) : null}
-          disabled={isEditMode}
-          onChange={(newValue) =>
-            onChange({
-              ...dateField,
-              date: newValue ? newValue.format("YYYY-MM-DD") : "",
-            })
-          }
-          // onChange={(newValue) => {
-          //   const updatedDateField = new DateField(
-          //     dateField.name,
-          //     dateField.id,
-          //     dateField.required,
-          //     newValue ? newValue.format("YYYY-MM-DD") : "",
-          //   );
-          //   onChange(updatedDateField);
-          // }}
-        ></DatePicker>
+        <>
+          <DatePicker
+            label={dateField.name}
+            value={dateField.date ? dayjs(dateField.date) : null}
+            disabled={isEditMode}
+            onChange={(newValue) =>
+              onChange({
+                ...dateField,
+                date: newValue ? newValue.format("YYYY-MM-DD") : "",
+              })
+            }
+            // onChange={(newValue) => {
+            //   const updatedDateField = new DateField(
+            //     dateField.name,
+            //     dateField.id,
+            //     dateField.required,
+            //     newValue ? newValue.format("YYYY-MM-DD") : "",
+            //   );
+            //   onChange(updatedDateField);
+            // }}
+          ></DatePicker>
+          <br />
+        </>
       }
       {isEditMode && (
         <DeleteIcon color="error" onClick={() => onDelete(dateField.id)} />

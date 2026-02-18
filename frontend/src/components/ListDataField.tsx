@@ -29,7 +29,7 @@ function ListDataField({
   }*/
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
+    <Stack direction="column" spacing={2} alignItems="left">
       {!isEditMode && (
         <>
           <label>{listField.name}</label>
@@ -52,8 +52,9 @@ function ListDataField({
         onChange={onChange}
         onDelete={onDelete}
       />
+      <br />
       <AddNewDataField
-        isEditMode={isEditMode}
+        isEditMode={true}
         addNewField={(newField) =>
           onChange({
             ...listField,

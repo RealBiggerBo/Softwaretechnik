@@ -32,16 +32,19 @@ function IntegerDataField({
       )}
 
       {
-        <Tf
-          type="number"
-          disabled={isEditMode}
-          value={integerField.value ?? 0}
-          onChange={(e) => {
-            onChange({ ...integerField, value: parseInt(e.target.value) });
-          }}
-          size="small"
-          sx={{ width: 100 }}
-        ></Tf>
+        <>
+          <Tf
+            type="number"
+            disabled={isEditMode}
+            value={integerField.value ?? 0}
+            onChange={(e) => {
+              onChange({ ...integerField, value: parseInt(e.target.value) });
+            }}
+            size="small"
+            sx={{ width: 100 }}
+          ></Tf>
+          <br />
+        </>
       }
       {isEditMode && (
         <DeleteIcon color="error" onClick={() => onDelete(integerField.id)} />

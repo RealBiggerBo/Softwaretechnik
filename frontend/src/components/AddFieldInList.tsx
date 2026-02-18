@@ -19,13 +19,16 @@ function AddFieldInList({
   return (
     <>
       {listField.element.map((e) => (
-        <FieldRenderer
-          field={e}
-          isEditMode={isEditMode}
-          onChange={onChange}
-          onDelete={onDelete}
-          onAdd={onAdd}
-        />
+        <>
+          <FieldRenderer
+            field={e}
+            isEditMode={isEditMode}
+            onChange={onChange}
+            onDelete={onDelete}
+            onAdd={onAdd}
+          />
+          <br />
+        </>
       ))}
     </>
   );
