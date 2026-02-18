@@ -55,20 +55,29 @@ export class DataRecordConverter {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 
     const dataFields: DataField[] = Object.entries(fields).map(
-      ([fieldName, fieldValues]) =>
-        this.CreateDataField(fieldName, fieldValues),
+      ([fieldId, fieldValues]) => this.CreateDataField(fieldId, fieldValues),
     );
     return { dataFields: dataFields };
   }
 
+  //TODO: add version number
   public static ConvertDataRecordToFormat3(
+    dataRecordType: "Anfrage" | "Fall",
+    //version: number,
     dataRecord: DataRecord,
   ): Record<string, any> {
-    const obj: Record<string, any> = {};
+    const format: Record<string, any> = {};
+
+    format["data_record"] = dataRecordType;
+    format["version"] = -1; //version;
+
+    const values: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
-      obj[field.name] = this.GetValue(field);
+      values[field.name] = this.GetValue(field);
     });
-    return obj;
+
+    format["values"] = values;
+    return format;
   }
 
   public static ConvertDataRecordToFormat2(
@@ -127,34 +136,66 @@ export class DataRecordConverter {
     return dataRecord;
   }
 
+  public static ConvertSearchResultToDataRecord(
+    searchResult: unknown,
+  ): DataRecord[] {
+    const results: Record<string, any>[] = this.normalizeInput(searchResult);
+
+    return results.map((record) => this.GetDataRecord(record));
+  }
+
+  //tries to convert any input to arrays of records
+  private static normalizeInput(input: unknown): Record<string, any>[] {
+    if (typeof input === "string") {
+      try {
+        const parsed = JSON.parse(input);
+        return Array.isArray(parsed) ? parsed : [parsed];
+      } catch {
+        return [];
+      }
+    }
+    if (Array.isArray(input)) return input as Record<string, any>[];
+    if (input && typeof input === "object")
+      return [input as Record<string, any>];
+    return [];
+  }
+  private static GetDataRecord(record: Record<string, any>): DataRecord {
+    return {
+      dataFields: Object.entries(record).map(([key, value], index) => {
+        return {
+          type: "text",
+          name: key,
+          text: value as string,
+          id: index,
+          required: true,
+          maxLength: -1,
+        };
+      }),
+    };
+  }
+
   private static SetValue(field: DataField, value: unknown): DataField {
     if (value == null) return field;
 
     switch (field.type) {
       case "text":
-        if (typeof value === "string") {
-          return { ...field, text: value };
-        }
+        if (typeof value === "string") return { ...field, text: value };
         break;
       case "enum":
-        if (typeof value === "string") {
+        if (typeof value === "string")
           return { ...field, selectedValue: value };
-        }
         break;
       case "date":
-        if (typeof value === "string") {
-          return { ...field, date: value };
-        }
+        if (typeof value === "string") return { ...field, date: value };
         break;
       case "boolean":
-        if (typeof value === "boolean") {
-          return { ...field, isSelected: value };
-        }
+        if (typeof value === "boolean") return { ...field, isSelected: value };
         break;
       case "integer":
-        if (typeof value === "number") {
-          return { ...field, value: value };
-        }
+        if (typeof value === "number") return { ...field, value: value };
+        break;
+      case "list":
+        if (Array.isArray(value)) return { ...field, element: value };
         break;
       default:
         const _exhaustive: never = field;
@@ -162,7 +203,9 @@ export class DataRecordConverter {
     }
     return field;
   }
-  private static GetValue(field: DataField): string | number | boolean | null {
+  private static GetValue(
+    field: DataField,
+  ): string | number | boolean | DataField[] | null {
     switch (field.type) {
       case "text":
         return field.text;
@@ -174,6 +217,8 @@ export class DataRecordConverter {
         return field.isSelected;
       case "integer":
         return field.value;
+      case "list":
+        return field.element;
       default:
         const _exhaustive: never = field;
         return _exhaustive;
@@ -197,15 +242,16 @@ export class DataRecordConverter {
   }
 
   private static CreateDataField(
-    fieldName: string,
+    fieldId: string,
     fieldValues: Record<string, unknown>,
   ): DataField {
-    const id = this.GetValueFromRecord(fieldValues, "id") as number;
+    const name = this.GetValueFromRecord(fieldValues, "name") as string;
     const required = this.GetValueFromRecord(
       fieldValues,
       "required",
     ) as boolean;
     const type = this.GetValueFromRecord(fieldValues, "type") as string;
+    const id = isNaN(Number(fieldId)) ? -1 : Number(fieldId);
 
     switch (type) {
       case "String": {
@@ -217,8 +263,8 @@ export class DataRecordConverter {
         if (possibleValues == null) {
           return {
             type: "text",
-            name: fieldName,
-            id,
+            name: name,
+            id: id,
             required,
             text: "",
             maxLength:
@@ -229,8 +275,8 @@ export class DataRecordConverter {
 
         return {
           type: "enum",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
           selectedValue: "",
           possibleValues,
@@ -240,17 +286,17 @@ export class DataRecordConverter {
       case "Date":
         return {
           type: "date",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
-          date: "0000-00-00",
+          date: this.getCurrentDate(),
         };
 
       case "Boolean":
         return {
           type: "boolean",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
           isSelected: false,
         };
@@ -258,8 +304,8 @@ export class DataRecordConverter {
       case "Integer":
         return {
           type: "integer",
-          name: fieldName,
-          id,
+          name: name,
+          id: id,
           required,
           value: (this.GetValueFromRecord(fieldValues, "value") as number) ?? 0,
           minValue:
@@ -280,5 +326,17 @@ export class DataRecordConverter {
     if (propertyName in raw)
       return (raw as Record<string, unknown>)[propertyName];
     return undefined;
+  }
+
+  private static getCurrentDate() {
+    const date = new Date();
+    const year = date.getFullYear();
+
+    // Months are 0-indexed (0 = January), so we add 1
+    // padStart(2, '0') ensures "5" becomes "05"
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
   }
 }

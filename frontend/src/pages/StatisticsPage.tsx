@@ -1,10 +1,13 @@
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import type { Dayjs } from "dayjs";
-import { type ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
@@ -16,8 +19,6 @@ import {
   type UiPreset,
 } from "../classes/UiItems";
 import PresetDisplay from "../components/PresetDisplay";
-import DatePickerRange from "../components/DatePickerRange";
-import TemplateDialog from "../components/TemplateDialog";
 import StyledButton from "../components/Styledbutton";
 
 interface Props {
@@ -32,8 +33,9 @@ function StatisticsPage({ caller }: Props) {
   const [presetTitle, setPresetTitle] = useState<string>("");
   const [fileFormat, setFileFormat] = useState<string>("CSV");
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
-  const [TemplatesDialogueOpen, setTemplatesDialogueOpen] =
-    useState<boolean>(false);
+  const [statisticsType, setStatisticsType] = useState<"Anfrage" | "Fall">(
+    "Fall",
+  );
 
   useEffect(() => {
     const fetchPresets = async () => {
@@ -48,13 +50,17 @@ function StatisticsPage({ caller }: Props) {
 
   useEffect(() => {
     const fetchFormat = async () => {
-      const result = await caller.GetFallJson();
-
-      setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      if (statisticsType === "Anfrage") {
+        const result = await caller.GetAnfrageJson();
+        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      } else if (statisticsType === "Fall") {
+        const result = await caller.GetFallJson();
+        setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+      }
     };
 
     void fetchFormat();
-  }, [caller]);
+  }, [caller, statisticsType]);
 
   const exportDisabled =
     !timeStart ||
@@ -83,21 +89,70 @@ function StatisticsPage({ caller }: Props) {
     link.remove();
   }
 
-  async function handlePresetChange(
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  function handlePresetTitleChange(
+    _event: React.SyntheticEvent,
+    value: string | null,
   ) {
-    const selectedTitle = event.target.value;
-    const presetMeta = presets.find((p) => p.title === selectedTitle);
-    if (!presetMeta) return;
+    setPresetTitle(value ?? "");
+  }
 
-    const { success, preset: loadedPreset } = await caller.GetStatisticsPreset(
-      presetMeta.id,
-    );
+  async function handlePresetShowOrCreate() {
+    if (!presetTitle) return;
 
-    if (success) {
-      setPreset(ToUiPreset(loadedPreset));
-      setPresetTitle(selectedTitle);
+    const existingPreset = presets
+      .filter((p) => p.type === statisticsType)
+      .find((p) => p.title === presetTitle);
+
+    if (existingPreset) {
+      const { success, preset: loadedPreset } =
+        await caller.GetStatisticsPreset(existingPreset.title);
+
+      if (success) {
+        setPreset(ToUiPreset(loadedPreset));
+      }
+
+      return;
     }
+
+    const newPreset = ToUiPreset({
+      PresetTitle: presetTitle,
+      globalRecordType: statisticsType,
+      globalFilterOptions: [],
+      queries: [],
+    });
+
+    setPreset(newPreset);
+    setPresets((prev) => {
+      const maxId = prev.reduce((max, p) => Math.max(max, p.id), 0);
+
+      return [
+        ...prev,
+        {
+          id: maxId + 1,
+          title: presetTitle,
+          type: statisticsType,
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    });
+  }
+
+  function handleStatisticsTypeChange(
+    event: React.MouseEvent<HTMLElement>,
+    value: "Anfrage" | "Fall",
+  ): void {
+    setStatisticsType(value);
+  }
+
+  async function handleSave() {
+    if (!preset) return;
+
+    await caller.TryCreateStatisticPreset(
+      statisticsType,
+      presetTitle,
+      ToNormalPreset(preset),
+    );
+    console.log(ToNormalPreset(preset).PresetTitle);
   }
 
   return (
@@ -107,31 +162,38 @@ function StatisticsPage({ caller }: Props) {
           <h1>Auswahlmenü</h1>
           <form>
             <Stack direction="column" spacing={2}>
-              <DatePickerRange
-                start={timeStart}
-                end={timeEnd}
-                onStartChange={setTimeStart}
-                onEndChange={setTimeEnd}
-              />
+              <ToggleButtonGroup
+                color="primary"
+                value={statisticsType}
+                exclusive
+                onChange={handleStatisticsTypeChange}
+              >
+                <ToggleButton value="Anfrage">Anfrage</ToggleButton>
+                <ToggleButton value="Fall">Fall</ToggleButton>
+              </ToggleButtonGroup>
               <Stack spacing={2} direction="row">
-                <TextField
-                  select
+                <Autocomplete
                   fullWidth
-                  label="Vorlage"
-                  sx={{ "& .MuiSelect-select": { textAlign: "left" } }}
-                  value={presetTitle}
-                  onChange={handlePresetChange}
-                >
-                  {presets.map((presetItem) => (
-                    <MenuItem key={presetItem.id} value={presetItem.title}>
-                      {presetItem.title}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                  freeSolo
+                  options={presets
+                    .filter((presetItem) => presetItem.type === statisticsType)
+                    .map((presetItem) => presetItem.title)}
+                  value={presetTitle || null}
+                  onChange={handlePresetTitleChange}
+                  onInputChange={handlePresetTitleChange}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Vorlage" />
+                  )}
+                />
+                <StyledButton
+                  text="Vorlage anzeigen/erstellen"
+                  onClick={handlePresetShowOrCreate}
+                  variant="outlined"
+                  sx={{ px: 7 }}
+                />
                 <StyledButton
                   text="Vorlage speichern"
-                  onClick={() => setTemplatesDialogueOpen(true)}
-                  size="large"
+                  onClick={handleSave}
                   sx={{ px: 3 }}
                 />
               </Stack>

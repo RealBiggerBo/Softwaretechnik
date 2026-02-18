@@ -55,73 +55,34 @@ function RemoveOption(
   return options.filter((uiOption) => uiOption.value !== optionToRemove.value);
 }
 
-function Search(
+async function Search(
   type: "fall" | "anfrage",
   options: UiItem<FilterOption>[],
   setSearchResult: (recordds: DataRecord[]) => void,
   caller: IApiCaller,
 ) {
   let res;
-  if (type == "fall") res = caller.TrySearchFall(options);
-  else res = caller.TrySearchAnfrage(options);
+  if (type == "fall")
+    res = await caller.TrySearchFall(options.map((uiCase) => uiCase.value));
+  else
+    res = await caller.TrySearchAnfrage(
+      options.map((uiOption) => uiOption.value),
+    );
 
-  alert(
-    "Not yet implemented. Dummy values provided. FilterOptions were: " +
-      JSON.stringify(options),
+  const values: DataRecord[] =
+    DataRecordConverter.ConvertSearchResultToDataRecord(res.searchResult);
+
+  setSearchResult(values);
+}
+
+function GetIdFromDataRecord(dataRecord: DataRecord) {
+  const idFields = dataRecord.dataFields.filter(
+    (field) => field.name.toLowerCase() === "id",
   );
+  if (idFields.length <= 0 || idFields[0].type !== "text") return -1;
+  const id = Number(idFields[0].text);
 
-  const dummyValues: DataRecord[] = [
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall1",
-          maxLength: -1,
-        },
-      ],
-    },
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall2",
-          maxLength: -1,
-        },
-      ],
-    },
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall3",
-          maxLength: -1,
-        },
-      ],
-    },
-    {
-      dataFields: [
-        {
-          type: "text",
-          id: 0,
-          required: true,
-          name: "Name",
-          text: "Fall4",
-          maxLength: -1,
-        },
-      ],
-    },
-  ];
-
-  setSearchResult(dummyValues);
+  return isNaN(id) ? -1 : id;
 }
 
 function NavigateToDataPage(
@@ -129,7 +90,7 @@ function NavigateToDataPage(
   entry: DataRecord,
   navigate: NavigateFunction,
 ) {
-  navigate("/dataview?type=" + type + "&id=" + 1);
+  navigate("/dataview?type=" + type + "&id=" + GetIdFromDataRecord(entry));
 }
 
 async function DeleteDataRecord(
@@ -139,8 +100,9 @@ async function DeleteDataRecord(
   updateData: () => void,
 ) {
   let res;
-  if (type == "fall") res = await caller.TryDeleteFall(-1);
-  else res = await caller.TryDeleteAnfrage(-1);
+  if (type == "fall")
+    res = await caller.TryDeleteFall(GetIdFromDataRecord(entry));
+  else res = await caller.TryDeleteAnfrage(GetIdFromDataRecord(entry));
 
   if (res.success) alert("Löschen erfolgreich");
   else alert(res.errorMsg);
@@ -183,7 +145,9 @@ function SearchPage({ caller }: Props) {
       <br></br>
       <StyledButton
         text="Suchen"
-        onClick={() => Search(type, options, setSearchResult, caller)}
+        onClick={async () =>
+          await Search(type, options, setSearchResult, caller)
+        }
       />
       <br></br>
       <DataRecordList

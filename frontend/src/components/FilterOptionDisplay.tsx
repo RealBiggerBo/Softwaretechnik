@@ -12,6 +12,18 @@ interface Props {
   onChange: (action: UiItem<FilterOption>) => void;
 }
 
+function getCurrentDate() {
+  const date = new Date();
+  const year = date.getFullYear();
+
+  // Months are 0-indexed (0 = January), so we add 1
+  // padStart(2, '0') ensures "5" becomes "05"
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function GetAvailableOptions(dataField?: DataField): UiItem<FilterOption>[] {
   if (dataField == undefined) return [];
   else {
@@ -21,13 +33,13 @@ function GetAvailableOptions(dataField?: DataField): UiItem<FilterOption>[] {
           ToUiItem({
             type: "DateRangeFilter",
             fieldId: dataField.id,
-            minValue: "0000-00-00",
-            maxValue: "0000-00-00",
+            minValue: getCurrentDate(),
+            maxValue: getCurrentDate(),
           }),
           ToUiItem({
             type: "DateValueFilter",
             fieldId: dataField.id,
-            value: "0000-00-00",
+            value: getCurrentDate(),
           }),
           ToUiItem({
             type: "DateImplicitFilter",
