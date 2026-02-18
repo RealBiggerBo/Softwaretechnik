@@ -5,6 +5,7 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import AddNewDataField from "./AddNewDataField";
 import { FieldRenderer } from "./Fieldrenderer";
 import {
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
