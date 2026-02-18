@@ -51,13 +51,13 @@ export class DataRecordConverter {
     });
   }
 
-  public static ConvertFormatToDataRecord(raw: unknown) {
+  public static ConvertFormatToDataRecord(raw: unknown): [number, DataRecord] {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 
     const dataFields: DataField[] = Object.entries(fields).map(
       ([fieldId, fieldValues]) => this.CreateDataField(fieldId, fieldValues),
     );
-    return { dataFields: dataFields };
+    return [this.GetFormatId(raw), { dataFields: dataFields }];
   }
 
   //TODO: add version number
@@ -239,6 +239,19 @@ export class DataRecordConverter {
     }
 
     return {};
+  }
+  private static GetFormatId(raw: unknown) {
+    if (
+      raw &&
+      typeof raw === "object" &&
+      "pk" in raw &&
+      typeof raw.pk === "number" &&
+      raw.pk !== null
+    ) {
+      return raw.pk;
+    }
+
+    return -1;
   }
 
   private static CreateDataField(

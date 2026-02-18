@@ -121,7 +121,7 @@ function SearchPage({ caller }: Props) {
       type == "fall"
         ? await caller.GetFallJson()
         : await caller.GetAnfrageJson();
-    setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json));
+    setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json)[1]);
   };
   useEffect(() => {
     loadData();

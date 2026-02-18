@@ -247,9 +247,8 @@ function DataRecordEditor({ caller }: Props) {
 
       if (!formatRes.success) return;
 
-      const format = DataRecordConverter.ConvertFormatToDataRecord(
-        formatRes.json,
-      );
+      const [formatVersion, format] =
+        DataRecordConverter.ConvertFormatToDataRecord(formatRes.json);
 
       if (type !== "neue-anfrage" && type !== "neuer-fall") {
         //Get data
