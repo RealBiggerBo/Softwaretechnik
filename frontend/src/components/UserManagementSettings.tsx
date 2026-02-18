@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
 import DataRecordList from "./DataRecordList";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import {
+  Alert,
+  Autocomplete,
+  Button,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import PasswordInput from "./PasswordInput";
 import type { DataField } from "../classes/DataField";
 import type { DataRecord } from "../classes/DataRecord";
@@ -12,24 +18,14 @@ interface Props {
   caller: IApiCaller;
 }
 
-async function submitRegisterUser(
-  caller: IApiCaller,
-  userName: string,
-  pswd: string,
-  pswdCtrl: string,
-  updateData: () => void,
-): Promise<void> {
-  const result = await caller.RegisterNewUser(userName, pswd, pswdCtrl);
-  updateData();
-  if (result.success) alert("Nutzer erfolgreich hinzugefügt.");
-  else alert("Nutzer konnte nicht hinzugefügt werden!");
-}
-
 function UserManagementSettings({ caller }: Props) {
   const [users, setUsers] = useState<DataRecord[]>([]);
   const [userName, setUserName] = useState("");
   const [pswd, setPswd] = useState("");
   const [pswdCtrl, setPswdCtrl] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [saveResult, setSaveResult] = useState(false);
 
   const loadData = async () =>
     setUsers(
@@ -40,6 +36,29 @@ function UserManagementSettings({ caller }: Props) {
   useEffect(() => {
     loadData();
   }, []);
+
+  async function submitRegisterUser(
+    caller: IApiCaller,
+    userName: string,
+    pswd: string,
+    pswdCtrl: string,
+    updateData: () => void,
+  ): Promise<void> {
+    const result = await caller.RegisterNewUser(userName, pswd, pswdCtrl);
+    updateData();
+    if (result.success) {
+      activateSnackbar("Nutzer erfolgreich hinzugefügt.");
+      setSaveResult(true);
+    } else {
+      activateSnackbar("Nutzer konnte nicht hinzugefügt werden!");
+      setSaveResult(false);
+    }
+  }
+
+  function activateSnackbar(msg: string) {
+    setOpenSnackbar(true);
+    setSnackbarMessage(msg);
+  }
 
   return (
     <>
@@ -95,6 +114,18 @@ function UserManagementSettings({ caller }: Props) {
         <button id="submit" className="passwordChangeSubmitBtn" type="submit">
           Neuen Nutzer hinzufügen
         </button>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert
+            severity={saveResult ? "success" : "error"}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </form>
     </>
   );
