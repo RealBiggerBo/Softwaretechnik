@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@mui/material";
 import StyledButton from "./Styledbutton";
+import DialogComponent from "./DialogComponent";
+import type { DialogObject } from "./DialogComponent";
 
 interface Props {
   record: DataRecord;
@@ -69,6 +71,20 @@ function DataRecordDisplay({
   const [fieldToDelete, setFieldToDelete] = useState<DataField | null>(null);
   const [msg, setmg] = useState("");
 
+  const dialogDelete: DialogObject = {
+    isOpen: openDeleteDialog,
+    title: "Feld löschen?",
+    body: msg,
+    yes: "Löschen",
+    no: "Abbrechen",
+    yesAction: async () => {
+      confirmDelete();
+    },
+    noAction: async () => {
+      cancelDelete();
+    },
+  };
+
   const handleDeleteClick = (field: DataField) => {
     setmg(`Möchten Sie das Feld "${field.name}" wirklich löschen?`);
     setFieldToDelete(field);
@@ -112,14 +128,7 @@ function DataRecordDisplay({
         />
       )}
 
-      <Dialog open={openDeleteDialog} onClose={cancelDelete}>
-        <DialogTitle>Feld löschen?</DialogTitle>
-        <DialogContent>{msg}</DialogContent>
-        <DialogActions>
-          <StyledButton onClick={cancelDelete} text="Abbrechen" />
-          <StyledButton color="error" onClick={confirmDelete} text="Löschen" />
-        </DialogActions>
-      </Dialog>
+      <DialogComponent dialogObject={dialogDelete} />
     </>
   );
 }
