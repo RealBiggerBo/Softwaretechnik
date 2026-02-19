@@ -2,6 +2,7 @@ import type { FilterOption } from "./FilterOption";
 import type { IApiCaller } from "./IApiCaller";
 import type { Preset } from "./Preset";
 import type { PresetItemListElement } from "./StatisticsTypes";
+import type { QueryOutput } from "./StatisticOutput";
 
 const baseurl = "http://127.0.0.1:8000";
 const headers = new Headers();
@@ -57,6 +58,27 @@ export class ApiCaller implements IApiCaller {
       "Vorlage konnte nicht erstellt werden.",
     );
     return res;
+  }
+
+  async GetStatisticsData(preset: Preset): Promise<{
+    success: boolean;
+    errorMsg: string;
+    results: QueryOutput[];
+  }> {
+    let results: QueryOutput[] = [];
+
+    const res = await this.SendApiCall(
+      "/api/stats/statistic",
+      "POST",
+      true,
+      JSON.stringify(preset),
+      "Statistik konnte nicht ausgeführt werden.",
+      async (response) => {
+        results = await response.json();
+      },
+    );
+
+    return { ...res, results };
   }
 
   async GetStatisticsPreset(

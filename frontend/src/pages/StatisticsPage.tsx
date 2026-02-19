@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import CircularProgress from "@mui/material/CircularProgress";
 import type { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
@@ -20,6 +21,8 @@ import {
 } from "../classes/UiItems";
 import PresetDisplay from "../components/PresetDisplay";
 import StyledButton from "../components/Styledbutton";
+import StatisticOutputDisplay from "../classes/StatisticOutputDisplay";
+import type { QueryOutput } from "../classes/StatisticOutput";
 
 interface Props {
   caller: IApiCaller;
@@ -36,6 +39,8 @@ function StatisticsPage({ caller }: Props) {
   const [statisticsType, setStatisticsType] = useState<"Anfrage" | "Fall">(
     "Fall",
   );
+  const [statisticResults, setStatisticResults] = useState<QueryOutput[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchPresets = async () => {
@@ -66,8 +71,6 @@ function StatisticsPage({ caller }: Props) {
 
     void fetchFormat();
   }, [caller, statisticsType]);
-
-  const exportDisabled = !presetTitle;
 
   function formatDateForApi(value: Dayjs | null): string {
     return value?.toISOString() ?? "";
@@ -152,6 +155,20 @@ function StatisticsPage({ caller }: Props) {
     console.log(res.errorMsg);
   }
 
+  async function handleExecuteStatistic() {
+    if (!preset) return;
+
+    setIsLoading(true);
+    const res = await caller.GetStatisticsData(ToNormalPreset(preset));
+
+    if (res.success) {
+      setStatisticResults(res.results);
+    } else {
+      console.error(res.errorMsg);
+    }
+    setIsLoading(false);
+  }
+
   return (
     <Box>
       <Grid container spacing={2}>
@@ -202,6 +219,14 @@ function StatisticsPage({ caller }: Props) {
                 />
               )}
               <Stack spacing={2} direction="row">
+                <StyledButton
+                  text="Statistik anzeigen"
+                  onClick={handleExecuteStatistic}
+                  disabled={!preset || isLoading}
+                  variant="outlined"
+                />
+              </Stack>
+              <Stack spacing={2} direction="row">
                 <TextField
                   select
                   fullWidth
@@ -220,7 +245,7 @@ function StatisticsPage({ caller }: Props) {
                   variant="outlined"
                   size="large"
                   sx={{ px: 3 }}
-                  disabled={exportDisabled}
+                  disabled={!preset}
                   onClick={handleExport}
                 />
               </Stack>
@@ -229,6 +254,11 @@ function StatisticsPage({ caller }: Props) {
         </Grid>
         <Grid size={6}>
           <h1>Statistik</h1>
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            <StatisticOutputDisplay queryOutputs={statisticResults} />
+          )}
         </Grid>
       </Grid>
 

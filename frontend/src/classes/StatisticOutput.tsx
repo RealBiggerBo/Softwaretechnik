@@ -4,6 +4,7 @@ export type QueryOutput = {
 };
 
 export type StatisticOutput = {
+  displayAction: string;
   displayActionTitle: string;
-  output: [string, unknown];
+  output: Record<string, unknown>;
 };
