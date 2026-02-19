@@ -6,6 +6,7 @@ import {
   Stack,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { memo } from "react";
 
 interface Props {
   toggleField: ToggleField;
@@ -57,4 +58,4 @@ function ToggleDataField({
   );
 }
 
-export default ToggleDataField;
+export default memo(ToggleDataField);

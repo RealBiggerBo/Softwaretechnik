@@ -2,6 +2,7 @@ import { useState } from "react";
 import { type TextField } from "../classes/DataField";
 import { Stack, TextField as Tf } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { memo } from "react";
 
 interface Props {
   textField: TextField;
@@ -58,4 +59,4 @@ function TextDataField({ textField, isEditMode, onChange, onDelete }: Props) {
   );
 }
 
-export default TextDataField;
+export default memo(TextDataField);

@@ -9,6 +9,7 @@ import AddFieldInList from "./AddFieldInList";
 import AddNewDataField from "./AddNewDataField";
 import StyledButton from "./Styledbutton";
 import { FieldRenderer } from "./Fieldrenderer";
+import { memo } from "react";
 
 interface Props {
   groupField: GroupField;
@@ -75,4 +76,4 @@ function GroupDataField({
   );
 }
 
-export default GroupDataField;
+export default memo(GroupDataField);

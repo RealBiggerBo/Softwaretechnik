@@ -1,6 +1,7 @@
 import { type IntegerField } from "../classes/DataField";
 import { Stack, TextField as Tf } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { memo } from "react";
 
 interface Props {
   integerField: IntegerField;
@@ -53,4 +54,4 @@ function IntegerDataField({
   );
 }
 
-export default IntegerDataField;
+export default memo(IntegerDataField);

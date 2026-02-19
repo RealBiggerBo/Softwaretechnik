@@ -4,6 +4,7 @@ import { Stack, TextField as Tf } from "@mui/material";
 import AddFieldInList from "./AddFieldInList";
 import AddNewDataField from "./AddNewDataField";
 import StyledButton from "./Styledbutton";
+import { memo } from "react";
 
 interface Props {
   listField: ListField;
@@ -83,4 +84,4 @@ function ListDataField({
   );
 }
 
-export default ListDataField;
+export default memo(ListDataField);

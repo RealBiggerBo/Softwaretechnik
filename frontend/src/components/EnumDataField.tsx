@@ -2,6 +2,7 @@ import { useState } from "react";
 import { type EnumField } from "../classes/DataField";
 import { TextField as Tf, Autocomplete, Stack } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { memo } from "react";
 
 interface Props {
   enumField: EnumField;
@@ -83,4 +84,4 @@ function EnumDataField({ enumField, isEditMode, onChange, onDelete }: Props) {
   );
 }
 
-export default EnumDataField;
+export default memo(EnumDataField);

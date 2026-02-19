@@ -3,6 +3,7 @@ import { Stack, TextField as Tf } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { memo } from "react";
 
 interface Props {
   dateField: DateField;
@@ -55,4 +56,4 @@ function DateDataField({ dateField, isEditMode, onChange, onDelete }: Props) {
   );
 }
 
-export default DateDataField;
+export default memo(DateDataField);
