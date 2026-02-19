@@ -503,13 +503,7 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   ) {
     try {
       if (!GetDataRecordValidity(recordToSave)) return;
-      const result = await Save(
-        type,
-        recordId,
-        recordToSave,
-        lastSavedRecord,
-        caller,
-      );
+      const result = await Save(type, recordId, recordToSave, caller);
 
       if (result.success) {
         savedData.current = true;
