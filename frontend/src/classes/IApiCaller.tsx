@@ -2,6 +2,7 @@ import type { FilterOption } from "./FilterOption";
 import type { Preset } from "./Preset";
 import type { PresetItemListElement } from "./StatisticsTypes";
 import type { Query } from "./Query";
+import type { QueryOutput } from "./StatisticOutput";
 
 export interface IApiCaller {
   TryExportStatistic(
@@ -18,6 +19,12 @@ export interface IApiCaller {
     title: string,
     preset: Preset,
   ): Promise<{ success: boolean; errorMsg: string }>;
+
+  GetStatisticsData(preset: Preset): Promise<{
+    success: boolean;
+    errorMsg: string;
+    results: QueryOutput[];
+  }>;
 
   GetUsers(): Promise<{
     success: boolean;
@@ -170,6 +177,48 @@ export class MockApiCaller implements IApiCaller {
     preset: Preset,
   ): Promise<{ success: boolean; errorMsg: string }> {
     throw new Error("Method not implemented.");
+  }
+  async GetStatisticsData(preset: Preset): Promise<{
+    success: boolean;
+    errorMsg: string;
+    results: QueryOutput[];
+  }> {
+    await new Promise((r) => setTimeout(r, 2000));
+    return Promise.resolve({
+      success: true,
+      errorMsg: "",
+      results: [
+        {
+          queryTitle: "Durchschnittsalter in Stadt Leipzig",
+          outputs: [
+            {
+              displayAction: "Average",
+              displayActionTitle: "Durchschnittsalter",
+              output: {
+                alter: 0.0,
+              },
+            },
+            {
+              displayAction: "Average",
+              displayActionTitle: "Durchschnittsalter",
+              output: {
+                alter: 0.0,
+              },
+            },
+          ],
+        },
+        {
+          queryTitle: "Wohnorte (alle)",
+          outputs: [
+            {
+              displayAction: "CountCategorized",
+              displayActionTitle: "Anzahl je Wohnort",
+              output: {},
+            },
+          ],
+        },
+      ],
+    });
   }
   GetStatisticsPreset(
     title: string,
