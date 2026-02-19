@@ -13,6 +13,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
@@ -46,6 +48,8 @@ function StatisticsPage({ caller }: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [overwritePresetDialogOpen, setOverwritePresetDialogOpen] =
     useState<boolean>(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
 
   useEffect(() => {
     const fetchPresets = async () => {
@@ -53,7 +57,8 @@ function StatisticsPage({ caller }: Props) {
       const { success, errorMsg, presetsList } =
         await caller.GetStatisticsPresetList();
       if (!success) {
-        alert(errorMsg);
+        setSnackbarMessage(errorMsg);
+        setSnackbarOpen(true);
         return;
       }
       setPresets(presetsList);
@@ -77,7 +82,8 @@ function StatisticsPage({ caller }: Props) {
             DataRecordConverter.ConvertFormatToDataRecord(result.json)[1],
           );
         } else {
-          alert(result.errorMsg);
+          setSnackbarMessage(result.errorMsg);
+          setSnackbarOpen(true);
         }
       }
     };
@@ -87,7 +93,8 @@ function StatisticsPage({ caller }: Props) {
   async function handleExport() {
     const res = await caller.TryExportStatistic(presetTitle, fileFormat);
     if (!res.success) {
-      alert(res.errorMsg);
+      setSnackbarMessage(res.errorMsg);
+      setSnackbarOpen(true);
       return;
     }
 
@@ -123,7 +130,8 @@ function StatisticsPage({ caller }: Props) {
       if (success) {
         setPreset(ToUiPreset(loadedPreset));
       } else {
-        alert(errorMsg);
+        setSnackbarMessage(errorMsg);
+        setSnackbarOpen(true);
       }
       return;
     }
@@ -166,7 +174,8 @@ function StatisticsPage({ caller }: Props) {
       if (res.errorMsg === "Preset mit diesem Namen existiert bereits.") {
         setOverwritePresetDialogOpen(true);
       } else {
-        alert(res.errorMsg);
+        setSnackbarMessage(res.errorMsg);
+        setSnackbarOpen(true);
       }
     }
   }
@@ -184,7 +193,8 @@ function StatisticsPage({ caller }: Props) {
     );
     setOverwritePresetDialogOpen(false);
     if (!res.success) {
-      alert(res.errorMsg);
+      setSnackbarMessage(res.errorMsg);
+      setSnackbarOpen(true);
     }
   }
 
@@ -295,9 +305,6 @@ function StatisticsPage({ caller }: Props) {
         </Grid>
       </Grid>
 
-      {/*Nur zum Testen des Farbkontrastes*/}
-      <StyledButton color="error" text="FEHLER"></StyledButton>
-
       {/* Overwrite Preset Dialog */}
       <Dialog
         open={overwritePresetDialogOpen}
@@ -328,6 +335,16 @@ function StatisticsPage({ caller }: Props) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert severity="error" onClose={() => setSnackbarOpen(false)}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
