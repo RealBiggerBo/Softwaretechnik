@@ -3,7 +3,15 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
-import { Alert, Fab, Snackbar } from "@mui/material";
+import {
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Fab,
+  Snackbar,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import type { DataField } from "../classes/DataField";
 import DataRecordDisplay from "./DataRecordDisplay";
@@ -52,23 +60,6 @@ function IsValid(field: DataField): boolean {
       const _exhaustive: never = field;
       return _exhaustive;
   }
-}
-
-// check if datarecord is valid
-// if it's valid, all required fields are filled out correctly, otherwise alert which field is not valid
-function GetDataRecordValidity(record: DataRecord | null) {
-  if (!record) {
-    alert("Nichts zum Speichern");
-    return false;
-  }
-  for (let i = 0; i < record.dataFields.length; i++) {
-    const field = record.dataFields[i];
-    if (!IsValid(field)) {
-      alert("Fehler bei Feld: " + field.name);
-      return false;
-    }
-  }
-  return true;
 }
 
 // get datarecord type based on url param, if type is invalid, alert and return default type "anfrage"
@@ -216,6 +207,10 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState<boolean | null>(null);
   const [formatVersion, setFormatVersion] = useState<number>(-1);
+  const [msg, setmg] = useState("");
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [msgField, setmgField] = useState("");
+  const [openFieldDialog, setOpenFieldDialog] = useState(false);
 
   const navigate = useNavigate();
 
@@ -417,8 +412,27 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
     return;
   }
 
+  // check if datarecord is valid
+  // if it's valid, all required fields are filled out correctly, otherwise alert which field is not valid
+  function GetDataRecordValidity(record: DataRecord | null) {
+    if (!record) {
+      openSnackbar("Nichts zum Speichern", false);
+      return false;
+    }
+    for (let i = 0; i < record.dataFields.length; i++) {
+      const field = record.dataFields[i];
+      if (!IsValid(field)) {
+        setOpenFieldDialog(true);
+        setmgField("Fehler bei Feld: " + field.name);
+        //alert("Fehler bei Feld: " + field.name);
+        return false;
+      }
+    }
+    return true;
+  }
+
   function deletable() {
-    if (datRecordId && isEditMode) return true;
+    if (datRecordId) return true;
     else return false;
   }
 
@@ -430,6 +444,10 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
     } else {
       openSnackbar(`${type} konnte nicht gelöscht werden`, suc);
     }
+  }
+
+  function cancelDelete() {
+    setOpenDeleteDialog(false);
   }
 
   return (
@@ -473,7 +491,9 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
         <StyledButton
           text="Datensatz löschen"
           color="error"
-          onClick={handleDeleteRecord}
+          onClick={() => {
+            setOpenDeleteDialog(true);
+          }}
         />
       )}
       <StyledButton
@@ -501,6 +521,26 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      {/*Dialog zum record löschen */}
+      <Dialog open={openDeleteDialog} onClose={cancelDelete}>
+        <DialogTitle>{type} löschen?</DialogTitle>
+        <DialogContent>{msg}</DialogContent>
+        <DialogActions>
+          <StyledButton onClick={cancelDelete} text="Abbrechen" />
+          <StyledButton
+            color="error"
+            onClick={() => handleDeleteRecord()}
+            text="Löschen"
+          />
+        </DialogActions>
+      </Dialog>
+      {/*Dialog für feld meldung */}
+      <Dialog open={openFieldDialog} onClose={() => setOpenFieldDialog(false)}>
+        <DialogContent>{msgField}</DialogContent>
+        <DialogActions>
+          <StyledButton onClick={() => setOpenFieldDialog(false)} text="Ok" />
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
