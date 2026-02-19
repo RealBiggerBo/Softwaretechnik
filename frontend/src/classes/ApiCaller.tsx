@@ -299,6 +299,7 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
+    alert(result);
     return { ...res, json: result };
   }
 
@@ -480,7 +481,7 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-
+    alert(JSON.stringify(result));
     return { ...res, json: result };
   }
 
@@ -524,15 +525,12 @@ export class ApiCaller implements IApiCaller {
     updatedRecord: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     const res = this.SendApiCall(
-      "/api/data/data_record/fall",
+      "/api/data/data_record_admin/fall",
       "POST",
       true,
       JSON.stringify(updatedRecord),
       "Speicherung der Änderungen Fehlgeschlagen!",
     );
-    if ((await res).success) {
-      alert("Erfolgreich gespeichert!");
-    }
     return res;
   }
 
@@ -540,15 +538,12 @@ export class ApiCaller implements IApiCaller {
     updatedRecord: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
     const res = this.SendApiCall(
-      "/api/data/data_record/anfrage",
+      "/api/data/data_record_admin/anfrage",
       "POST",
       true,
       JSON.stringify(updatedRecord),
       "Speicherung der Änderungen Fehlgeschlagen!",
     );
-    if ((await res).success) {
-      alert("Erfolgreich gespeichert!");
-    }
     return res;
   }
 
