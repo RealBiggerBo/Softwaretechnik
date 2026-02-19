@@ -7,6 +7,12 @@ import MenuItem from "@mui/material/MenuItem";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
 import type { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
@@ -30,8 +36,6 @@ interface Props {
 
 function StatisticsPage({ caller }: Props) {
   const [presets, setPresets] = useState<PresetItemListElement[]>([]);
-  const [timeStart, setTimeStart] = useState<Dayjs | null>(null);
-  const [timeEnd, setTimeEnd] = useState<Dayjs | null>(null);
   const [preset, setPreset] = useState<UiItem<UiPreset> | null>(null);
   const [presetTitle, setPresetTitle] = useState<string>("");
   const [fileFormat, setFileFormat] = useState<string>("csv");
@@ -41,6 +45,8 @@ function StatisticsPage({ caller }: Props) {
   );
   const [statisticResults, setStatisticResults] = useState<QueryOutput[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [overwritePresetDialogOpen, setOverwritePresetDialogOpen] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const fetchPresets = async () => {
@@ -153,6 +159,25 @@ function StatisticsPage({ caller }: Props) {
       ToNormalPreset(preset),
     );
     console.log(res.errorMsg);
+
+    if (res.errorMsg === "Preset mit diesem Namen existiert bereits.") {
+      setOverwritePresetDialogOpen(true);
+    }
+  }
+
+  function handleOverwriteDialogClose() {
+    setOverwritePresetDialogOpen(false);
+  }
+
+  async function handleOverwriteConfirm() {
+    if (!preset) return;
+    const res = await caller.TryUpdateStatisticPreset(
+      statisticsType,
+      presetTitle,
+      ToNormalPreset(preset),
+    );
+    console.log(res.errorMsg);
+    setOverwritePresetDialogOpen(false);
   }
 
   async function handleExecuteStatistic() {
@@ -264,6 +289,37 @@ function StatisticsPage({ caller }: Props) {
 
       {/*Nur zum Testen des Farbkontrastes*/}
       <StyledButton color="error" text="FEHLER"></StyledButton>
+
+      {/* Overwrite Preset Dialog */}
+      <Dialog
+        open={overwritePresetDialogOpen}
+        onClose={handleOverwriteDialogClose}
+        aria-labelledby="overwrite-dialog-title"
+        aria-describedby="overwrite-dialog-description"
+      >
+        <DialogTitle id="overwrite-dialog-title">
+          Preset überschreiben?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="overwrite-dialog-description">
+            Ein Preset mit diesem Namen existiert bereits. Möchten Sie es
+            überschreiben?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleOverwriteDialogClose}
+            autoFocus
+          >
+            Nein
+          </Button>
+          <Button variant="outlined" onClick={handleOverwriteConfirm}>
+            Ja
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
