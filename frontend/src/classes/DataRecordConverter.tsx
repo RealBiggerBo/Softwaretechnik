@@ -56,8 +56,6 @@ export class DataRecordConverter {
   }
 
   public static ConvertFormatToDataRecord(raw: unknown): [number, DataRecord] {
-    //console.log(raw);
-
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 
     const dataFields: DataField[] = Object.entries(fields).map(
@@ -66,13 +64,22 @@ export class DataRecordConverter {
     return [this.GetPk(raw), { dataFields: dataFields }];
   }
 
+  private static ConvertJsonToFormatDataRecord(format: unknown) {
+    const fields = format as Record<string, Record<string, unknown>>;
+
+    const dataFields: DataField[] = Object.entries(fields).map(
+      ([fieldId, fieldValues]) => this.CreateDataField(fieldId, fieldValues),
+    );
+
+    return { dataFields: dataFields };
+  }
+
   public static ConvertIdSearchResult(
     raw: unknown,
   ): [number, Record<string, unknown>] {
     return [this.GetVersion(raw), this.GetValues(raw)];
   }
 
-  //TODO: add version number
   public static ConvertDataRecordToFormat3(
     dataRecordType: "Anfrage" | "Fall",
     version: number,
@@ -209,8 +216,11 @@ export class DataRecordConverter {
         if (typeof value === "number") return { ...field, value: value };
         break;
       case "list":
+        if (Array.isArray(value)) return { ...field, records: value };
+        break;
       case "group":
-        if (Array.isArray(value)) return { ...field, element: value };
+        alert("Im DataRecordConverter: " + JSON.stringify(value));
+        return { ...field, element: this.ConvertJsonToFormatDataRecord(value) };
         break;
       default:
         const _exhaustive: never = field;
@@ -220,7 +230,7 @@ export class DataRecordConverter {
   }
   private static GetValue(
     field: DataField,
-  ): string | number | boolean | DataField[] | DataField | null {
+  ): string | number | boolean | DataRecord[] | DataRecord | null {
     switch (field.type) {
       case "text":
         return field.text;
@@ -233,6 +243,7 @@ export class DataRecordConverter {
       case "integer":
         return field.value;
       case "list":
+        return field.records;
       case "group":
         return field.element;
       default:
@@ -386,12 +397,8 @@ export class DataRecordConverter {
             (this.GetValueFromRecord(fieldValues, "maxValue") as number) ?? -1,
         };
       case "List": {
-        const element = this.GetValueFromRecord(
-          fieldValues,
-          "element",
-        ) as Record<string, Record<string, unknown>>;
-        const dataFields: DataField[] = Object.entries(element).map(
-          ([fieldId, fieldVals]) => this.CreateDataField(fieldId, fieldVals),
+        const elementDataRecord = this.ConvertJsonToFormatDataRecord(
+          this.GetValueFromRecord(fieldValues, "element"),
         );
         return {
           type: "list",
@@ -399,16 +406,13 @@ export class DataRecordConverter {
           id: id,
           required,
           sensitive,
-          element: dataFields,
+          element: elementDataRecord,
+          records: [],
         };
       }
       case "Group": {
-        const element = this.GetValueFromRecord(
-          fieldValues,
-          "element",
-        ) as Record<string, Record<string, unknown>>;
-        const dataFields: DataField[] = Object.entries(element).map(
-          ([fieldId, fieldVals]) => this.CreateDataField(fieldId, fieldVals),
+        const elementDataRecord = this.ConvertJsonToFormatDataRecord(
+          this.GetValueFromRecord(fieldValues, "element"),
         );
 
         return {
@@ -417,7 +421,7 @@ export class DataRecordConverter {
           id: id,
           required,
           sensitive,
-          element: dataFields,
+          element: elementDataRecord,
         };
       }
       default:

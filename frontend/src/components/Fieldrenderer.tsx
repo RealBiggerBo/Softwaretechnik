@@ -18,10 +18,12 @@ import {
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useState } from "react";
+import type { IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
   field: DataField;
   isEditMode: boolean;
+  caller: IApiCaller;
   onChange: (field: DataField) => void;
   onAdd: (fieldToAdd: DataField) => void;
   onDelete: (id: number) => void;
@@ -31,6 +33,7 @@ interface Props {
 function GetFieldComponent(
   field: DataField,
   isEditMode: boolean,
+  caller: IApiCaller,
   onChange: (field: DataField) => void,
   onAdd: (fieldToAdd: DataField) => void,
   onDelete: (id: number) => void,
@@ -87,6 +90,7 @@ function GetFieldComponent(
         <ListDataField
           listField={field}
           isEditMode={isEditMode}
+          caller={caller}
           onChange={onChange}
           setOpenDialog={setOpenDialog}
           onAdd={onAdd}
@@ -97,6 +101,7 @@ function GetFieldComponent(
         <GroupDataField
           groupField={field}
           isEditMode={isEditMode}
+          caller={caller}
           onChange={onChange}
           setOpenDialog={setOpenDialog}
         />
@@ -149,6 +154,7 @@ function GetFieldCollapse(
 export function FieldRenderer({
   field,
   isEditMode,
+  caller,
   onChange,
   onAdd,
   onDelete,
@@ -175,6 +181,7 @@ export function FieldRenderer({
         {GetFieldComponent(
           field,
           isEditMode,
+          caller,
           onChange,
           onAdd,
           onDelete,

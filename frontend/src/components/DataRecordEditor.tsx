@@ -52,8 +52,11 @@ function IsValid(field: DataField): boolean {
     case "boolean":
       return true;
     case "list":
+      return field.records.every((entry) =>
+        entry.dataFields.every((field) => IsValid(field)),
+      );
     case "group":
-      return field.element.every((field) => IsValid(field));
+      return field.element.dataFields.every((field) => IsValid(field));
     default:
       const _exhaustive: never = field;
       return _exhaustive;

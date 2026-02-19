@@ -1,3 +1,5 @@
+import type { DataRecord } from "./DataRecord";
+
 type BaseField = {
   name: string;
   id: number;
@@ -35,12 +37,13 @@ export type ToggleField = BaseField & {
 
 export type ListField = BaseField & {
   type: "list";
-  element: DataField[];
+  element: DataRecord;
+  records: DataRecord[];
 };
 
 export type GroupField = BaseField & {
   type: "group";
-  element: DataField[];
+  element: DataRecord;
 };
 
 export type DataField =

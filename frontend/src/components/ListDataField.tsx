@@ -5,10 +5,13 @@ import AddFieldInList from "./AddFieldInList";
 import AddNewDataField from "./AddNewDataField";
 import StyledButton from "./Styledbutton";
 import { memo } from "react";
+import DataRecordDisplay from "./DataRecordDisplay";
+import type { IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
   listField: ListField;
   isEditMode: boolean;
+  caller: IApiCaller;
   onChange: (field: DataField) => void;
   setOpenDialog: (showDialog: boolean) => void;
   onAdd: (fieldToAdd: DataField) => void;
@@ -17,6 +20,7 @@ interface Props {
 function ListDataField({
   listField,
   isEditMode,
+  caller,
   onChange,
   setOpenDialog,
   onAdd,
@@ -46,7 +50,23 @@ function ListDataField({
           value={listField.name}
         ></Tf>
       )}
-      <AddFieldInList
+      {listField.records.map((record) => (
+        <DataRecordDisplay
+          record={record}
+          displayEditButtons={false} //always false here. We will display the editing somwhere else
+          isEditMode={false} //same here
+          caller={caller}
+          onChange={(toChange) =>
+            onChange({
+              ...listField,
+              records: listField.records.map((record) =>
+                record.dataFields == toChange.dataFields ? toChange : record,
+              ),
+            })
+          }
+        />
+      ))}
+      {/* <AddFieldInList
         listField={listField}
         isEditMode={isEditMode}
         onAdd={onAdd}
@@ -78,7 +98,7 @@ function ListDataField({
             element: [...listField.element, newField],
           })
         }
-      />
+      /> */}
       {/*<StyledButton text="List duplizieren" onClick={()=> duplucate(listField)}/>*/}
     </Stack>
   );

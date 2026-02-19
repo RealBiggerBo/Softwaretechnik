@@ -57,6 +57,7 @@ function DataRecordDisplay({
   record,
   displayEditButtons,
   isEditMode,
+  caller,
   onChange,
 }: Props) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -103,6 +104,7 @@ function DataRecordDisplay({
           <FieldRenderer
             field={field}
             isEditMode={isEditMode}
+            caller={caller}
             onChange={(toUpdate) =>
               onChange(UpdateField(record, field, toUpdate))
             }

@@ -10,10 +10,13 @@ import AddNewDataField from "./AddNewDataField";
 import StyledButton from "./Styledbutton";
 import { FieldRenderer } from "./Fieldrenderer";
 import { memo } from "react";
+import DataRecordDisplay from "./DataRecordDisplay";
+import type { IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
   groupField: GroupField;
   isEditMode: boolean;
+  caller: IApiCaller;
   onChange: (field: DataField) => void;
   setOpenDialog: (showDialog: boolean) => void;
 }
@@ -21,6 +24,7 @@ interface Props {
 function GroupDataField({
   groupField,
   isEditMode,
+  caller,
   onChange,
   setOpenDialog,
 }: Props) {
@@ -41,15 +45,27 @@ function GroupDataField({
           value={groupField.name}
         ></Tf>
       )}
-      {groupField.element.map((field) => (
-        <FieldRenderer
+      <DataRecordDisplay
+        record={groupField.element}
+        displayEditButtons={false} //always false here. We will display the editing somwhere else
+        isEditMode={false} //same here
+        caller={caller}
+        onChange={(toChange) =>
+          onChange({
+            ...groupField,
+            element: toChange,
+          })
+        }
+      />
+      {/* {groupField.element.dataFields.map((field) => (
+        <DataRecordDisplay
           key={field.id}
           field={field}
           isEditMode={isEditMode}
           onChange={(toChange) =>
             onChange({
               ...groupField,
-              element: groupField.element.map((field) =>
+              element: groupField.element.dataFields.map((field) =>
                 field.id === toChange.id ? toChange : field,
               ),
             })
@@ -70,7 +86,7 @@ function GroupDataField({
           }
           setOpenDialog={setOpenDialog}
         />
-      ))}
+      ))} */}
       {/*<StyledButton text="List duplizieren" onClick={()=> duplucate(listField)}/>*/}
     </Stack>
   );
