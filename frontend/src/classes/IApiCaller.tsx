@@ -14,6 +14,13 @@ export interface IApiCaller {
     url: string;
     filename: string;
   }>;
+
+  TryUpdateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
   TryCreateStatisticPreset(
     type: "Fall" | "Anfrage",
     title: string,
@@ -155,6 +162,13 @@ export interface IApiCaller {
 }
 
 export class MockApiCaller implements IApiCaller {
+  TryUpdateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
   TryExportStatistic(
     _title: string,
     _format: "csv" | "xlsx" | "pdf",

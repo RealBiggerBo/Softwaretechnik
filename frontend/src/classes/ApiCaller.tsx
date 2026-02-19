@@ -13,6 +13,22 @@ if (authToken) {
 }
 
 export class ApiCaller implements IApiCaller {
+  async TryUpdateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    preset.PresetTitle = title;
+    preset.globalRecordType = type;
+    const res = await this.SendApiCall(
+      `/api/stats/presets/update`,
+      "POST",
+      true,
+      JSON.stringify(preset),
+      "Vorlage konnte nicht geSpeicher werden.",
+    );
+    return res;
+  }
   async TryExportStatistic(
     title: string,
     format: string,
