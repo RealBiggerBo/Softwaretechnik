@@ -493,6 +493,7 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
           color="error"
           onClick={() => {
             setOpenDeleteDialog(true);
+            setmg("Wollen Sie diesen Datensatz wirklich löschen?");
           }}
         />
       )}

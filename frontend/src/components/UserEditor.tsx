@@ -1,14 +1,9 @@
-import {
-  Alert,
-  Autocomplete,
-  Button,
-  Snackbar,
-  TextField,
-} from "@mui/material";
+import { Alert, Autocomplete, Snackbar, TextField } from "@mui/material";
 import type { IApiCaller } from "../classes/IApiCaller";
 import type { DataRecord } from "../classes/DataRecord";
-import React, { useState } from "react";
+import { useState } from "react";
 import PasswordInput from "./PasswordInput";
+import StyledButton from "./Styledbutton";
 
 interface Props {
   user: DataRecord;
@@ -107,7 +102,8 @@ function UserEditor({ user, caller, updateData }: Props) {
         extraLabel="Passwort zurücksetzen"
         onValueChange={setNewPswd}
       />
-      <Button
+      <StyledButton
+        text="Passwort zurücksetzen"
         className="passwordChangeSubmitBtn"
         onClick={async () => {
           const res = await caller.ResetUserPassword(GetUserId(user), newPswd);
@@ -122,10 +118,10 @@ function UserEditor({ user, caller, updateData }: Props) {
             setSaveResult(false);
           }
         }}
-      >
-        Passwort zurücksetzen
-      </Button>
-      <Button
+      />
+      <StyledButton
+        text="Nutzer löschen"
+        color="error"
         className="passwordChangeSubmitBtn"
         onClick={async () => {
           const res = await caller.DeleteUser(GetUserId(user));
@@ -140,9 +136,8 @@ function UserEditor({ user, caller, updateData }: Props) {
             setSaveResult(false);
           }
         }}
-      >
-        Nutzer löschen
-      </Button>
+      />
+
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}
