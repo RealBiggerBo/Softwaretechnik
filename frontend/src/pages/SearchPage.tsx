@@ -13,6 +13,7 @@ import type { FilterOption } from "../classes/FilterOption";
 import DataRecordList from "../components/DataRecordList";
 import StyledButton from "../components/Styledbutton";
 import {
+  Alert,
   Collapse,
   debounce,
   Dialog,
@@ -20,6 +21,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -106,22 +108,6 @@ function NavigateToDataPage(
   navigate("/dataview?type=" + type + "&id=" + GetIdFromDataRecord(entry));
 }
 
-async function DeleteDataRecord(
-  type: "fall" | "anfrage",
-  entry: DataRecord,
-  caller: IApiCaller,
-  updateData: () => void,
-) {
-  let res;
-  if (type == "fall")
-    res = await caller.TryDeleteFall(GetIdFromDataRecord(entry));
-  else res = await caller.TryDeleteAnfrage(GetIdFromDataRecord(entry));
-
-  if (res.success) alert("Löschen erfolgreich");
-  else alert(res.errorMsg);
-  updateData();
-}
-
 function SearchPage({ caller }: Props) {
   const navigate = useNavigate();
   const type: "anfrage" | "fall" = GetType(useSearchParams()[0].get("type"));
@@ -130,6 +116,9 @@ function SearchPage({ caller }: Props) {
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
   const [isExpanded, setIsExpanded] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [saveResult, setSaveResult] = useState(false);
 
   const loadData = async () => {
     const result =
@@ -142,8 +131,34 @@ function SearchPage({ caller }: Props) {
     loadData();
   }, [caller]);
 
+  async function DeleteDataRecord(
+    type: "fall" | "anfrage",
+    entry: DataRecord,
+    caller: IApiCaller,
+    updateData: () => void,
+  ) {
+    let res;
+    if (type == "fall")
+      res = await caller.TryDeleteFall(GetIdFromDataRecord(entry));
+    else res = await caller.TryDeleteAnfrage(GetIdFromDataRecord(entry));
+
+    if (res.success) {
+      activateSnackbar("Löschen erfolgreich");
+      setSaveResult(true);
+    } else {
+      activateSnackbar(res.errorMsg);
+      setSaveResult(false);
+    }
+    updateData();
+  }
+
   function cancelDelete() {
     setOpenDialog(false);
+  }
+
+  function activateSnackbar(msg: string) {
+    setOpenSnackbar(true);
+    setSnackbarMessage(msg);
   }
 
   return (
@@ -212,6 +227,18 @@ function SearchPage({ caller }: Props) {
                   />
                 </DialogActions>
               </Dialog>
+              <Snackbar
+                open={openSnackbar}
+                autoHideDuration={3000}
+                onClose={() => setOpenSnackbar(false)}
+              >
+                <Alert
+                  severity={saveResult ? "success" : "error"}
+                  onClose={() => setOpenSnackbar(false)}
+                >
+                  {snackbarMessage}
+                </Alert>
+              </Snackbar>
             </>
           );
         }}
