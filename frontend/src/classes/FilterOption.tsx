@@ -38,6 +38,7 @@ export type IntegerRangeFilter = {
 export type DateRangeFilter = {
   type: "DateRangeFilter";
   fieldId: number;
+  //includeYear: boolean;
   minValue: string;
   maxValue: string;
 };
