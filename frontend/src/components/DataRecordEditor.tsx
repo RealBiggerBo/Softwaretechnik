@@ -84,16 +84,20 @@ function GetDataRecordId(str: string | null) {
 }
 
 // get datarecord format based on type
-async function GetDataFormat(caller: IApiCaller, type: dataRecordType) {
+async function GetDataFormat(
+  caller: IApiCaller,
+  type: dataRecordType,
+  formatVersion?: number,
+) {
   switch (type) {
     case "anfrage":
     case "letzte-anfrage":
     case "neue-anfrage":
-      return await caller.GetAnfrageJson();
+      return await caller.GetAnfrageJson(formatVersion);
     case "fall":
     case "letzter-fall":
     case "neuer-fall":
-      return await caller.GetFallJson();
+      return await caller.GetFallJson(formatVersion);
   }
 }
 
@@ -155,6 +159,23 @@ async function CreateNewDataRecord(
   }
 }
 
+async function GetDataById(
+  type: dataRecordType,
+  id: number,
+  caller: IApiCaller,
+) {
+  switch (type) {
+    case "anfrage":
+    case "letzte-anfrage":
+      return caller.TrySearchAnfrageByID(id);
+    case "fall":
+    case "letzter-fall":
+      return caller.TrySearchAnfrageByID(id);
+    default:
+      return { success: false, errorMsg: "Wrong type", json: "" };
+  }
+}
+
 // update datarecord if existing ,based on type and id
 async function UpdateDataRecord(
   type: dataRecordType,
@@ -192,10 +213,75 @@ async function UpdateDataRecord(
   return false;
 }
 
+async function LoadDataAndFormat(
+  type: dataRecordType,
+  id: number,
+  caller: IApiCaller,
+  setDataRecord: (record: DataRecord) => void,
+  setFormatVersion: (version: number) => void,
+) {
+  if (
+    type == "anfrage" ||
+    type == "fall" ||
+    type == "letzte-anfrage" ||
+    type == "letzter-fall"
+  ) {
+    //get by id
+    const res = await GetDataById(type, id, caller);
+
+    if (res.success) {
+      //convert to version format
+
+      const [neededFormatVersion, keyValueTuples] =
+        DataRecordConverter.ConvertIdSearchResult(res.json);
+      //get format
+
+      const formatRes = await GetDataFormat(caller, type, neededFormatVersion);
+
+      if (formatRes.success) {
+        const [_, formatDataRecord] =
+          DataRecordConverter.ConvertFormatToDataRecord(formatRes.json);
+
+        //merge
+        const mergedDataRecord = DataRecordConverter.MergeDataRecordWithData(
+          formatDataRecord,
+          keyValueTuples,
+        );
+
+        setDataRecord(mergedDataRecord);
+      } else {
+        alert(
+          "Fehler beim Anfragen der Format id: " +
+            neededFormatVersion +
+            ". Fehler: " +
+            formatRes.errorMsg,
+        );
+      }
+    } else {
+      alert("Fehler beim Suchen nach id " + id + ". Fehler: " + res.errorMsg);
+    }
+  } else {
+    //get format only
+    const formatRes = await GetDataFormat(caller, type);
+
+    if (!formatRes.success) {
+      alert("Konnte aktuelles Format nicht laden");
+      return;
+    }
+
+    const [version, format] = DataRecordConverter.ConvertFormatToDataRecord(
+      formatRes.json,
+    );
+
+    setDataRecord(format);
+    setFormatVersion(version);
+  }
+}
+
 function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   const [searchParams] = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams.get("type"));
-  const datRecordId: number = GetDataRecordId(searchParams.get("id"));
+  const dataRecordId: number = GetDataRecordId(searchParams.get("id"));
 
   const [role, setRole] = useState<userRole>(null);
   const [lastSavedRecord, setLastSavedRecord] = useState<DataRecord>({
@@ -225,37 +311,46 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
       if (!role) return;
       setRole(role);
 
-      //Get format
-      const formatRes = await GetDataFormat(caller, type);
-
-      if (!formatRes.success) return;
-
-      const [version, format] = DataRecordConverter.ConvertFormatToDataRecord(
-        formatRes.json,
+      await LoadDataAndFormat(
+        type,
+        dataRecordId,
+        caller,
+        setRecord,
+        setFormatVersion,
       );
-      setFormatVersion(version);
+      // return;
+      // //Get format
+      // const formatRes = await GetDataFormat(caller, type);
 
-      if (type !== "neue-anfrage" && type !== "neuer-fall") {
-        //Get data
-        const dataRes = await GetData(caller, type, datRecordId);
-        if (!dataRes.success) {
-          return;
-        }
-        //merge data and data
-        const datarecord = DataRecordConverter.MergeDataRecordWithData(
-          format,
-          dataRes.json["values"],
-        );
+      // if (!formatRes.success) return;
 
-        setRecord(datarecord);
-        setLastSavedRecord(structuredClone(datarecord));
-        return;
-      }
-      setLastSavedRecord(structuredClone(format));
-      setRecord(format);
+      // const [version, format] = DataRecordConverter.ConvertFormatToDataRecord(
+      //   formatRes.json,
+      // );
+      // setFormatVersion(version);
+
+      // if (type !== "neue-anfrage" && type !== "neuer-fall") {
+      //   //Get data
+      //   const dataRes = await GetData(caller, type, dataRecordId);
+      //   if (!dataRes.success) {
+      //     return;
+      //   }
+      //   //merge data and data
+      //   const datarecord = DataRecordConverter.MergeDataRecordWithData(
+      //     format,
+      //     dataRes.json,
+      //     //dataRes.json["values"],
+      //   );
+
+      //   setRecord(datarecord);
+      //   setLastSavedRecord(structuredClone(datarecord));
+      //   return;
+      // }
+      // setLastSavedRecord(structuredClone(format));
+      // setRecord(format);
     }
     loadData();
-  }, [caller, type, datRecordId]);
+  }, [caller, type, dataRecordId]);
 
   //saves the datarecord
   async function Save(
@@ -432,12 +527,12 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   }
 
   function deletable() {
-    if (datRecordId) return true;
+    if (dataRecordId) return true;
     else return false;
   }
 
   async function handleDeleteRecord() {
-    const suc = (await caller.TryDeleteAnfrage(datRecordId)).success;
+    const suc = (await caller.TryDeleteAnfrage(dataRecordId)).success;
     if (suc) {
       openSnackbar(`${type} wurde erfolgreich gelöscht.`, suc);
       navigate("/main");
@@ -501,7 +596,7 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
         onClick={async () =>
           await handleSave(
             type,
-            datRecordId,
+            dataRecordId,
             record,
             lastSavedRecord,
             caller,

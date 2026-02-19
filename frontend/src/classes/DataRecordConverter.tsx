@@ -56,12 +56,20 @@ export class DataRecordConverter {
   }
 
   public static ConvertFormatToDataRecord(raw: unknown): [number, DataRecord] {
+    //console.log(raw);
+
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 
     const dataFields: DataField[] = Object.entries(fields).map(
       ([fieldId, fieldValues]) => this.CreateDataField(fieldId, fieldValues),
     );
-    return [this.GetFormatId(raw), { dataFields: dataFields }];
+    return [this.GetPk(raw), { dataFields: dataFields }];
+  }
+
+  public static ConvertIdSearchResult(
+    raw: unknown,
+  ): [number, Record<string, unknown>] {
+    return [this.GetVersion(raw), this.GetValues(raw)];
   }
 
   //TODO: add version number
@@ -118,22 +126,27 @@ export class DataRecordConverter {
 
   public static MergeDataRecordWithData(
     dataRecord: DataRecord,
-    raw: any,
+    keyValueRecord: Record<string, unknown>,
   ): DataRecord {
-    if (!raw) return { dataFields: [] };
-    const rawkey = Object.keys(raw["values"]);
-    let i = 0;
-    while (i < rawkey.length) {
-      const fieldName = rawkey[i];
-      const fieldValues = raw[fieldName];
-      dataRecord.dataFields[i] = this.SetValue(
-        dataRecord.dataFields[i],
-        fieldValues,
-      );
-      i++;
-    }
+    return {
+      dataFields: Object.entries(keyValueRecord).map(
+        ([fieldName, fieldValue]) => {
+          const fittingFields = dataRecord.dataFields.filter(
+            (field) => field.name === fieldName,
+          );
 
-    return dataRecord;
+          if (fittingFields.length < 1)
+            console.log(
+              "No matching field found in format. Could not find: " + fieldName,
+            );
+          if (fittingFields.length > 1)
+            console.log(
+              "Too many fields found in format. Searched for: " + fieldName,
+            );
+          return this.SetValue(fittingFields[0], fieldValue);
+        },
+      ),
+    };
   }
 
   public static ConvertSearchResultToDataRecord(
@@ -243,7 +256,7 @@ export class DataRecordConverter {
 
     return {};
   }
-  private static GetFormatId(raw: unknown) {
+  private static GetPk(raw: unknown) {
     if (
       raw &&
       typeof raw === "object" &&
@@ -255,6 +268,33 @@ export class DataRecordConverter {
     }
 
     return -1;
+  }
+  private static GetVersion(raw: unknown) {
+    if (
+      raw &&
+      typeof raw === "object" &&
+      "version" in raw &&
+      typeof raw.version === "number" &&
+      raw.version !== null
+    ) {
+      return raw.version;
+    }
+
+    return -1;
+  }
+  private static GetValues(raw: unknown): Record<string, unknown> {
+    if (
+      raw &&
+      typeof raw === "object" &&
+      "values" in raw &&
+      typeof (raw as any).values === "object" &&
+      (raw as any).values !== null &&
+      !Array.isArray((raw as any).values)
+    ) {
+      return (raw as { values: Record<string, unknown> }).values;
+    }
+
+    return {};
   }
 
   private static IsDataField<T>(
