@@ -12,7 +12,7 @@ export type DialogObject = {
   body: string;
   yes?: string;
   no: string;
-  yesAction: () => Promise<void>;
+  yesAction?: () => Promise<void>;
   noAction: () => Promise<void>;
 };
 

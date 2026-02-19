@@ -213,6 +213,8 @@ async function LoadDataAndFormat(
   caller: IApiCaller,
   setDataRecord: (record: DataRecord) => void,
   setFormatVersion: (version: number) => void,
+  setMsgID: (msg: string) => void,
+  setOpenIdDialog: (open: boolean) => void,
 ) {
   if (
     type == "anfrage" ||
@@ -244,22 +246,27 @@ async function LoadDataAndFormat(
 
         setDataRecord(mergedDataRecord);
       } else {
-        alert(
+        setMsgID(
           "Fehler beim Anfragen der Format id: " +
             neededFormatVersion +
             ". Fehler: " +
             formatRes.errorMsg,
         );
+        setOpenIdDialog(true);
       }
     } else {
-      alert("Fehler beim Suchen nach id " + id + ". Fehler: " + res.errorMsg);
+      setMsgID(
+        "Fehler beim Suchen nach id " + id + ". Fehler: " + res.errorMsg,
+      );
+      setOpenIdDialog(true);
     }
   } else {
     //get format only
     const formatRes = await GetDataFormat(caller, type);
 
     if (!formatRes.success) {
-      alert("Konnte aktuelles Format nicht laden");
+      setMsgID("Konnte aktuelles Format nicht laden");
+      setOpenIdDialog(true);
       return;
     }
 
@@ -291,6 +298,8 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [msgField, setmgField] = useState("");
   const [openFieldDialog, setOpenFieldDialog] = useState(false);
+  const [openIdDialog, setOpenIdDialog] = useState(false);
+  const [msgID, setMsgID] = useState("");
 
   const navigate = useNavigate();
 
@@ -298,10 +307,8 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
     isOpen: openFieldDialog,
     title: "",
     body: msgField,
-    yes: "Ok.",
-    no: "",
-    yesAction: async () => setOpenFieldDialog(false),
-    noAction: async () => {},
+    no: "ok",
+    noAction: async () => setOpenFieldDialog(false),
   };
 
   const dialogDelete: DialogObject = {
@@ -312,6 +319,14 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
     no: "Abbrechen",
     yesAction: () => handleDeleteRecord(),
     noAction: async () => cancelDelete(),
+  };
+
+  const dialogID: DialogObject = {
+    isOpen: openIdDialog,
+    title: "Seite konnte nicht geladen werden.",
+    body: msgID,
+    no: "Ok",
+    noAction: async () => setOpenIdDialog(false),
   };
 
   function sleep(ms: number) {
@@ -331,6 +346,8 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
         caller,
         setRecord,
         setFormatVersion,
+        setMsgID,
+        setOpenIdDialog,
       );
       // return;
       // //Get format
@@ -635,6 +652,8 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
       <DialogComponent dialogObject={dialogDelete} />
       {/*Dialog für feld meldung */}
       <DialogComponent dialogObject={dialogField} />
+      {/*Dialog für ID nicht gefunden bzw Format konnte nicht geladen werden */}
+      <DialogComponent dialogObject={dialogID} />
     </div>
   );
 }
