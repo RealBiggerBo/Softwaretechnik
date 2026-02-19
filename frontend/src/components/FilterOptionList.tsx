@@ -65,17 +65,15 @@ function FilterOptionList({
               >
                 <DeleteIcon />
               </Fab>
-              {/* <StyledButton
-                text={removeText}
-                color="error"
-                onClick={() => removeFilterOption(option)}
-              /> */}
             </Box>
           </Stack>
         </Paper>
       ))}
-      <br></br>
-      <StyledButton text={addText} onClick={() => addNewFilterOption()} />
+      <StyledButton
+        text={addText}
+        onClick={() => addNewFilterOption()}
+        sx={{ marginTop: "10px" }}
+      />
     </>
   );
 }
