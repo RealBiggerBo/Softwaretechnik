@@ -349,36 +349,6 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
         setMsgID,
         setOpenIdDialog,
       );
-      // return;
-      // //Get format
-      // const formatRes = await GetDataFormat(caller, type);
-
-      // if (!formatRes.success) return;
-
-      // const [version, format] = DataRecordConverter.ConvertFormatToDataRecord(
-      //   formatRes.json,
-      // );
-      // setFormatVersion(version);
-
-      // if (type !== "neue-anfrage" && type !== "neuer-fall") {
-      //   //Get data
-      //   const dataRes = await GetData(caller, type, dataRecordId);
-      //   if (!dataRes.success) {
-      //     return;
-      //   }
-      //   //merge data and data
-      //   const datarecord = DataRecordConverter.MergeDataRecordWithData(
-      //     format,
-      //     dataRes.json,
-      //     //dataRes.json["values"],
-      //   );
-
-      //   setRecord(datarecord);
-      //   setLastSavedRecord(structuredClone(datarecord));
-      //   return;
-      // }
-      // setLastSavedRecord(structuredClone(format));
-      // setRecord(format);
     }
     loadData();
   }, [caller, type, dataRecordId]);
