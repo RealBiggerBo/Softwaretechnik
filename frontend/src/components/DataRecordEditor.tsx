@@ -324,6 +324,7 @@ async function CreateNewDataSet(
   const res = await TryCreateDataSet(type, formatToSave, caller);
   if (res.success) {
     const saveId = isNaN(Number(res.json["pk"])) ? -1 : Number(res.json["pk"]);
+
     openSnackbar(bigType + " erfolgreich gespeichert!", true);
     await sleep(1500);
     navigate(`?type=${bigType.toLowerCase()}?id=${saveId}`, { replace: true });
@@ -333,51 +334,6 @@ async function CreateNewDataSet(
     openSnackbar(bigType + " konnte nicht gespeichert werden!", false);
     return false;
   }
-
-  // if (type === "neue-anfrage") {
-  //   const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
-  //     "Anfrage",
-  //     formatVersion,
-  //     recordToSave,
-  //   );
-  //   res = await caller.TryCreateAnfrage(rectosaavejson);
-  //   sucsaved = res.success;
-  //   saveid = Number(res.json["pk"]);
-  //   if (sucsaved === undefined || sucsaved === false) {
-  //     openSnackbar("Anfrage konnte nicht gespeichert werden!", false);
-  //     return { success: false };
-  //   }
-  //   if (sucsaved === true) {
-  //     openSnackbar("Anfrage erfolgreich gespeichert!", true);
-  //     await sleep(1500);
-  //     navigate(`?type=anfrage?id=${saveid}`, { replace: true });
-  //     await setLast(saveid, type);
-  //     return { success: true };
-  //   }
-  //}
-
-  //neuen Fall erstellen, snackbar öffnen und url ändern
-  // if (type === "neuer-fall") {
-  //   const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
-  //     "Fall",
-  //     formatVersion,
-  //     recordToSave,
-  //   );
-  //   res = await caller.TryCreateFall(rectosaavejson);
-  //   sucsaved = res.success;
-  //   saveid = Number(res.json["pk"]);
-  //   if (sucsaved === undefined || sucsaved === false) {
-  //     openSnackbar("Fall konnte nicht gespeichert werden!", false);
-  //     return { success: false };
-  //   }
-  //   if (sucsaved === true) {
-  //     openSnackbar("Fall erfolgreich gespeichert!", true);
-  //     await sleep(1500);
-  //     navigate(`?type=fall?id=${saveid}`, { replace: true });
-  //     await setLast(saveid, type);
-  //     return { success: true };
-  //   }
-  //}
 }
 
 function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
@@ -459,7 +415,6 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
     type: dataRecordType,
     recordId: number,
     recordToSave: DataRecord,
-    lastSavedRecord: DataRecord,
     caller: IApiCaller,
   ): Promise<{ success: boolean }> {
     //wenn es keinen record zum speichern gibt, snackbar öffnen und abbrechen
@@ -497,8 +452,6 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
       setLast,
       navigate,
     );
-
-    navigate("");
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
     if (!savedData) {
