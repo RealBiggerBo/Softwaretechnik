@@ -11,10 +11,8 @@ import StyledButton from "./Styledbutton";
 
 interface Props {
   caller: IApiCaller;
-  setHasDataChanges: (setHasDataChanges: boolean) => void;
-  setHasFormatChanges: (setHasFormatChanges: boolean) => void;
-  hasDataChanges: boolean;
-  hasFormatChanges: boolean;
+  savedData: React.RefObject<boolean>;
+  savedFormat: React.RefObject<boolean>;
 }
 
 type dataRecordType =
@@ -28,7 +26,7 @@ type userRole = "base_user" | "extended_user" | "admin_user" | null;
 
 // check if datafield is required and valid
 // if it's not required, return true, otherwise check if it's valid based on its type and return the result
-function IsValid(field: DataField) {
+function IsValid(field: DataField): boolean {
   if (!field.required) return true;
   switch (field.type) {
     case "text":
@@ -47,6 +45,12 @@ function IsValid(field: DataField) {
       );
     case "boolean":
       return true;
+    case "list":
+    case "group":
+      return field.element.every((field) => IsValid(field));
+    default:
+      const _exhaustive: never = field;
+      return _exhaustive;
   }
 }
 
@@ -197,13 +201,7 @@ async function UpdateDataRecord(
   return false;
 }
 
-function DataRecordEditor({
-  caller,
-  setHasDataChanges,
-  setHasFormatChanges,
-  hasDataChanges,
-  hasFormatChanges,
-}: Props) {
+function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   const [searchParams] = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams.get("type"));
   const datRecordId: number = GetDataRecordId(searchParams.get("id"));
@@ -284,7 +282,7 @@ function DataRecordEditor({
     let saveid: number = -1;
 
     // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
-    if (hasFormatChanges) {
+    if (!savedFormat.current) {
       succhanged = await CreateNewDataRecord(type, recordToSave, caller);
       if (succhanged === undefined || succhanged === false) {
         openSnackbar("Neue Struktur konnte nicht gespeichert werden!", false);
@@ -344,7 +342,7 @@ function DataRecordEditor({
     }
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
-    if (hasDataChanges) {
+    if (!savedData) {
       if (
         (await UpdateDataRecord(
           type,
@@ -366,6 +364,7 @@ function DataRecordEditor({
     }
   }
 
+  //sets last changed Anfrage/Fall
   async function setLast(id: number, type: dataRecordType) {
     if (
       type === "anfrage" ||
@@ -401,8 +400,8 @@ function DataRecordEditor({
       );
 
       if (result.success) {
-        setHasFormatChanges(false);
-        setHasDataChanges(false);
+        savedData.current = true;
+        savedFormat.current = true;
         setLastSaved(recordToSave);
       }
     } catch (err) {
@@ -462,9 +461,9 @@ function DataRecordEditor({
         caller={caller}
         onChange={(record) => {
           if (isEditMode) {
-            setHasFormatChanges(true);
+            savedFormat.current = false;
           } else {
-            setHasDataChanges(true);
+            savedData.current = false;
           }
           setRecord(record);
         }}

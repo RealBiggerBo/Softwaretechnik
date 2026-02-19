@@ -12,6 +12,21 @@ import FilterOptionList from "../components/FilterOptionList";
 import type { FilterOption } from "../classes/FilterOption";
 import DataRecordList from "../components/DataRecordList";
 import StyledButton from "../components/Styledbutton";
+import {
+  Alert,
+  Collapse,
+  debounce,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 interface Props {
   caller: IApiCaller;
@@ -93,28 +108,19 @@ function NavigateToDataPage(
   navigate("/dataview?type=" + type + "&id=" + GetIdFromDataRecord(entry));
 }
 
-async function DeleteDataRecord(
-  type: "fall" | "anfrage",
-  entry: DataRecord,
-  caller: IApiCaller,
-  updateData: () => void,
-) {
-  let res;
-  if (type == "fall")
-    res = await caller.TryDeleteFall(GetIdFromDataRecord(entry));
-  else res = await caller.TryDeleteAnfrage(GetIdFromDataRecord(entry));
-
-  if (res.success) alert("Löschen erfolgreich");
-  else alert(res.errorMsg);
-  updateData();
-}
-
 function SearchPage({ caller }: Props) {
   const navigate = useNavigate();
   const type: "anfrage" | "fall" = GetType(useSearchParams()[0].get("type"));
   const [options, setOptions] = useState(GetDefaultFilterOptions(type));
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [saveResult, setSaveResult] = useState(false);
+
+  const bigType = type.charAt(0).toUpperCase() + type.slice(1);
 
   const loadData = async () => {
     const result =
@@ -127,29 +133,70 @@ function SearchPage({ caller }: Props) {
     loadData();
   }, [caller]);
 
+  async function DeleteDataRecord(
+    type: "fall" | "anfrage",
+    entry: DataRecord,
+    caller: IApiCaller,
+    updateData: () => void,
+  ) {
+    let res;
+    if (type == "fall")
+      res = await caller.TryDeleteFall(GetIdFromDataRecord(entry));
+    else res = await caller.TryDeleteAnfrage(GetIdFromDataRecord(entry));
+
+    if (res.success) {
+      activateSnackbar("Löschen erfolgreich");
+      setSaveResult(true);
+    } else {
+      activateSnackbar(res.errorMsg);
+      setSaveResult(false);
+    }
+    updateData();
+  }
+
+  function cancelDelete() {
+    setOpenDialog(false);
+  }
+
+  function activateSnackbar(msg: string) {
+    setOpenSnackbar(true);
+    setSnackbarMessage(msg);
+  }
+
   return (
-    <>
-      <FilterOptionList
-        format={format}
-        filterOptions={options}
-        addText="Neuer Suchfilter"
-        removeText="Löschen"
-        updateFilterOption={(toUpdate, newOption) =>
-          setOptions(UpdateOptions(options, toUpdate, newOption))
-        }
-        addNewFilterOption={() => setOptions(AddNewOption(options))}
-        removeFilterOption={(toRemove) =>
-          setOptions(RemoveOption(options, toRemove))
-        }
-      ></FilterOptionList>
-      <br></br>
+    <Stack spacing={2}>
+      <h1>
+        {type == "anfrage" && "Anfragesuche"}
+        {type == "fall" && "Fallsuche"}
+      </h1>
+      <Stack direction={"row"} alignItems={"center"}>
+        <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+          {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+        </IconButton>
+        <Typography variant="h5">Suchfilter</Typography>
+      </Stack>
+      <Collapse in={isExpanded}>
+        <FilterOptionList
+          format={format}
+          filterOptions={options}
+          addText="Neuer Suchfilter"
+          removeText="Löschen"
+          updateFilterOption={(toUpdate, newOption) =>
+            setOptions(UpdateOptions(options, toUpdate, newOption))
+          }
+          addNewFilterOption={() => setOptions(AddNewOption(options))}
+          removeFilterOption={(toRemove) =>
+            setOptions(RemoveOption(options, toRemove))
+          }
+        />
+        <br />
+      </Collapse>
       <StyledButton
         text="Suchen"
         onClick={async () =>
           await Search(type, options, setSearchResult, caller)
         }
       />
-      <br></br>
       <DataRecordList
         data={searchResult}
         mapEntry={(entry) => {
@@ -162,15 +209,43 @@ function SearchPage({ caller }: Props) {
               <StyledButton
                 color="error"
                 text="Löschen"
-                onClick={async () =>
-                  await DeleteDataRecord(type, entry, caller, loadData)
-                }
+                onClick={() => setOpenDialog(true)}
               />
+              <Dialog open={openDialog} onClose={cancelDelete}>
+                <DialogTitle>{bigType} löschen?</DialogTitle>
+                <DialogContent>
+                  Möchten Sie {bigType} {GetIdFromDataRecord(entry)} wirklich
+                  löschen?
+                </DialogContent>
+                <DialogActions>
+                  <StyledButton onClick={cancelDelete} text="Abbrechen" />
+                  <StyledButton
+                    color="error"
+                    onClick={async () => {
+                      await DeleteDataRecord(type, entry, caller, loadData);
+                      setOpenDialog(false);
+                    }}
+                    text="Löschen"
+                  />
+                </DialogActions>
+              </Dialog>
+              <Snackbar
+                open={openSnackbar}
+                autoHideDuration={3000}
+                onClose={() => setOpenSnackbar(false)}
+              >
+                <Alert
+                  severity={saveResult ? "success" : "error"}
+                  onClose={() => setOpenSnackbar(false)}
+                >
+                  {snackbarMessage}
+                </Alert>
+              </Snackbar>
             </>
           );
         }}
       />
-    </>
+    </Stack>
   );
 }
 export default SearchPage;

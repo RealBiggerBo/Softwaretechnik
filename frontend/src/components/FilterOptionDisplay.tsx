@@ -1,6 +1,6 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import type { DataRecord } from "../classes/DataRecord";
-import { TextField } from "@mui/material";
+import { Box, Stack, TextField } from "@mui/material";
 import type { DataField, EnumField } from "../classes/DataField";
 import { ToUiItem, type UiItem } from "../classes/UiItems";
 import type { FilterOption } from "../classes/FilterOption";
@@ -139,48 +139,52 @@ function FilterOptionDisplay({ option, format, onChange }: Props) {
   const selectedFieldOption = GetSelectedFieldOption(option, format.dataFields);
 
   return (
-    <>
-      <Autocomplete
-        options={format.dataFields}
-        value={selectedFieldOption}
-        getOptionLabel={(f) => f.name}
-        onChange={(_, field) => {
-          onChange(
-            field
-              ? ToUiItem({ type: "Empty", fieldId: field.id })
-              : ToUiItem({ type: "Empty", fieldId: -1 }),
-          );
-        }}
-        renderInput={(params) => (
-          <TextField {...params} label="Feld auswählen" />
-        )}
-      />
-      {selectedDataField != undefined && (
+    <Stack spacing={1}>
+      <Stack direction="row" spacing={1}>
         <Autocomplete
-          options={filterOptions}
-          value={selectedFilterOption}
-          renderInput={(params) => (
-            <TextField {...params} label="Operation auswählen" />
-          )}
-          getOptionKey={(option) => option.filter?.id}
-          onChange={(_, selectedOption) => {
+          options={format.dataFields}
+          value={selectedFieldOption}
+          getOptionLabel={(f) => f.name}
+          onChange={(_, field) => {
             onChange(
-              selectedOption?.filter ??
-                ToUiItem({
-                  type: "Empty",
-                  fieldId: -1,
-                }),
+              field
+                ? ToUiItem({ type: "Empty", fieldId: field.id })
+                : ToUiItem({ type: "Empty", fieldId: -1 }),
             );
           }}
+          renderInput={(params) => (
+            <TextField {...params} label="Feld auswählen" />
+          )}
+          sx={{ flex: 1 }}
         />
-      )}
+        {selectedDataField != undefined && (
+          <Autocomplete
+            options={filterOptions}
+            value={selectedFilterOption}
+            renderInput={(params) => (
+              <TextField {...params} label="Operation auswählen" />
+            )}
+            getOptionKey={(option) => option.filter?.id}
+            onChange={(_, selectedOption) => {
+              onChange(
+                selectedOption?.filter ??
+                  ToUiItem({
+                    type: "Empty",
+                    fieldId: -1,
+                  }),
+              );
+            }}
+            sx={{ flex: 1 }}
+          />
+        )}
+      </Stack>
       {selectedDataField != undefined && selectedFilterOption != undefined && (
         <FilterOptionEditor
           filterOption={option}
           onChange={onChange}
         ></FilterOptionEditor>
       )}
-    </>
+    </Stack>
   );
 }
 
