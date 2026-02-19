@@ -279,10 +279,14 @@ export class ApiCaller implements IApiCaller {
     );
   }
 
-  async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
+  async GetStatisticsPresetList(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    presetsList: PresetItemListElement[];
+  }> {
     let presets: PresetItemListElement[] = [];
 
-    await this.SendApiCall(
+    const res = await this.SendApiCall(
       "/api/stats/presets",
       "GET",
       true,
@@ -292,15 +296,13 @@ export class ApiCaller implements IApiCaller {
         const data = await response.json();
         const items = Array.isArray(data?.items) ? data.items : [];
         presets = items.map((item: any) => ({
-          id: Number(item?.id),
           title: String(item?.title ?? ""),
           type: String(item?.recordType ?? ""),
           updated_at: String(item?.updated_at ?? ""),
         }));
       },
     );
-
-    return presets;
+    return { ...res, presetsList: presets };
   }
 
   async TryChangePassword(

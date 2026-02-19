@@ -13,7 +13,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import type { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
@@ -51,8 +50,13 @@ function StatisticsPage({ caller }: Props) {
   useEffect(() => {
     const fetchPresets = async () => {
       console.log("getStatisticsList");
-      const availablePresets = await caller.GetStatisticsPresetList();
-      setPresets(availablePresets);
+      const { success, errorMsg, presetsList } =
+        await caller.GetStatisticsPresetList();
+      if (!success) {
+        alert(errorMsg);
+        return;
+      }
+      setPresets(presetsList);
       setPreset(null);
       setPresetTitle("");
     };
@@ -62,33 +66,33 @@ function StatisticsPage({ caller }: Props) {
 
   useEffect(() => {
     const fetchFormat = async () => {
-      if (statisticsType === "Anfrage") {
-        const result = await caller.GetAnfrageJson();
-        setFormat(
-          DataRecordConverter.ConvertFormatToDataRecord(result.json)[1],
-        );
-      } else if (statisticsType === "Fall") {
-        const result = await caller.GetFallJson();
-        setFormat(
-          DataRecordConverter.ConvertFormatToDataRecord(result.json)[1],
-        );
+      const result = await caller.GetAnfrageJson();
+      if (result.success) {
+        if (statisticsType === "Anfrage") {
+          setFormat(
+            DataRecordConverter.ConvertFormatToDataRecord(result.json)[1],
+          );
+        } else if (statisticsType === "Fall") {
+          setFormat(
+            DataRecordConverter.ConvertFormatToDataRecord(result.json)[1],
+          );
+        } else {
+          alert(result.errorMsg);
+        }
       }
     };
-
     void fetchFormat();
   }, [caller, statisticsType]);
 
-  function formatDateForApi(value: Dayjs | null): string {
-    return value?.toISOString() ?? "";
-  }
-
   async function handleExport() {
     const res = await caller.TryExportStatistic(presetTitle, fileFormat);
+    if (!res.success) {
+      alert(res.errorMsg);
+      return;
+    }
 
     const link = document.createElement("a");
     link.href = res.url;
-    console.log(res);
-
     link.download = res.filename;
     document.body.appendChild(link);
     link.click();
@@ -110,13 +114,17 @@ function StatisticsPage({ caller }: Props) {
       .find((p) => p.title === presetTitle);
 
     if (existingPreset) {
-      const { success, preset: loadedPreset } =
-        await caller.GetStatisticsPreset(existingPreset.title);
+      const {
+        success,
+        errorMsg,
+        preset: loadedPreset,
+      } = await caller.GetStatisticsPreset(existingPreset.title);
 
       if (success) {
         setPreset(ToUiPreset(loadedPreset));
+      } else {
+        alert(errorMsg);
       }
-
       return;
     }
 
@@ -128,19 +136,14 @@ function StatisticsPage({ caller }: Props) {
     });
 
     setPreset(newPreset);
-    setPresets((prev) => {
-      const maxId = prev.reduce((max, p) => Math.max(max, p.id), 0);
-
-      return [
-        ...prev,
-        {
-          id: maxId + 1,
-          title: presetTitle,
-          type: statisticsType,
-          updated_at: new Date().toISOString(),
-        },
-      ];
-    });
+    setPresets((prev) => [
+      ...prev,
+      {
+        title: presetTitle,
+        type: statisticsType,
+        updated_at: new Date().toISOString(),
+      },
+    ]);
   }
 
   function handleStatisticsTypeChange(
@@ -159,9 +162,12 @@ function StatisticsPage({ caller }: Props) {
       ToNormalPreset(preset),
     );
     console.log(res.errorMsg);
-
-    if (res.errorMsg === "Preset mit diesem Namen existiert bereits.") {
-      setOverwritePresetDialogOpen(true);
+    if (!res.success) {
+      if (res.errorMsg === "Preset mit diesem Namen existiert bereits.") {
+        setOverwritePresetDialogOpen(true);
+      } else {
+        alert(res.errorMsg);
+      }
     }
   }
 
@@ -176,8 +182,10 @@ function StatisticsPage({ caller }: Props) {
       presetTitle,
       ToNormalPreset(preset),
     );
-    console.log(res.errorMsg);
     setOverwritePresetDialogOpen(false);
+    if (!res.success) {
+      alert(res.errorMsg);
+    }
   }
 
   async function handleExecuteStatistic() {
