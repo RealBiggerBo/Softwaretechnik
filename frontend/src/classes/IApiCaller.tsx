@@ -14,6 +14,13 @@ export interface IApiCaller {
     url: string;
     filename: string;
   }>;
+
+  TryUpdateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }>;
+
   TryCreateStatisticPreset(
     type: "Fall" | "Anfrage",
     title: string,
@@ -52,7 +59,11 @@ export interface IApiCaller {
     newPswd: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
-  GetStatisticsPresetList(): Promise<PresetItemListElement[]>;
+  GetStatisticsPresetList(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    presetsList: PresetItemListElement[];
+  }>;
 
   GetStatisticsPreset(
     title: string,
@@ -155,6 +166,13 @@ export interface IApiCaller {
 }
 
 export class MockApiCaller implements IApiCaller {
+  TryUpdateStatisticPreset(
+    type: "Fall" | "Anfrage",
+    title: string,
+    preset: Preset,
+  ): Promise<{ success: boolean; errorMsg: string }> {
+    throw new Error("Method not implemented.");
+  }
   TryExportStatistic(
     _title: string,
     _format: "csv" | "xlsx" | "pdf",
@@ -265,7 +283,7 @@ export class MockApiCaller implements IApiCaller {
     if (pswd1 == pswd2) {
       return { success: true, errorMsg: "" };
     }
-    return { success: false, errorMsg: "Registration Faild" };
+    return { success: false, errorMsg: "Registration Failed" };
   }
   async TryLogin(
     user: string,
@@ -293,7 +311,7 @@ export class MockApiCaller implements IApiCaller {
       errorMsg: "",
       json: {
         id: 1,
-        username: "superuse",
+        username: "superuser",
         role: "admin_user",
         last_request_id: -1,
         last_case_id: -1,
@@ -356,12 +374,20 @@ export class MockApiCaller implements IApiCaller {
     return { success: false, errorMsg: "not supported in MockApi" };
   }
 
-  async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
-    return [
-      { id: 1, title: "Preset 1", type: "Anfrage", updated_at: "Heute" },
-      { id: 2, title: "Preset 2", type: "Fall", updated_at: "Heute" },
-      { id: 3, title: "Preset 3", type: "Anfrage", updated_at: "Heute" },
-    ];
+  async GetStatisticsPresetList(): Promise<{
+    success: boolean;
+    errorMsg: string;
+    presetsList: PresetItemListElement[];
+  }> {
+    return Promise.resolve({
+      success: true,
+      errorMsg: "",
+      presetsList: [
+        { title: "Preset 1", type: "Anfrage", updated_at: "Heute" },
+        { title: "Preset 2", type: "Fall", updated_at: "Heute" },
+        { title: "Preset 3", type: "Anfrage", updated_at: "Heute" },
+      ],
+    });
   }
 
   async TryChangePassword(

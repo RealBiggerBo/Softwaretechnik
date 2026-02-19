@@ -3,19 +3,13 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
-import {
-  Alert,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Fab,
-  Snackbar,
-} from "@mui/material";
+import { Alert, Fab, Snackbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import type { DataField } from "../classes/DataField";
 import DataRecordDisplay from "./DataRecordDisplay";
 import StyledButton from "./Styledbutton";
+import DialogComponent from "./DialogComponent";
+import type { DialogObject } from "./DialogComponent";
 
 interface Props {
   caller: IApiCaller;
@@ -299,6 +293,26 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   const [openFieldDialog, setOpenFieldDialog] = useState(false);
 
   const navigate = useNavigate();
+
+  const dialogField: DialogObject = {
+    isOpen: openFieldDialog,
+    title: "",
+    body: msgField,
+    yes: "Ok.",
+    no: "",
+    yesAction: async () => setOpenFieldDialog(false),
+    noAction: async () => {},
+  };
+
+  const dialogDelete: DialogObject = {
+    isOpen: openDeleteDialog,
+    title: `${type} löschen?`,
+    body: msg,
+    yes: "Löschen",
+    no: "Abbrechen",
+    yesAction: () => handleDeleteRecord(),
+    noAction: async () => cancelDelete(),
+  };
 
   function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -588,6 +602,7 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
           color="error"
           onClick={() => {
             setOpenDeleteDialog(true);
+            setmg("Wollen Sie diesen Datensatz wirklich löschen?");
           }}
         />
       )}
@@ -617,25 +632,9 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
         </Alert>
       </Snackbar>
       {/*Dialog zum record löschen */}
-      <Dialog open={openDeleteDialog} onClose={cancelDelete}>
-        <DialogTitle>{type} löschen?</DialogTitle>
-        <DialogContent>{msg}</DialogContent>
-        <DialogActions>
-          <StyledButton onClick={cancelDelete} text="Abbrechen" />
-          <StyledButton
-            color="error"
-            onClick={() => handleDeleteRecord()}
-            text="Löschen"
-          />
-        </DialogActions>
-      </Dialog>
+      <DialogComponent dialogObject={dialogDelete} />
       {/*Dialog für feld meldung */}
-      <Dialog open={openFieldDialog} onClose={() => setOpenFieldDialog(false)}>
-        <DialogContent>{msgField}</DialogContent>
-        <DialogActions>
-          <StyledButton onClick={() => setOpenFieldDialog(false)} text="Ok" />
-        </DialogActions>
-      </Dialog>
+      <DialogComponent dialogObject={dialogField} />
     </div>
   );
 }
