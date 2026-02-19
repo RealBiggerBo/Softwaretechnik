@@ -1,6 +1,7 @@
 import type { FilterOption } from "./FilterOption";
 import type { Preset } from "./Preset";
 import type { PresetItemListElement } from "./StatisticsTypes";
+import type { Query } from "./Query";
 
 export interface IApiCaller {
   TryExportStatistic(
@@ -173,7 +174,36 @@ export class MockApiCaller implements IApiCaller {
   GetStatisticsPreset(
     title: string,
   ): Promise<{ success: boolean; errorMsg: string; preset: Preset }> {
-    throw new Error("Method not implemented.");
+    const data = {
+      id: 11,
+      title: "Hallo",
+      payload: {
+        globalFilterOptions: [
+          {
+            type: "DateRangeFilter",
+            fieldId: 2,
+            minValue: "2026-02-18",
+            maxValue: "2026-02-21",
+          },
+        ],
+        queries: [
+          { queryTitle: "Test", displayActions: [], filterOptions: [] },
+          { queryTitle: "Titel", displayActions: [], filterOptions: [] },
+        ],
+        globalRecordType: "Anfrage",
+      },
+      updated_at: "2026-02-18T09:07:06.396296+00:00",
+    };
+    const payload = data?.payload ?? {};
+    const preset: Preset = {
+      globalFilterOptions: Array.isArray(payload.globalFilterOptions)
+        ? (payload.globalFilterOptions as FilterOption[])
+        : [],
+      queries: Array.isArray(payload.queries)
+        ? (payload.queries as Query[])
+        : [],
+    };
+    return Promise.resolve({ success: true, errorMsg: "", preset });
   }
   Logout(): void {
     throw new Error("Method not implemented.");
@@ -278,7 +308,11 @@ export class MockApiCaller implements IApiCaller {
   }
 
   async GetStatisticsPresetList(): Promise<PresetItemListElement[]> {
-    return [];
+    return [
+      { id: 1, title: "Preset 1", type: "Anfrage", updated_at: "Heute" },
+      { id: 2, title: "Preset 2", type: "Fall", updated_at: "Heute" },
+      { id: 3, title: "Preset 3", type: "Anfrage", updated_at: "Heute" },
+    ];
   }
 
   async TryChangePassword(
