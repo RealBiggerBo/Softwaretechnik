@@ -10,6 +10,7 @@ interface Props {
   disabled?: boolean;
   variant?: "outlined";
   sx?: SxProps<Theme>;
+  className?: string;
   color?:
     | "error"
     | "inherit"
@@ -30,6 +31,7 @@ function StyledButton({
   variant,
   sx,
   color,
+  className,
   onClick,
 }: Props) {
   const btnVariant = variant ? variant : "contained";
@@ -37,6 +39,7 @@ function StyledButton({
 
   return (
     <Button
+      className={className}
       type={type}
       size={size}
       color={color}

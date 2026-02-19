@@ -15,11 +15,6 @@ import StyledButton from "../components/Styledbutton";
 import {
   Alert,
   Collapse,
-  debounce,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   IconButton,
   Snackbar,
   Stack,
@@ -27,6 +22,7 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import DialogComponent from "../components/DialogComponent";
 
 interface Props {
   caller: IApiCaller;
@@ -35,14 +31,14 @@ interface Props {
 function GetType(type: string | null) {
   switch (type?.toLowerCase() ?? "") {
     case "fall":
-      return "fall";
+      return "Fall";
     default:
-      return "anfrage";
+      return "Anfrage";
   }
 }
 
 function GetDefaultFilterOptions(
-  type: "fall" | "anfrage",
+  type: "Fall" | "Anfrage",
 ): UiItem<FilterOption>[] {
   let options: UiItem<FilterOption>[] = [];
 
@@ -71,13 +67,13 @@ function RemoveOption(
 }
 
 async function Search(
-  type: "fall" | "anfrage",
+  type: "Fall" | "Anfrage",
   options: UiItem<FilterOption>[],
   setSearchResult: (recordds: DataRecord[]) => void,
   caller: IApiCaller,
 ) {
   let res;
-  if (type == "fall")
+  if (type == "Fall")
     res = await caller.TrySearchFall(options.map((uiCase) => uiCase.value));
   else
     res = await caller.TrySearchAnfrage(
@@ -101,46 +97,57 @@ function GetIdFromDataRecord(dataRecord: DataRecord) {
 }
 
 function NavigateToDataPage(
-  type: "fall" | "anfrage",
+  type: "Fall" | "Anfrage",
   entry: DataRecord,
   navigate: NavigateFunction,
 ) {
-  navigate("/dataview?type=" + type + "&id=" + GetIdFromDataRecord(entry));
+  navigate(
+    "/dataview?type=" +
+      type.toLowerCase() +
+      "&id=" +
+      GetIdFromDataRecord(entry),
+  );
 }
 
 function SearchPage({ caller }: Props) {
   const navigate = useNavigate();
-  const type: "anfrage" | "fall" = GetType(useSearchParams()[0].get("type"));
+  const type: "Anfrage" | "Fall" = GetType(useSearchParams()[0].get("type"));
   const [options, setOptions] = useState(GetDefaultFilterOptions(type));
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogObject, setDialogObject] = useState({
+    isOpen: false,
+    title: "",
+    body: "",
+    yes: "",
+    no: "",
+    yesAction: async () => {},
+    noAction: async () => {},
+  });
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState(false);
 
-  const bigType = type.charAt(0).toUpperCase() + type.slice(1);
-
-  const loadData = async () => {
+  const loadFormat = async () => {
     const result =
-      type == "fall"
+      type == "Fall"
         ? await caller.GetFallJson()
         : await caller.GetAnfrageJson();
+
     setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json)[1]);
   };
   useEffect(() => {
-    loadData();
-  }, [caller]);
+    loadFormat();
+  }, [caller, type]);
 
   async function DeleteDataRecord(
-    type: "fall" | "anfrage",
+    type: "Fall" | "Anfrage",
     entry: DataRecord,
     caller: IApiCaller,
-    updateData: () => void,
   ) {
     let res;
-    if (type == "fall")
+    if (type == "Fall")
       res = await caller.TryDeleteFall(GetIdFromDataRecord(entry));
     else res = await caller.TryDeleteAnfrage(GetIdFromDataRecord(entry));
 
@@ -151,11 +158,7 @@ function SearchPage({ caller }: Props) {
       activateSnackbar(res.errorMsg);
       setSaveResult(false);
     }
-    updateData();
-  }
-
-  function cancelDelete() {
-    setOpenDialog(false);
+    await Search(type, options, setSearchResult, caller);
   }
 
   function activateSnackbar(msg: string) {
@@ -163,89 +166,103 @@ function SearchPage({ caller }: Props) {
     setSnackbarMessage(msg);
   }
 
+  function OpenDialogObject(
+    type: "Fall" | "Anfrage",
+    entry: DataRecord,
+    caller: IApiCaller,
+  ) {
+    const id = GetIdFromDataRecord(entry);
+    const title = type + " löschen?";
+    const body = "Möchten Sie " + type + " " + id + " wirklich löschen";
+    const yes = "Löschen";
+    const no = "Abbrechen";
+    const yesAction = async () => {
+      await DeleteDataRecord(type, entry, caller);
+      await CloseDialogObject();
+    };
+
+    setDialogObject({
+      isOpen: true,
+      title: title,
+      body: body,
+      yes: yes,
+      no: no,
+      yesAction: yesAction,
+      noAction: CloseDialogObject,
+    });
+  }
+  async function CloseDialogObject() {
+    setDialogObject({
+      ...dialogObject,
+      isOpen: false,
+    });
+  }
+
   return (
-    <Stack spacing={2}>
-      <h1>
-        {type == "anfrage" && "Anfragesuche"}
-        {type == "fall" && "Fallsuche"}
-      </h1>
-      <Stack direction={"row"} alignItems={"center"}>
-        <IconButton onClick={() => setIsExpanded(!isExpanded)}>
-          {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-        </IconButton>
-        <Typography variant="h5">Suchfilter</Typography>
-      </Stack>
-      <Collapse in={isExpanded}>
-        <FilterOptionList
-          format={format}
-          filterOptions={options}
-          addText="Neuer Suchfilter"
-          removeText="Löschen"
-          updateFilterOption={(toUpdate, newOption) =>
-            setOptions(UpdateOptions(options, toUpdate, newOption))
-          }
-          addNewFilterOption={() => setOptions(AddNewOption(options))}
-          removeFilterOption={(toRemove) =>
-            setOptions(RemoveOption(options, toRemove))
+    <>
+      <Stack spacing={2}>
+        <h1>{type + "suche"}</h1>
+        <Stack direction={"row"} alignItems={"center"}>
+          <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+            {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+          <Typography variant="h5">Suchfilter</Typography>
+        </Stack>
+        <Collapse in={isExpanded}>
+          <FilterOptionList
+            format={format}
+            filterOptions={options}
+            addText="Neuer Suchfilter"
+            removeText="Löschen"
+            updateFilterOption={(toUpdate, newOption) =>
+              setOptions(UpdateOptions(options, toUpdate, newOption))
+            }
+            addNewFilterOption={() => setOptions(AddNewOption(options))}
+            removeFilterOption={(toRemove) =>
+              setOptions(RemoveOption(options, toRemove))
+            }
+          />
+          <br />
+        </Collapse>
+        <StyledButton
+          text="Suchen"
+          onClick={async () =>
+            await Search(type, options, setSearchResult, caller)
           }
         />
-        <br />
-      </Collapse>
-      <StyledButton
-        text="Suchen"
-        onClick={async () =>
-          await Search(type, options, setSearchResult, caller)
-        }
-      />
-      <DataRecordList
-        data={searchResult}
-        mapEntry={(entry) => {
-          return (
-            <>
-              <StyledButton
-                text="Bearbeiten / Anzeigen"
-                onClick={() => NavigateToDataPage(type, entry, navigate)}
-              />
-              <StyledButton
-                color="error"
-                text="Löschen"
-                onClick={() => setOpenDialog(true)}
-              />
-              <Dialog open={openDialog} onClose={cancelDelete}>
-                <DialogTitle>{bigType} löschen?</DialogTitle>
-                <DialogContent>
-                  Möchten Sie {bigType} {GetIdFromDataRecord(entry)} wirklich
-                  löschen?
-                </DialogContent>
-                <DialogActions>
-                  <StyledButton onClick={cancelDelete} text="Abbrechen" />
-                  <StyledButton
-                    color="error"
-                    onClick={async () => {
-                      await DeleteDataRecord(type, entry, caller, loadData);
-                      setOpenDialog(false);
-                    }}
-                    text="Löschen"
-                  />
-                </DialogActions>
-              </Dialog>
-              <Snackbar
-                open={openSnackbar}
-                autoHideDuration={3000}
-                onClose={() => setOpenSnackbar(false)}
-              >
-                <Alert
-                  severity={saveResult ? "success" : "error"}
+        <DataRecordList
+          data={searchResult}
+          mapEntry={(entry) => {
+            return (
+              <>
+                <StyledButton
+                  text="Bearbeiten / Anzeigen"
+                  onClick={() => NavigateToDataPage(type, entry, navigate)}
+                />
+                <StyledButton
+                  color="error"
+                  text="Löschen"
+                  onClick={() => OpenDialogObject(type, entry, caller)}
+                />
+                <Snackbar
+                  open={openSnackbar}
+                  autoHideDuration={3000}
                   onClose={() => setOpenSnackbar(false)}
                 >
-                  {snackbarMessage}
-                </Alert>
-              </Snackbar>
-            </>
-          );
-        }}
-      />
-    </Stack>
+                  <Alert
+                    severity={saveResult ? "success" : "error"}
+                    onClose={() => setOpenSnackbar(false)}
+                  >
+                    {snackbarMessage}
+                  </Alert>
+                </Snackbar>
+              </>
+            );
+          }}
+        />
+      </Stack>
+      <DialogComponent dialogObject={dialogObject} />
+    </>
   );
 }
 export default SearchPage;
