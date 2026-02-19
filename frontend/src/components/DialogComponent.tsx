@@ -10,7 +10,7 @@ export type DialogObject = {
   isOpen: boolean;
   title: string;
   body: string;
-  yes: string;
+  yes?: string;
   no: string;
   yesAction: () => Promise<void>;
   noAction: () => Promise<void>;
@@ -27,11 +27,13 @@ function DialogComponent({ dialogObject }: Props) {
       <DialogContent>{dialogObject.body}</DialogContent>
       <DialogActions>
         <StyledButton onClick={dialogObject.noAction} text={dialogObject.no} />
-        <StyledButton
-          color="error"
-          onClick={dialogObject.yesAction}
-          text={dialogObject.yes}
-        />
+        {dialogObject.yes && (
+          <StyledButton
+            color="error"
+            onClick={dialogObject.yesAction}
+            text={dialogObject.yes}
+          />
+        )}
       </DialogActions>
     </Dialog>
   );
