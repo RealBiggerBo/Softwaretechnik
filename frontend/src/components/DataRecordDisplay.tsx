@@ -67,8 +67,10 @@ function DataRecordDisplay({
 }: Props) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [fieldToDelete, setFieldToDelete] = useState<DataField | null>(null);
+  const [msg, setmg] = useState("");
 
   const handleDeleteClick = (field: DataField) => {
+    setmg(`Möchten Sie das Feld "${field.name}" wirklich löschen?`);
     setFieldToDelete(field);
     setOpenDeleteDialog(true);
   };
@@ -112,9 +114,7 @@ function DataRecordDisplay({
 
       <Dialog open={openDeleteDialog} onClose={cancelDelete}>
         <DialogTitle>Feld löschen?</DialogTitle>
-        <DialogContent>
-          Möchten Sie das Feld "{fieldToDelete?.name}" wirklich löschen?
-        </DialogContent>
+        <DialogContent>{msg}</DialogContent>
         <DialogActions>
           <StyledButton onClick={cancelDelete} text="Abbrechen" />
           <StyledButton color="error" onClick={confirmDelete} text="Löschen" />
