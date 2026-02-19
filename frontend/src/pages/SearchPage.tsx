@@ -12,7 +12,17 @@ import FilterOptionList from "../components/FilterOptionList";
 import type { FilterOption } from "../classes/FilterOption";
 import DataRecordList from "../components/DataRecordList";
 import StyledButton from "../components/Styledbutton";
-import { Collapse, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Collapse,
+  debounce,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
@@ -119,6 +129,7 @@ function SearchPage({ caller }: Props) {
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const loadData = async () => {
     const result =
@@ -130,6 +141,10 @@ function SearchPage({ caller }: Props) {
   useEffect(() => {
     loadData();
   }, [caller]);
+
+  function cancelDelete() {
+    setOpenDialog(false);
+  }
 
   return (
     <Stack spacing={2}>
@@ -177,10 +192,26 @@ function SearchPage({ caller }: Props) {
               <StyledButton
                 color="error"
                 text="Löschen"
-                onClick={async () =>
-                  await DeleteDataRecord(type, entry, caller, loadData)
-                }
+                onClick={() => setOpenDialog(true)}
               />
+              <Dialog open={openDialog} onClose={cancelDelete}>
+                <DialogTitle>{type} löschen?</DialogTitle>
+                <DialogContent>
+                  Möchten Sie {type} {GetIdFromDataRecord(entry)} wirklich
+                  löschen?
+                </DialogContent>
+                <DialogActions>
+                  <StyledButton onClick={cancelDelete} text="Abbrechen" />
+                  <StyledButton
+                    color="error"
+                    onClick={async () => {
+                      await DeleteDataRecord(type, entry, caller, loadData);
+                      setOpenDialog(false);
+                    }}
+                    text="Löschen"
+                  />
+                </DialogActions>
+              </Dialog>
             </>
           );
         }}
