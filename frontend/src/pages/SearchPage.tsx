@@ -12,6 +12,9 @@ import FilterOptionList from "../components/FilterOptionList";
 import type { FilterOption } from "../classes/FilterOption";
 import DataRecordList from "../components/DataRecordList";
 import StyledButton from "../components/Styledbutton";
+import { Collapse, IconButton, Stack, Typography } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 interface Props {
   caller: IApiCaller;
@@ -115,6 +118,7 @@ function SearchPage({ caller }: Props) {
   const [options, setOptions] = useState(GetDefaultFilterOptions(type));
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const loadData = async () => {
     const result =
@@ -128,28 +132,39 @@ function SearchPage({ caller }: Props) {
   }, [caller]);
 
   return (
-    <>
-      <FilterOptionList
-        format={format}
-        filterOptions={options}
-        addText="Neuer Suchfilter"
-        removeText="Löschen"
-        updateFilterOption={(toUpdate, newOption) =>
-          setOptions(UpdateOptions(options, toUpdate, newOption))
-        }
-        addNewFilterOption={() => setOptions(AddNewOption(options))}
-        removeFilterOption={(toRemove) =>
-          setOptions(RemoveOption(options, toRemove))
-        }
-      ></FilterOptionList>
-      <br></br>
+    <Stack spacing={2}>
+      <h1>
+        {type == "anfrage" && "Anfragesuche"}
+        {type == "fall" && "Fallsuche"}
+      </h1>
+      <Stack direction={"row"} alignItems={"center"}>
+        <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+          {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+        </IconButton>
+        <Typography variant="h5">Suchfilter</Typography>
+      </Stack>
+      <Collapse in={isExpanded}>
+        <FilterOptionList
+          format={format}
+          filterOptions={options}
+          addText="Neuer Suchfilter"
+          removeText="Löschen"
+          updateFilterOption={(toUpdate, newOption) =>
+            setOptions(UpdateOptions(options, toUpdate, newOption))
+          }
+          addNewFilterOption={() => setOptions(AddNewOption(options))}
+          removeFilterOption={(toRemove) =>
+            setOptions(RemoveOption(options, toRemove))
+          }
+        />
+        <br />
+      </Collapse>
       <StyledButton
         text="Suchen"
         onClick={async () =>
           await Search(type, options, setSearchResult, caller)
         }
       />
-      <br></br>
       <DataRecordList
         data={searchResult}
         mapEntry={(entry) => {
@@ -170,7 +185,7 @@ function SearchPage({ caller }: Props) {
           );
         }}
       />
-    </>
+    </Stack>
   );
 }
 export default SearchPage;
