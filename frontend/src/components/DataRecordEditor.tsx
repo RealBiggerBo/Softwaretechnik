@@ -26,7 +26,7 @@ type userRole = "base_user" | "extended_user" | "admin_user" | null;
 
 // check if datafield is required and valid
 // if it's not required, return true, otherwise check if it's valid based on its type and return the result
-function IsValid(field: DataField) {
+function IsValid(field: DataField): boolean {
   if (!field.required) return true;
   switch (field.type) {
     case "text":
@@ -45,6 +45,12 @@ function IsValid(field: DataField) {
       );
     case "boolean":
       return true;
+    case "list":
+    case "group":
+      return field.element.every((field) => IsValid(field));
+    default:
+      const _exhaustive: never = field;
+      return _exhaustive;
   }
 }
 

@@ -20,7 +20,6 @@ import SearchPage from "./pages/SearchPage";
 import { useEffect, useState, useRef } from "react";
 import { ThemeProvider, type Theme } from "@emotion/react";
 import { createTheme } from "@mui/material";
-import { purple } from "@mui/material/colors";
 
 interface Props {
   caller: IApiCaller;
