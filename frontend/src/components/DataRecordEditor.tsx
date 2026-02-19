@@ -1,4 +1,8 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  useSearchParams,
+  type NavigateOptions,
+} from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
@@ -272,6 +276,103 @@ async function LoadDataAndFormat(
   }
 }
 
+async function TryCreateDataSet(
+  type: dataRecordType,
+  toSave: any,
+  caller: IApiCaller,
+) {
+  switch (type) {
+    case "neue-anfrage":
+      return await caller.TryCreateAnfrage(toSave);
+    case "neuer-fall":
+      return await caller.TryCreateFall(toSave);
+  }
+  return {
+    success: false,
+    errorMsg: "Can not create for type: " + type,
+    json: "",
+  };
+}
+
+async function CreateNewDataSet(
+  type: dataRecordType,
+  formatVersion: number,
+  recordToSave: DataRecord,
+  caller: IApiCaller,
+  openSnackbar: (text: string, success: boolean) => void,
+  sleep: (delay: number) => Promise<unknown>,
+  setLast: (id: number, type: dataRecordType) => Promise<void>,
+  navigate: (to: string, options?: NavigateOptions) => void,
+) {
+  if (type !== "neue-anfrage" && type !== "neuer-fall") return false;
+  const bigType = type === "neue-anfrage" ? "Anfrage" : "Fall";
+
+  const formatToSave = DataRecordConverter.ConvertDataRecordToFormat3(
+    bigType,
+    formatVersion,
+    recordToSave,
+  );
+
+  //neue Daten estellen, snackbar öffnen und url ändern
+  const res = await TryCreateDataSet(type, formatToSave, caller);
+  if (res.success) {
+    const saveId = isNaN(Number(res.json["pk"])) ? -1 : Number(res.json["pk"]);
+    openSnackbar(bigType + " erfolgreich gespeichert!", true);
+    await sleep(1500);
+    navigate(`?type=${bigType.toLowerCase()}?id=${saveId}`, { replace: true });
+    await setLast(saveId, type);
+    return true;
+  } else {
+    openSnackbar(bigType + " konnte nicht gespeichert werden!", false);
+    return false;
+  }
+
+  // if (type === "neue-anfrage") {
+  //   const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
+  //     "Anfrage",
+  //     formatVersion,
+  //     recordToSave,
+  //   );
+  //   res = await caller.TryCreateAnfrage(rectosaavejson);
+  //   sucsaved = res.success;
+  //   saveid = Number(res.json["pk"]);
+  //   if (sucsaved === undefined || sucsaved === false) {
+  //     openSnackbar("Anfrage konnte nicht gespeichert werden!", false);
+  //     return { success: false };
+  //   }
+  //   if (sucsaved === true) {
+  //     openSnackbar("Anfrage erfolgreich gespeichert!", true);
+  //     await sleep(1500);
+  //     navigate(`?type=anfrage?id=${saveid}`, { replace: true });
+  //     await setLast(saveid, type);
+  //     return { success: true };
+  //   }
+  //}
+
+  //neuen Fall erstellen, snackbar öffnen und url ändern
+  // if (type === "neuer-fall") {
+  //   const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
+  //     "Fall",
+  //     formatVersion,
+  //     recordToSave,
+  //   );
+  //   res = await caller.TryCreateFall(rectosaavejson);
+  //   sucsaved = res.success;
+  //   saveid = Number(res.json["pk"]);
+  //   if (sucsaved === undefined || sucsaved === false) {
+  //     openSnackbar("Fall konnte nicht gespeichert werden!", false);
+  //     return { success: false };
+  //   }
+  //   if (sucsaved === true) {
+  //     openSnackbar("Fall erfolgreich gespeichert!", true);
+  //     await sleep(1500);
+  //     navigate(`?type=fall?id=${saveid}`, { replace: true });
+  //     await setLast(saveid, type);
+  //     return { success: true };
+  //   }
+  //}
+}
+
 function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   const [searchParams] = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams.get("type"));
@@ -332,36 +433,6 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
         setRecord,
         setFormatVersion,
       );
-      // return;
-      // //Get format
-      // const formatRes = await GetDataFormat(caller, type);
-
-      // if (!formatRes.success) return;
-
-      // const [version, format] = DataRecordConverter.ConvertFormatToDataRecord(
-      //   formatRes.json,
-      // );
-      // setFormatVersion(version);
-
-      // if (type !== "neue-anfrage" && type !== "neuer-fall") {
-      //   //Get data
-      //   const dataRes = await GetData(caller, type, dataRecordId);
-      //   if (!dataRes.success) {
-      //     return;
-      //   }
-      //   //merge data and data
-      //   const datarecord = DataRecordConverter.MergeDataRecordWithData(
-      //     format,
-      //     dataRes.json,
-      //     //dataRes.json["values"],
-      //   );
-
-      //   setRecord(datarecord);
-      //   setLastSavedRecord(structuredClone(datarecord));
-      //   return;
-      // }
-      // setLastSavedRecord(structuredClone(format));
-      // setRecord(format);
     }
     loadData();
   }, [caller, type, dataRecordId]);
@@ -399,51 +470,18 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
       openSnackbar("Strukturänderung erfolgreich gespeichert!", true);
     }
 
-    //neue Anfrage estellen, snackbar öffnen und url ändern
-    if (type === "neue-anfrage") {
-      const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
-        "Anfrage",
-        formatVersion,
-        recordToSave,
-      );
-      res = await caller.TryCreateAnfrage(rectosaavejson);
-      sucsaved = res.success;
-      saveid = Number(res.json["pk"]);
-      if (sucsaved === undefined || sucsaved === false) {
-        openSnackbar("Anfrage konnte nicht gespeichert werden!", false);
-        return { success: false };
-      }
-      if (sucsaved === true) {
-        openSnackbar("Anfrage erfolgreich gespeichert!", true);
-        await sleep(1500);
-        navigate(`?type=anfrage?id=${saveid}`, { replace: true });
-        await setLast(saveid, type);
-        return { success: true };
-      }
-    }
+    CreateNewDataSet(
+      type,
+      formatVersion,
+      recordToSave,
+      caller,
+      openSnackbar,
+      sleep,
+      setLast,
+      navigate,
+    );
 
-    //neuen Fall erstellen, snackbar öffnen und url ändern
-    if (type === "neuer-fall") {
-      const rectosaavejson = DataRecordConverter.ConvertDataRecordToFormat3(
-        "Fall",
-        formatVersion,
-        recordToSave,
-      );
-      res = await caller.TryCreateFall(rectosaavejson);
-      sucsaved = res.success;
-      saveid = Number(res.json["pk"]);
-      if (sucsaved === undefined || sucsaved === false) {
-        openSnackbar("Fall konnte nicht gespeichert werden!", false);
-        return { success: false };
-      }
-      if (sucsaved === true) {
-        openSnackbar("Fall erfolgreich gespeichert!", true);
-        await sleep(1500);
-        navigate(`?type=fall?id=${saveid}`, { replace: true });
-        await setLast(saveid, type);
-        return { success: true };
-      }
-    }
+    navigate("");
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
     if (!savedData) {

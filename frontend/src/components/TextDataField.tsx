@@ -15,7 +15,6 @@ function TextDataField({ textField, isEditMode, onChange, onDelete }: Props) {
   const [value, setValue] = useState(textField.text);
   const [touched, setTouched] = useState(false);
   const isError = touched && value.trim() === "" && textField.required;
-  console.log(touched);
 
   return (
     <Stack direction="row" spacing={2} alignItems="center">
