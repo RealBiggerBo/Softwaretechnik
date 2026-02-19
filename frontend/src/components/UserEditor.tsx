@@ -4,6 +4,8 @@ import type { DataRecord } from "../classes/DataRecord";
 import { useState } from "react";
 import PasswordInput from "./PasswordInput";
 import StyledButton from "./Styledbutton";
+import DialogComponent from "./DialogComponent";
+import type { DialogObject } from "./DialogComponent";
 
 interface Props {
   user: DataRecord;
@@ -56,10 +58,35 @@ function UserEditor({ user, caller, updateData }: Props) {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const dialogDelete: DialogObject = {
+    isOpen: openDeleteDialog,
+    title: "Nutzer löschen?",
+    body: "Wollen Sie diesen Nutzer wirklich löschen?",
+    yes: "Löschen",
+    no: "Abbrechen",
+    yesAction: async () => await deleteUser(),
+    noAction: async () => setOpenDeleteDialog(false),
+  };
 
   function activateSnackbar(msg: string) {
     setOpenSnackbar(true);
     setSnackbarMessage(msg);
+  }
+
+  async function deleteUser() {
+    const res = await caller.DeleteUser(GetUserId(user));
+    updateData();
+    if (res.success) {
+      activateSnackbar("Löschen erfolgreich");
+      setOpenSnackbar(true);
+      setSaveResult(true);
+    } else {
+      activateSnackbar(res.errorMsg);
+      setOpenSnackbar(true);
+      setSaveResult(false);
+    }
   }
 
   return (
@@ -124,17 +151,7 @@ function UserEditor({ user, caller, updateData }: Props) {
         color="error"
         className="passwordChangeSubmitBtn"
         onClick={async () => {
-          const res = await caller.DeleteUser(GetUserId(user));
-          updateData();
-          if (res.success) {
-            activateSnackbar("Löschen erfolgreich");
-            setOpenSnackbar(true);
-            setSaveResult(true);
-          } else {
-            activateSnackbar(res.errorMsg);
-            setOpenSnackbar(true);
-            setSaveResult(false);
-          }
+          setOpenDeleteDialog(true);
         }}
       />
 
@@ -150,6 +167,7 @@ function UserEditor({ user, caller, updateData }: Props) {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      <DialogComponent dialogObject={dialogDelete} />
     </div>
   );
 }

@@ -4,14 +4,6 @@ import type { DataRecord } from "../classes/DataRecord";
 import type { IApiCaller } from "../classes/IApiCaller";
 import AddNewDataField from "./AddNewDataField";
 import { FieldRenderer } from "./Fieldrenderer";
-import {
-  Collapse,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
-import StyledButton from "./Styledbutton";
 import DialogComponent from "./DialogComponent";
 import type { DialogObject } from "./DialogComponent";
 
