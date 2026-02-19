@@ -321,7 +321,6 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-    alert(result);
     return { ...res, json: result };
   }
 
@@ -388,7 +387,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      `/api/data/search/anfrage?id=${id}`,
+      `/api/data/data/anfrage?id=${id}`,
       "GET",
       true,
       undefined,
@@ -406,7 +405,7 @@ export class ApiCaller implements IApiCaller {
     let result: any = null;
 
     const res = await this.SendApiCall(
-      `/api/data/search/fall?id=${id}`,
+      `/api/data/data/fall?id=${id}`,
       "GET",
       true,
       undefined,
@@ -503,7 +502,6 @@ export class ApiCaller implements IApiCaller {
         result = await response.json();
       },
     );
-    alert(JSON.stringify(result));
     return { ...res, json: result };
   }
 
