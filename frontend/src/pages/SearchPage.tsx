@@ -120,6 +120,8 @@ function SearchPage({ caller }: Props) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState(false);
 
+  const bigType = type.charAt(0).toUpperCase() + type.slice(1);
+
   const loadData = async () => {
     const result =
       type == "fall"
@@ -210,9 +212,9 @@ function SearchPage({ caller }: Props) {
                 onClick={() => setOpenDialog(true)}
               />
               <Dialog open={openDialog} onClose={cancelDelete}>
-                <DialogTitle>{type} löschen?</DialogTitle>
+                <DialogTitle>{bigType} löschen?</DialogTitle>
                 <DialogContent>
-                  Möchten Sie {type} {GetIdFromDataRecord(entry)} wirklich
+                  Möchten Sie {bigType} {GetIdFromDataRecord(entry)} wirklich
                   löschen?
                 </DialogContent>
                 <DialogActions>
