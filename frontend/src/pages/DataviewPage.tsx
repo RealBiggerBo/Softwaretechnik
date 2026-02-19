@@ -4,24 +4,15 @@ import DataRecordEditor from "../components/DataRecordEditor";
 
 interface Props {
   caller: IApiCaller;
-  setHasDataChanges: (setHasDataChanges: boolean) => void;
-  setHasFormatChanges: (setHasFormatChanges: boolean) => void;
-  hasDataChanges: boolean;
-  hasFormatChanges: boolean;
+
+  savedData: React.RefObject<boolean>;
+  savedFormat: React.RefObject<boolean>;
 }
 
-function DataviewPage({
-  caller,
-  setHasDataChanges,
-  setHasFormatChanges,
-  hasDataChanges,
-  hasFormatChanges,
-}: Props) {
+function DataviewPage({ caller, hasDataChanges, hasFormatChanges }: Props) {
   return (
     <DataRecordEditor
       caller={caller}
-      setHasDataChanges={setHasDataChanges}
-      setHasFormatChanges={setHasFormatChanges}
       hasDataChanges={hasDataChanges}
       hasFormatChanges={hasFormatChanges}
     />

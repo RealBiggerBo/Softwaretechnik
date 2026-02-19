@@ -17,7 +17,7 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import DataviewPage from "./pages/DataviewPage";
 import SearchPage from "./pages/SearchPage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ThemeProvider, type Theme } from "@emotion/react";
 import { createTheme } from "@mui/material";
 import { purple } from "@mui/material/colors";
@@ -85,8 +85,8 @@ function App({ caller }: Props) {
   const [theme, setTheme] = useState(
     GetColorTheme(useLocation().pathname, useLocation().search),
   );
-  const [hasDataChanges, setHasDataChanges] = useState(false);
-  const [hasFormatChanges, setHasFormatChanges] = useState(false);
+  const savedData = useRef<boolean>(true);
+  const savedFormat = useRef<boolean>(true);
 
   useEffect(() => {
     async function checkLogin() {
@@ -128,11 +128,11 @@ function App({ caller }: Props) {
       <ThemeProvider theme={theme}>
         <Navbar
           caller={caller}
-          hasFormatChanges={hasFormatChanges}
-          hasDataChanges={hasDataChanges}
+          savedData={savedData.current}
+          savedFormat={savedFormat.current}
           resetChangeFlags={() => {
-            setHasDataChanges(false);
-            setHasFormatChanges(false);
+            savedData.current = true;
+            savedFormat.current = true;
           }}
         />
         <Container fixed>
@@ -163,10 +163,8 @@ function App({ caller }: Props) {
                   element={
                     <DataviewPage
                       caller={caller}
-                      setHasFormatChanges={setHasFormatChanges}
-                      setHasDataChanges={setHasDataChanges}
-                      hasDataChanges={hasDataChanges}
-                      hasFormatChanges={hasFormatChanges}
+                      savedData={savedData}
+                      savedFormat={savedFormat}
                     />
                   }
                 />

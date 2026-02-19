@@ -21,17 +21,12 @@ import StyledButton from "./Styledbutton";
 
 interface Props {
   caller: IApiCaller;
-  hasFormatChanges: boolean;
-  hasDataChanges: boolean;
+  savedData: boolean;
+  savedFormat: boolean;
   resetChangeFlags: () => void;
 }
 
-function Navbar({
-  caller,
-  hasDataChanges,
-  hasFormatChanges,
-  resetChangeFlags,
-}: Props) {
+function Navbar({ caller, savedData, savedFormat, resetChangeFlags }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
@@ -77,7 +72,7 @@ function Navbar({
   }, [isLoginPage]);
 
   function checkNavigate(urlstr: string) {
-    const stopNavigate = hasDataChanges || hasFormatChanges;
+    const stopNavigate = !savedData || !savedFormat;
 
     if (!stopNavigate) {
       if (urlstr === "/login") {
