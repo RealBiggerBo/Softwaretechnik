@@ -65,7 +65,7 @@ def datarecord_validation(data):
         field = field_names[field_name]
         field_type = field["type"]
 
-        for attribute in field:
+        for attribute in list(field.keys()):
             if attribute not in ["name", "type", "required", "sensitive", "possibleValues", "element"]:
                 field.pop(attribute)
 
@@ -88,11 +88,11 @@ def datarecord_validation(data):
         
         if "sensitive" not in field:
             raise serializers.ValidationError("Erforderliches Feld, sensitive, wurde nicht übergeben.")
-        elif not isinstance(field["required"], bool):
+        elif not isinstance(field["sensitive"], bool):
             raise serializers.ValidationError("Wert mit falschen Typ für sensitive übergeben. Der richtige Typ ist Boolean.")
         
         if "possibleValues" in field and field_type != "String":
-            field.pop("possibleValue")
+            field.pop("possibleValues")
         
         if field_type == "Group" or field_type == "List":
             if "element" not in field:
