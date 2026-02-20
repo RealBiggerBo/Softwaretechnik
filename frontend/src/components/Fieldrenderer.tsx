@@ -110,6 +110,7 @@ function GetFieldComponent(
           onChange={onChange}
           setOpenDialog={setOpenDialog}
           onAdd={onAdd}
+          maxId={maxId}
         />
       );
     default:

@@ -25,6 +25,7 @@ import {
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DialogComponent from "../components/DialogComponent";
+import { jsx } from "react/jsx-runtime";
 
 interface Props {
   caller: IApiCaller;
@@ -73,6 +74,8 @@ async function Search(
   setSearchResult: (recordds: DataRecord[]) => void,
   caller: IApiCaller,
 ) {
+  console.log(formats);
+  console.log(formatVersion);
   let res;
   if (type == "Fall")
     res = await caller.TrySearchFall(
@@ -91,7 +94,9 @@ async function Search(
   //Convert res.searchResult to Record<string, unknown>[]
 
   //merge with current format
-
+  console.log(
+    "DAS HIER WILLST DU SEHEN::::" + JSON.stringify(res.searchResult),
+  );
   const values: DataRecord[] =
     DataRecordConverter.ConvertSearchResultToDataRecord(
       res.searchResult,
@@ -292,7 +297,8 @@ function SearchPage({ caller }: Props) {
         </Collapse>
         <StyledButton
           text="Suchen"
-          onClick={async () =>
+          onClick={async () => {
+            console.log("vor suche");
             await Search(
               type,
               options,
@@ -300,8 +306,9 @@ function SearchPage({ caller }: Props) {
               selectedFormatVersion ? selectedFormatVersion : -1,
               setSearchResult,
               caller,
-            )
-          }
+            );
+            console.log("nach such");
+          }}
         />
         <DataRecordList
           data={searchResult}

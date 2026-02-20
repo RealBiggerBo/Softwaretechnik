@@ -12,6 +12,7 @@ interface Props {
   onChange: (field: DataField) => void;
   setOpenDialog: (showDialog: boolean) => void;
   onAdd: (fieldToAdd: DataField) => void;
+  maxId: number;
 }
 
 function GroupDataField({
@@ -21,6 +22,7 @@ function GroupDataField({
   onChange,
   setOpenDialog,
   //nAdd,
+  maxId,
 }: Props) {
   function handleAddField() {}
 
@@ -57,14 +59,17 @@ function GroupDataField({
         {isEditMode && (
           <AddNewDataField
             isEditMode={isEditMode}
-            addNewField={(toAdd) =>
+            addNewField={(toAdd) => {
+              const fieldToAdd: DataField = { ...toAdd, id: maxId + 1 };
+              console.log("Added new dataField in List with id: " + maxId + 1);
+
               onChange({
                 ...groupField,
                 element: {
                   dataFields: [...groupField.element.dataFields, toAdd],
                 },
-              })
-            }
+              });
+            }}
           />
         )}
       </Stack>
