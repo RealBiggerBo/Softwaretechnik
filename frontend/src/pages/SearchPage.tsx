@@ -14,10 +14,12 @@ import DataRecordList from "../components/DataRecordList";
 import StyledButton from "../components/Styledbutton";
 import {
   Alert,
+  Autocomplete,
   Collapse,
   IconButton,
   Snackbar,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -47,11 +49,11 @@ function GetDefaultFilterOptions(
 
 function UpdateOptions(
   options: UiItem<FilterOption>[],
-  toUpdate: UiItem<FilterOption>,
+  idToUpdate: string,
   newOption: UiItem<FilterOption>,
 ): UiItem<FilterOption>[] {
   return options.map((uiOption) =>
-    uiOption.id === toUpdate.id ? newOption : uiOption,
+    uiOption.id === idToUpdate ? newOption : uiOption,
   );
 }
 
@@ -59,16 +61,14 @@ function AddNewOption(options: UiItem<FilterOption>[]) {
   return [...options, ToUiItem<FilterOption>({ type: "Empty", fieldId: -1 })];
 }
 
-function RemoveOption(
-  options: UiItem<FilterOption>[],
-  optionToRemove: UiItem<FilterOption>,
-) {
-  return options.filter((uiOption) => uiOption.value !== optionToRemove.value);
+function RemoveOption(options: UiItem<FilterOption>[], optionId: string) {
+  return options.filter((uiOption) => uiOption.id !== optionId);
 }
 
 async function Search(
   type: "Fall" | "Anfrage",
   options: UiItem<FilterOption>[],
+  formatVersion: number,
   setSearchResult: (recordds: DataRecord[]) => void,
   caller: IApiCaller,
 ) {
@@ -79,6 +79,7 @@ async function Search(
     res = await caller.TrySearchAnfrage(
       options.map((uiOption) => uiOption.value),
     );
+  console.log(res);
 
   const values: DataRecord[] =
     DataRecordConverter.ConvertSearchResultToDataRecord(res.searchResult);
@@ -109,11 +110,25 @@ function NavigateToDataPage(
   );
 }
 
+function GetCurrentSelectedFormat(
+  formats: [number, DataRecord][],
+  formatVersion: number,
+): DataRecord {
+  const fittingFiltes = formats.filter((format) => format[0] == formatVersion);
+
+  if (fittingFiltes.length >= 1) return fittingFiltes[0][1];
+  return { dataFields: [] };
+}
+
 function SearchPage({ caller }: Props) {
   const navigate = useNavigate();
   const type: "Anfrage" | "Fall" = GetType(useSearchParams()[0].get("type"));
   const [options, setOptions] = useState(GetDefaultFilterOptions(type));
-  const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
+  //const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
+  const [formats, setFormats] = useState<[number, DataRecord][]>([]);
+  const [selectedFormatVersion, setSelectedFormatVersion] = useState<
+    number | undefined
+  >(undefined);
   const [searchResult, setSearchResult] = useState<DataRecord[]>([]);
   const [isExpanded, setIsExpanded] = useState(true);
   const [dialogObject, setDialogObject] = useState({
@@ -129,21 +144,26 @@ function SearchPage({ caller }: Props) {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [saveResult, setSaveResult] = useState(false);
 
-  const loadFormat = async () => {
-    const result =
-      type == "Fall"
-        ? await caller.GetFallJson()
-        : await caller.GetAnfrageJson();
+  const loadFormats = async () => {
+    const smallType = type == "Anfrage" ? "anfrage" : "fall";
+    const result = await caller.GetExistingDataFormats(smallType);
 
-    setFormat(DataRecordConverter.ConvertFormatToDataRecord(result.json)[1]);
+    const formats = DataRecordConverter.ConvertToFormatCollection(
+      result.formats,
+    );
+    setFormats(formats);
+    if (formats.length >= 1)
+      setSelectedFormatVersion(formats[formats.length - 1][0]);
+    else setSelectedFormatVersion(undefined);
   };
   useEffect(() => {
-    loadFormat();
+    loadFormats();
   }, [caller, type]);
 
   async function DeleteDataRecord(
     type: "Fall" | "Anfrage",
     entry: DataRecord,
+    formatVersion: number,
     caller: IApiCaller,
   ) {
     let res;
@@ -158,7 +178,7 @@ function SearchPage({ caller }: Props) {
       activateSnackbar(res.errorMsg);
       setSaveResult(false);
     }
-    await Search(type, options, setSearchResult, caller);
+    await Search(type, options, formatVersion, setSearchResult, caller);
   }
 
   function activateSnackbar(msg: string) {
@@ -169,6 +189,7 @@ function SearchPage({ caller }: Props) {
   function OpenDialogObject(
     type: "Fall" | "Anfrage",
     entry: DataRecord,
+    formatVersion: number,
     caller: IApiCaller,
   ) {
     const id = GetIdFromDataRecord(entry);
@@ -177,7 +198,7 @@ function SearchPage({ caller }: Props) {
     const yes = "Löschen";
     const no = "Abbrechen";
     const yesAction = async () => {
-      await DeleteDataRecord(type, entry, caller);
+      await DeleteDataRecord(type, entry, formatVersion, caller);
       await CloseDialogObject();
     };
 
@@ -209,16 +230,37 @@ function SearchPage({ caller }: Props) {
           <Typography variant="h5">Suchfilter</Typography>
         </Stack>
         <Collapse in={isExpanded}>
+          <Autocomplete
+            value={
+              selectedFormatVersion ? selectedFormatVersion.toString() : ""
+            }
+            options={formats.map((formats) => formats[0].toString())}
+            onChange={(_, newValue) =>
+              setSelectedFormatVersion(
+                newValue
+                  ? isNaN(Number(newValue))
+                    ? undefined
+                    : Number(newValue)
+                  : undefined,
+              )
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Formatversion auswählen" />
+            )}
+          ></Autocomplete>
           <FilterOptionList
-            format={format}
+            format={GetCurrentSelectedFormat(
+              formats,
+              selectedFormatVersion ? selectedFormatVersion : -1,
+            )}
             filterOptions={options}
             addText="Neuer Suchfilter"
             removeText="Löschen"
-            updateFilterOption={(toUpdate, newOption) =>
+            updateFilterOptionById={(toUpdate, newOption) =>
               setOptions(UpdateOptions(options, toUpdate, newOption))
             }
             addNewFilterOption={() => setOptions(AddNewOption(options))}
-            removeFilterOption={(toRemove) =>
+            removeFilterOptionById={(toRemove) =>
               setOptions(RemoveOption(options, toRemove))
             }
           />
@@ -227,7 +269,13 @@ function SearchPage({ caller }: Props) {
         <StyledButton
           text="Suchen"
           onClick={async () =>
-            await Search(type, options, setSearchResult, caller)
+            await Search(
+              type,
+              options,
+              selectedFormatVersion ? selectedFormatVersion : -1,
+              setSearchResult,
+              caller,
+            )
           }
         />
         <DataRecordList
@@ -242,7 +290,14 @@ function SearchPage({ caller }: Props) {
                 <StyledButton
                   color="error"
                   text="Löschen"
-                  onClick={() => OpenDialogObject(type, entry, caller)}
+                  onClick={() =>
+                    OpenDialogObject(
+                      type,
+                      entry,
+                      selectedFormatVersion ? selectedFormatVersion : -1,
+                      caller,
+                    )
+                  }
                 />
                 <Snackbar
                   open={openSnackbar}
