@@ -403,7 +403,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
     );
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
-    if (!savedData) {
+    if (!savedData.current) {
       if (
         (await UpdateDataRecord(
           type,
