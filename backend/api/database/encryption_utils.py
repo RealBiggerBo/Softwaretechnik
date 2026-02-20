@@ -88,24 +88,27 @@ def get_sensitive_fields(data_record_type, id=None):
 
 def decrypt_sensitive_fields(data_dict, sensitive_keys):
     """
-    Debug: Ersetzt alle sensiblen Felder rekursiv mit "hello".
+    Debug: Ersetzt alle sensiblen Felder rekursiv mit 'hello'.
+    Funktioniert auch für verschachtelte Dicts und Listen.
     """
-    result = {}
-    for k, v in data_dict.items():
-        full_key = str(k)
-        if isinstance(v, dict):
-            # Alle Keys, die unter diesem verschachtelten Dict liegen
-            nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
-            result[k] = decrypt_sensitive_fields(v, nested_keys)
-        elif isinstance(v, list):
-            # Liste durchlaufen, falls Listenelemente verschachtelte dicts sind
-            result[k] = [
-                decrypt_sensitive_fields(item, sensitive_keys) if isinstance(item, dict) else item
-                for item in v
-            ]
-        elif full_key in sensitive_keys:
-            # DEBUG: Hello setzen
-            result[k] = "hello"
-        else:
-            result[k] = v
-    return result
+    if isinstance(data_dict, dict):
+        result = {}
+        for k, v in data_dict.items():
+            full_key = str(k)
+            # Prüfen, ob der Key selbst sensibel ist
+            if full_key in sensitive_keys:
+                result[k] = "hello"
+            # Dict rekursiv prüfen
+            elif isinstance(v, dict):
+                nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
+                result[k] = decrypt_sensitive_fields(v, nested_keys)
+            # Liste rekursiv prüfen
+            elif isinstance(v, list):
+                result[k] = [decrypt_sensitive_fields(item, sensitive_keys) if isinstance(item, dict) else item for item in v]
+            else:
+                result[k] = v
+        return result
+    elif isinstance(data_dict, list):
+        return [decrypt_sensitive_fields(item, sensitive_keys) if isinstance(item, dict) else item for item in data_dict]
+    else:
+        return data_dict
