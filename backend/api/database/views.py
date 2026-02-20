@@ -149,6 +149,7 @@ def dataset_validation(structure, values):
             "Boolean": bool,
             "Date": str,
             "Integer": int,
+            "Group": object,
             "List": list,
             "String": str
         }
@@ -169,6 +170,8 @@ def dataset_validation(structure, values):
                                                 value[5:7].isdigit() and
                                                 value[8:].isdigit()):
                 raise serializers.ValidationError(f"Date-Wert in falschem Format übergeben. Das richtige Format ist YYYY-MM-DD.")
+            if field_type == "Group":
+                dataset_validation(field["element"], value)
             if field_type == "List":
                 for element in value:
                     dataset_validation(field["element"], element)
