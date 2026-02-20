@@ -7,7 +7,7 @@ import type { IApiCaller } from "../classes/IApiCaller";
 import { useCallback, useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
-import { Alert, Fab, Snackbar } from "@mui/material";
+import { Alert, CircularProgress, Fab, Snackbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import type { DataField } from "../classes/DataField";
 import DataRecordDisplay from "./DataRecordDisplay";
@@ -315,6 +315,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   const [openFieldDialog, setOpenFieldDialog] = useState(false);
   const [openIdDialog, setOpenIdDialog] = useState(false);
   const [msgID, setMsgID] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -362,9 +363,13 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
   useEffect(() => {
     async function loadData() {
+      setIsLoading(true);
       //check login status
       const role = await GetRole(caller);
-      if (!role) return;
+      if (!role) {
+        setIsLoading(false);
+        return;
+      }
       setRole(role);
       console.log(urlid.current);
       await LoadDataAndFormat(
@@ -376,6 +381,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
         setMsgID,
         setOpenIdDialog,
       );
+      setIsLoading(false);
     }
     loadData();
   }, [caller, type, urlid.current]);
@@ -593,78 +599,91 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
   return (
     <div>
-      <h1>
-        {(type == "anfrage" ||
-          type == "letzte-anfrage" ||
-          type == "neue-anfrage") &&
-          "Anfrageansicht"}
-        {(type == "fall" || type == "letzter-fall" || type == "neuer-fall") &&
-          "Fallansicht"}
-      </h1>
-      {role && role !== "base_user" && (
-        <Fab
-          color="primary"
-          aria-label="edit"
-          size="small"
-          style={{ float: "right" }}
-          onClick={() => setIsEditMode(!isEditMode)}
+      {isLoading && (
+        <div
+          style={{ display: "flex", justifyContent: "center", padding: "50px" }}
         >
-          <EditIcon />
-        </Fab>
+          <CircularProgress />
+        </div>
       )}
-      <br />
-      <DataRecordDisplay
-        record={record}
-        displayEditButtons={role !== null && role !== "base_user"}
-        isEditMode={isEditMode}
-        caller={caller}
-        onChange={handleRecordChange}
-      />
-      <br />
-      {deletable() && (
-        <StyledButton
-          text="Datensatz löschen"
-          color="error"
-          onClick={() => {
-            setOpenDeleteDialog(true);
-            setmg("Wollen Sie diesen Datensatz wirklich löschen?");
-          }}
-        />
+      {!isLoading && (
+        <>
+          <h1>
+            {(type == "anfrage" ||
+              type == "letzte-anfrage" ||
+              type == "neue-anfrage") &&
+              "Anfrageansicht"}
+            {(type == "fall" ||
+              type == "letzter-fall" ||
+              type == "neuer-fall") &&
+              "Fallansicht"}
+          </h1>
+          {role && role !== "base_user" && (
+            <Fab
+              color="primary"
+              aria-label="edit"
+              size="small"
+              style={{ float: "right" }}
+              onClick={() => setIsEditMode(!isEditMode)}
+            >
+              <EditIcon />
+            </Fab>
+          )}
+          <br />
+          <DataRecordDisplay
+            record={record}
+            displayEditButtons={role !== null && role !== "base_user"}
+            isEditMode={isEditMode}
+            caller={caller}
+            onChange={handleRecordChange}
+          />
+          <br />
+          {deletable() && (
+            <StyledButton
+              text="Datensatz löschen"
+              color="error"
+              onClick={() => {
+                setOpenDeleteDialog(true);
+                setmg("Wollen Sie diesen Datensatz wirklich löschen?");
+              }}
+            />
+          )}
+          <StyledButton
+            text="Speichern"
+            onClick={async () => {
+              // if (urlid.current === null) {
+              //   return;
+              // }
+              await handleSave(
+                type,
+                urlid.current,
+                record,
+                lastSavedRecord,
+                caller,
+                setLastSavedRecord,
+              );
+            }}
+          />
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={3000}
+            onClose={() => setSnackbarOpen(false)}
+          >
+            <Alert
+              severity={saveResult ? "success" : "error"}
+              onClose={() => setSnackbarOpen(false)}
+            >
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
+          {/*Dialog zum record löschen */}
+          <DialogComponent dialogObject={dialogDelete} />
+          {/*Dialog für feld meldung */}
+          <DialogComponent dialogObject={dialogField} />
+          {/*Dialog für ID nicht gefunden bzw Format konnte nicht geladen werden */}
+          <DialogComponent dialogObject={dialogID} />
+        </>
       )}
-      <StyledButton
-        text="Speichern"
-        onClick={async () => {
-          // if (urlid.current === null) {
-          //   return;
-          // }
-          await handleSave(
-            type,
-            urlid.current,
-            record,
-            lastSavedRecord,
-            caller,
-            setLastSavedRecord,
-          );
-        }}
-      />
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert
-          severity={saveResult ? "success" : "error"}
-          onClose={() => setSnackbarOpen(false)}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-      {/*Dialog zum record löschen */}
-      <DialogComponent dialogObject={dialogDelete} />
-      {/*Dialog für feld meldung */}
-      <DialogComponent dialogObject={dialogField} />
-      {/*Dialog für ID nicht gefunden bzw Format konnte nicht geladen werden */}
-      <DialogComponent dialogObject={dialogID} />
     </div>
   );
 }
