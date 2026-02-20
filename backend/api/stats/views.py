@@ -143,6 +143,12 @@ def presets_export(request: HttpRequest):
     - POST /api/stats/presets/export → JSON {download_url, filename}
     - GET  /api/stats/presets/export?format=CSV|XLSX|PDF&preset_title=... → Datei streamen
     PDF: unformatierter Text (Semikolon-separiert), eine Zeile pro Datensatz
+
+    Erweiterung:
+    - POST akzeptiert zwei Varianten:
+      (A) {PresetTitle, FileFormat}  -> export aus gespeichertem Preset (kurzer Downloadlink)
+      (B) Presetformat direkt im Body (enthält z.B. Queries/GlobalFilterOptions/globalRecordType) + FileFormat
+          -> token-basierter Downloadlink: /api/stats/presets/export?format=CSV&token=...
     """
     # POST → Link zurückgeben
     if request.method == "POST":
@@ -160,7 +166,32 @@ def presets_export(request: HttpRequest):
         if fmt is None:
             return JsonResponse({"error": "Ungültiges Format. Erlaubt: CSV, XLSX, PDF"}, status=400)
 
-        download_url, filename = _build_download_link_by_title(preset_title.strip(), fmt)
+        # Heuristik: wenn Body ein Presetformat enthält, nutzen wir token-basierten Export
+        # (Presetformat i.d.R. hat "Queries" (List) und optional "GlobalFilterOptions"/"globalRecordType")
+        has_preset_format = isinstance(body.get("Queries"), list) or isinstance(body.get("queries"), list)
+
+        # (A) Nur Titel-Export (wie zuvor)
+        if not has_preset_format:
+            download_url, filename = _build_download_link_by_title(preset_title.strip(), fmt)
+            return JsonResponse({"download_url": download_url, "filename": filename}, status=200)
+
+        # (B) Presetformat-Export via Token (URL bleibt kurz)
+        try:
+            # token erzeugen und payload in cache legen (TTL)
+            from django.core.cache import cache
+            import secrets
+
+            token = secrets.token_urlsafe(24)
+            cache_key = f"stats_export:{token}"
+
+            # Payload genau so ablegen wie geliefert (damit bestehende Exportlogik unverändert bleibt)
+            # (FileFormat wird nicht benötigt, aber schadet nicht – Export nutzt fmt aus Query)
+            cache.set(cache_key, body, timeout=10 * 60)  # 10 Minuten gültig
+        except Exception:
+            return JsonResponse({"error": "Export-Token konnte nicht erstellt werden."}, status=500)
+
+        filename = f"{slugify(preset_title.strip())}.{fmt}"
+        download_url = f"/api/stats/presets/export?format={fmt.upper()}&token={token}"
         return JsonResponse({"download_url": download_url, "filename": filename}, status=200)
 
     # GET → Datei streamen
@@ -172,8 +203,25 @@ def presets_export(request: HttpRequest):
     payload: Optional[Dict[str, Any]] = None
     preset_title = request.GET.get("preset_title")
     payload_b64 = request.GET.get("payload_b64")
+    token = request.GET.get("token")
 
-    if payload_b64:
+    # Token hat Priorität (neuer Weg)
+    if token:
+        try:
+            from django.core.cache import cache
+            cache_key = f"stats_export:{token}"
+            cached = cache.get(cache_key)
+            if cached is None:
+                return HttpResponse("Token ungültig oder abgelaufen.", status=404, content_type="text/plain")
+            if not isinstance(cached, dict):
+                return HttpResponse("Token payload ist ungültig.", status=400, content_type="text/plain")
+            payload = cached
+            # optional: one-time token (nach erstem Download löschen)
+            cache.delete(cache_key)
+        except Exception:
+            return HttpResponse("Token konnte nicht geladen werden.", status=500, content_type="text/plain")
+
+    elif payload_b64:
         try:
             payload_json = _b64_urlsafe_decode(payload_b64)
             payload = json.loads(payload_json)
@@ -189,7 +237,7 @@ def presets_export(request: HttpRequest):
         except Exception:
             return HttpResponse("Preset nicht gefunden.", status=404, content_type="text/plain")
     else:
-        return HttpResponse("Erforderlich: preset_title oder payload_b64.", status=400, content_type="text/plain")
+        return HttpResponse("Erforderlich: preset_title oder payload_b64 oder token.", status=400, content_type="text/plain")
 
     if (rt := payload.get("globalRecordType")) is not None and rt not in ALLOWED_RECORD_TYPES:
         return HttpResponse(f"Ungültiger globalRecordType '{rt}'.", status=400, content_type="text/plain")
@@ -219,7 +267,7 @@ def presets_export(request: HttpRequest):
 
         record_global_filters = [
             gf for gf in global_filters
-            if isinstance(gf.get("id"), int) and id_to_field(record_type, gf["id"], maps)
+            if isinstance(gf.get("fieldId"), int) and id_to_field(record_type, gf["fieldId"], maps)
         ]
 
         recs = filter_records_for(record_type, record_global_filters, qfilters, maps)
