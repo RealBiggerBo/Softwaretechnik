@@ -236,9 +236,25 @@ export class DataRecordConverter {
       this.normalizeInput(searchResult);
     console.log(results);
 
-    return results.map((result) =>
-      this.MergeDataRecordWithData(format, result),
-    ); // results.map((record) => this.GetDataRecord(record));
+    // return results.map((result) =>
+    //   this.MergeDataRecordWithData(format, result),
+    // );
+    return results.map((record) => {
+      const convertedRecord = this.GetDataRecord(record);
+      const idFields: DataField[] = convertedRecord.dataFields.map((f) => {
+        //get fields where id == f.name
+        const fs = format.dataFields.filter(
+          (field) => field.id.toString() == f.name,
+        );
+
+        if (fs.length >= 1) return { ...f, name: fs[0].name };
+        return f;
+      });
+      console.log("REOCRD");
+      console.log(convertedRecord);
+
+      return { dataFields: idFields };
+    });
   }
 
   //tries to convert any input to arrays of records
