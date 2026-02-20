@@ -1,14 +1,5 @@
-import { useState } from "react";
-import {
-  type DataField,
-  type GroupField,
-  type ListField,
-} from "../classes/DataField";
+import { type DataField, type GroupField } from "../classes/DataField";
 import { Stack, TextField as Tf } from "@mui/material";
-import AddFieldInList from "./AddFieldInList";
-import AddNewDataField from "./AddNewDataField";
-import StyledButton from "./Styledbutton";
-import { FieldRenderer } from "./Fieldrenderer";
 import { memo } from "react";
 import DataRecordDisplay from "./DataRecordDisplay";
 import type { IApiCaller } from "../classes/IApiCaller";

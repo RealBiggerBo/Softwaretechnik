@@ -173,6 +173,10 @@ export class DataRecordConverter {
     dataRecord: DataRecord,
     keyValueRecord: Record<string, unknown>,
   ): DataRecord {
+    console.log("merging: ");
+    console.log(dataRecord);
+    console.log(keyValueRecord);
+
     return {
       dataFields: Object.entries(keyValueRecord).map(
         ([fieldId, fieldValue]) => {
@@ -183,11 +187,12 @@ export class DataRecordConverter {
 
           if (fittingFields.length < 1)
             console.log(
-              "No matching field found in format. Could not find: " + fieldId,
+              "No matching field found in format. Could not find id: " +
+                fieldId,
             );
           if (fittingFields.length > 1)
             console.log(
-              "Too many fields found in format. Searched for: " + fieldId,
+              "Too many fields found in format. Searched for id: " + fieldId,
             );
           return this.MergeFieldWithValue(fittingFields[0], fieldValue);
         },
@@ -221,10 +226,19 @@ export class DataRecordConverter {
 
   public static ConvertSearchResultToDataRecord(
     searchResult: unknown,
+    format: DataRecord,
   ): DataRecord[] {
-    const results: Record<string, any>[] = this.normalizeInput(searchResult);
+    if (!Array.isArray(searchResult)) return [];
 
-    return results.map((record) => this.GetDataRecord(record));
+    console.log("converted: ");
+
+    const results: Record<string, unknown>[] =
+      this.normalizeInput(searchResult);
+    console.log(results);
+
+    return results.map((result) =>
+      this.MergeDataRecordWithData(format, result),
+    ); // results.map((record) => this.GetDataRecord(record));
   }
 
   //tries to convert any input to arrays of records
@@ -245,14 +259,18 @@ export class DataRecordConverter {
   private static GetDataRecord(record: Record<string, any>): DataRecord {
     return {
       dataFields: Object.entries(record).map(([key, value], index) => {
+        let text = value as string;
+        if (typeof value === "object") {
+          text = value.toString();
+        }
+
         return {
           type: "text",
           name: key,
-          text: value as string,
+          text: text,
           id: index,
           required: true,
           sensitive: true,
-          maxLength: -1,
         };
       }),
     };

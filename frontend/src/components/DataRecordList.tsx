@@ -21,6 +21,8 @@ interface Props {
 }
 
 function GetFieldValue(field: DataField): ReactNode {
+  console.log(field);
+
   switch (field.type) {
     case "text":
       return field.text;
@@ -33,7 +35,7 @@ function GetFieldValue(field: DataField): ReactNode {
     case "enum":
       return field.possibleValues?.join(", ");
     default:
-      return null;
+      return "NULL";
   }
 }
 
@@ -87,6 +89,7 @@ function DataRecordList({ data, mapEntry, mapField }: Props) {
                     const mappedValue = mapField ? mapField(field) : null;
                     return (
                       <TableCell key={field.id}>
+                        {/* Test */}
                         {mappedValue ? mappedValue : GetFieldValue(field)}
                       </TableCell>
                     );

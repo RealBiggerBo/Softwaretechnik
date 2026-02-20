@@ -30,6 +30,8 @@ function AddNewField(record: DataRecord, newField: DataField): DataRecord {
     ...newField,
     id,
   };
+  console.log("Added with id: " + id);
+
   return { ...record, dataFields: [...record.dataFields, fieldWithId] };
 }
 
@@ -140,10 +142,7 @@ function DataRecordDisplay({
         </div>
       ))}
       {displayEditButtons && (
-        <AddNewDataField
-          isEditMode={isEditMode}
-          addNewField={handleAddField}
-        />
+        <AddNewDataField isEditMode={isEditMode} addNewField={handleAddField} />
       )}
 
       <DialogComponent dialogObject={dialogDelete} />
