@@ -30,8 +30,7 @@ Passwort:
    - Windows PowerShell: `python -m venv venv; .\venv\Scripts\Activate.ps1` (Bei Fehler vorher: `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`(permanent); `powershell -ExecutionPolicy Bypass`(temporär) ausführen)
 3. Abhängigkeiten installieren: `pip install -r requirements.txt`
 4. Datenbank migrieren (legt SQLite-DB an/aktualisiert sie): `python manage.py migrate`
-5. Erstellen der Rollen `python manage.py create_roles` (aktuell noch manuell, später wahrscheinlich als script)
-6. Entwicklung starten: `python manage.py runserver` (läuft unter http://127.0.0.1:8000)
+5. Entwicklung starten: `python manage.py runserver` (läuft unter http://127.0.0.1:8000)
 
 ## Frontend (Vite + React)
 
