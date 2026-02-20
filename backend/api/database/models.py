@@ -10,6 +10,7 @@ class Anfrage(models.Model):
     """
 
     structure = models.JSONField()
+    version = models.IntegerField(default=1)
 
 class Fall(models.Model):
     """
@@ -17,7 +18,8 @@ class Fall(models.Model):
     """
 
     structure = models.JSONField()
-
+    version = models.IntegerField(default=1)
+    
 class DataRecord(models.TextChoices):
     ANFRAGE = "Anfrage", "Anfrage"
     FALL = "Fall", "Fall"
