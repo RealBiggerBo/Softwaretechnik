@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class AnfrageSerializer(serializers.ModelSerializer):
     values = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Anfrage
         fields = ["pk",
@@ -45,18 +45,16 @@ class FallSerializer(serializers.ModelSerializer):
         return datarecord_validation(data)
 
 class DataSetSerializer(serializers.ModelSerializer):
-    # writeable für POST/PUT
-    values = serializers.JSONField() 
 
-    # read-only für GET
+    values = serializers.JSONField()
     decrypted_values = serializers.SerializerMethodField()
+    
     class Meta:
         model = DataSet
         fields = ["pk",
                     "data_record",
                     "version",
-                    "values",
-                    "decrypted_values"]
+                    "values"]
         
     def get_decrypted_values(self, obj):
       return obj.get_decrypted_values()

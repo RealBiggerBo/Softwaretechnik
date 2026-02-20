@@ -100,50 +100,92 @@ class DataAPI(APIView):
         serializer.save()
         return Response(serializer.data)
 
+# class DataRecordAPI(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, type):
+#         """
+#         Gibt die Struktur eines DataRecords zurück.
+#         """
+
+#         id = request.GET.get("id", None)
+#         type_lower = type.lower()
+
+#         # Daten aus dem passenden Model holen
+#         if type_lower == "anfrage":
+#             try:
+#                 record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
+#             except Anfrage.DoesNotExist:
+#                 return Response({"error": "Anfrage nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+#         elif type_lower == "fall":
+#             try:
+#                 record = Fall.objects.get(pk=id) if id else Fall.objects.last()
+#             except Fall.DoesNotExist:
+#                 return Response({"error": "Fall nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+#         else:
+#             return Response({"error": "Ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # Serializer auf das Model anwenden
+#         serializer = AnfrageSerializer(record) if type_lower == "anfrage" else FallSerializer(record)
+#         serializer_data = serializer.data  # hier sind die Werte noch verschlüsselt
+
+#         # Sensible Felder ermitteln (Modelname groß)
+#         model_name = "Anfrage" if type_lower == "anfrage" else "Fall"
+#         sensitive_keys = get_sensitive_fields(model_name, id)
+
+#         # Entschlüsseln
+#         encrypted_values = getattr(record, "values", None) or {}
+#         decrypted_values = decrypt_sensitive_fields(encrypted_values, sensitive_keys)
+
+#         # Neues Dict für Response
+#         response_data = {
+#             "pk": serializer_data.get("pk"),
+#             "data_record": type_lower.capitalize(),
+#             "structure": serializer_data.get("structure"),
+#             "values": decrypted_values
+#         }
+
+#         return Response(response_data, status=status.HTTP_200_OK)
+
 class DataRecordAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, type):
-        """
-        Gibt die Struktur eines DataRecords zurück.
-        """
-
-        id = request.GET.get("id", None)
+        id = request.GET.get("id")
         type_lower = type.lower()
 
-        # Daten aus dem passenden Model holen
-        if type_lower == "anfrage":
-            try:
-                record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
-            except Anfrage.DoesNotExist:
-                return Response({"error": "Anfrage nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
-        elif type_lower == "fall":
-            try:
-                record = Fall.objects.get(pk=id) if id else Fall.objects.last()
-            except Fall.DoesNotExist:
-                return Response({"error": "Fall nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response({"error": "Ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
+        if type_lower not in ["anfrage", "fall"]:
+            return Response({"error": "Ungültiger Typ"}, status=400)
 
-        # Serializer auf das Model anwenden
-        serializer = AnfrageSerializer(record) if type_lower == "anfrage" else FallSerializer(record)
-        serializer_data = serializer.data  # hier sind die Werte noch verschlüsselt
+        # 1️⃣ Struktur holen
+        Model = Anfrage if type_lower == "anfrage" else Fall
+        try:
+            structure_record = Model.objects.get(pk=id) if id else Model.objects.last()
+        except Model.DoesNotExist:
+            return Response({"error": "Record nicht gefunden"}, status=404)
 
-        # Sensible Felder ermitteln (Modelname groß)
-        model_name = "Anfrage" if type_lower == "anfrage" else "Fall"
-        sensitive_keys = get_sensitive_fields(model_name, id)
+        # 2️⃣ DataSet holen (die Werte!)
+        dataset = DataSet.objects.filter(
+            data_record=structure_record.__class__.__name__,
+            version=structure_record.pk
+        ).last()
 
-        # Entschlüsseln
-        decrypted_values = decrypt_sensitive_fields(serializer_data.get("values") or {}, sensitive_keys)
+        encrypted_values = dataset.values if dataset else {}
 
-        # Neues Dict für Response
-        response_data = {
-            "pk": serializer_data.get("pk"),
-            "structure": serializer_data.get("structure"),
+        # 3️⃣ Entschlüsseln
+        sensitive_keys = get_sensitive_fields(
+            structure_record.__class__.__name__,
+            structure_record.pk
+        )
+
+        decrypted_values = decrypt_sensitive_fields(encrypted_values, sensitive_keys)
+
+        return Response({
+            "pk": structure_record.pk,
+            "data_record": structure_record.__class__.__name__,
+            "structure": structure_record.structure,
             "values": decrypted_values
-        }
-
-        return Response(response_data, status=status.HTTP_200_OK)
+        })
 
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
