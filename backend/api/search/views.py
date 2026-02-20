@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from api.stats.utils import id_to_field, get_dataset_qs, normalize_values, build_id_to_field_maps
+from api.stats.utils import id_to_field, get_dataset_qs, normalize_values, build_id_to_field_maps, records_match_filters
 
 ALLOWED_RECORD_TYPES = {"Anfrage", "Fall"}
 
@@ -14,6 +14,17 @@ def _as_date_str(s: Any) -> Optional[str]:
     if isinstance(s, str) and len(s) == 10:
         return s
     return None
+
+def _month_day_str(s: Any) -> Optional[str]:
+    if not isinstance(s, str):
+        return None
+    s = s.strip()
+    if len(s) == 10 and s[4] == "-" and s[7] == "-":
+        return s[5:]
+    if len(s) == 5 and s[2] == "-":
+        return s
+    return None
+
 
 def _parse_iso_date(s: str) -> Optional[datetime]:
     try:
@@ -76,14 +87,31 @@ def _matches_single_filter(values: Dict[Any, Any], record_type: str, f: Dict[str
         return isinstance(val, int) and mn <= val <= mx
 
     if ftype == "DateValueFilter":
-        v = _as_date_str(val)
-        return v is not None and v == f.get("value")
+        include_year = f.get("includeYear", True)
+        if include_year:
+            v = _as_date_str(val)
+            return v is not None and v == f.get("value")
+        else:
+            v_md = _month_day_str(val)
+            tgt_md = _month_day_str(f.get("value"))
+            return v_md is not None and tgt_md is not None and v_md == tgt_md
 
     if ftype == "DateRangeFilter":
-        v = _as_date_str(val)
-        min_v = f.get("minValue")
-        max_v = f.get("maxValue")
-        return v is not None and isinstance(min_v, str) and isinstance(max_v, str) and (min_v <= v <= max_v)
+        include_year = f.get("includeYear", True)
+        if include_year:
+            v = _as_date_str(val)
+            min_v = f.get("minValue")
+            max_v = f.get("maxValue")
+            return v is not None and isinstance(min_v, str) and isinstance(max_v, str) and (min_v <= v <= max_v)
+        else:
+            v_md = _month_day_str(val)
+            min_md = _month_day_str(f.get("minValue"))
+            max_md = _month_day_str(f.get("maxValue"))
+            if v_md is None or min_md is None or max_md is None:
+                return False
+            if min_md <= max_md:
+                return min_md <= v_md <= max_md
+            return v_md >= min_md or v_md <= max_md
 
     if ftype == "DateImplicitFilter":
         month_span = f.get("monthSpan")
@@ -126,7 +154,7 @@ def search_execute(request: HttpRequest):
     results: List[Dict[str, Any]] = []
     for ds in qs:
         vals = normalize_values(ds.values or {})
-        if _records_match_filters(vals, record_type, filter_options, maps):
+        if records_match_filters(vals, record_type, filter_options, maps):
             results.append({"id": ds.id, **vals})
 
     return JsonResponse(results, status=200, safe=False)
