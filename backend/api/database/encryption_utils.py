@@ -1,4 +1,3 @@
-from api.database.models import Anfrage, Fall
 from django.core.cache import cache
 
 CACHE_TIME = 60 * 10 # 10 Minuten
@@ -8,6 +7,7 @@ def get_sensitive_fields(data_record_type, version):
     Gibt Liste sensibler Felder zurück.
     Nutzt Cache für Performance.
     """
+    from api.database.models import Anfrage, Fall
 
     cache_key = f"sensitive:{data_record_type}:{version}"
     cached = cache.get(cache_key)
