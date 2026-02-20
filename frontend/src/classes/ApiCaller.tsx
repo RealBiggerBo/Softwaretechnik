@@ -348,7 +348,9 @@ export class ApiCaller implements IApiCaller {
     anfrageToCreate: any,
   ): Promise<{ success: boolean; errorMsg: string; json: any }> {
     let result: any = null;
-    console.log(JSON.stringify(anfrageToCreate));
+    console.log("lege neue Anfrage mit folgenden Daten an:");
+    console.log(anfrageToCreate);
+
     const res = await this.SendApiCall(
       "/api/data/data/anfrage",
       "POST",
@@ -364,8 +366,13 @@ export class ApiCaller implements IApiCaller {
 
   async TrySearchFall(
     caseToSearch: FilterOption[],
+    formatVersion: number,
   ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }> {
-    let searchObject = { recordType: "Fall", filterOptions: caseToSearch };
+    const searchObject = {
+      recordType: "Fall",
+      formatVersion: formatVersion,
+      filterOptions: caseToSearch,
+    };
     let result: unknown;
     const res = await this.SendApiCall(
       "/api/search/execute",
@@ -382,9 +389,11 @@ export class ApiCaller implements IApiCaller {
 
   async TrySearchAnfrage(
     anfrageToSearch: FilterOption[],
+    formatVersion: number,
   ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }> {
     const searchObject = {
       recordType: "Anfrage",
+      formatVersion: formatVersion,
       filterOptions: anfrageToSearch,
     };
     let result: unknown;
@@ -583,6 +592,10 @@ export class ApiCaller implements IApiCaller {
   async TryCreateNewDataRecordFall(
     updatedRecord: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    console.log("Create new fall format: ");
+
+    console.log(updatedRecord);
+
     const res = this.SendApiCall(
       "/api/data/data_record_admin/fall",
       "POST",
@@ -596,6 +609,9 @@ export class ApiCaller implements IApiCaller {
   async TryCreateNewDataRecordAnfrage(
     updatedRecord: any,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    console.log("Create new fall format: ");
+
+    console.log(updatedRecord);
     const res = this.SendApiCall(
       "/api/data/data_record_admin/anfrage",
       "POST",

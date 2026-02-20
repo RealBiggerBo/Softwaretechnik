@@ -118,10 +118,12 @@ export interface IApiCaller {
 
   TrySearchFall(
     caseToSearch: FilterOption[],
+    formatVersion: number,
   ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }>;
 
   TrySearchAnfrage(
     anfrageToSearch: FilterOption[],
+    formatVersion: number,
   ): Promise<{ success: boolean; errorMsg: string; searchResult: unknown }>;
 
   TrySearchAnfrageByID(

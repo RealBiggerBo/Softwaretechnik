@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import base64
 from django.conf import settings
 
-def decrypt_value(encrypted_value: str) -> str:
+def decrypt_value(encrypted_value: str, field_name: str) -> str:
     """
     Entschlüsselt einen AES-GCM verschlüsselten Wert.
     Erwartet das Format: ENC1:BASE64(nonce + ciphertext + tag)
@@ -11,8 +11,9 @@ def decrypt_value(encrypted_value: str) -> str:
     if not encrypted_value:
         return encrypted_value
 
-    if encrypted_value.startswith("ENC1:"):
-        encrypted_value = encrypted_value[5:]
+    PREFIX = "ENC1:"
+    if encrypted_value.startswith(PREFIX):
+        encrypted_value = encrypted_value[len(PREFIX):]
 
     encrypted_bytes = base64.b64decode(encrypted_value)
 
@@ -20,8 +21,9 @@ def decrypt_value(encrypted_value: str) -> str:
     nonce = encrypted_bytes[:12]
     ciphertext_and_tag = encrypted_bytes[12:]
 
-    aesgcm = AESGCM(settings.AES_KEY.encode())  # Key aus settings.py
-    decrypted_bytes = aesgcm.decrypt(nonce, ciphertext_and_tag, associated_data=None)
+    # ✅ Kein .encode() mehr
+    aesgcm = AESGCM(settings.AES_KEY)
+    decrypted_bytes = aesgcm.decrypt(nonce, ciphertext_and_tag, associated_data=field_name.encode())
     return decrypted_bytes.decode("utf-8")
 
 
@@ -71,20 +73,20 @@ def get_sensitive_fields(data_record_type, id=None):
     cache.set(cache_key, sensitive, CACHE_TIME)
     return sensitive
 
-def decrypt_sensitive_fields(data_dict, sensitive_keys):
+def decrypt_sensitive_fields(data_dict, sensitive_keys, parent_key=""):
     """
     Entschlüsselt rekursiv die sensiblen Felder in einem dict.
+    parent_key: der Pfad der übergeordneten Keys für AES associated_data
     """
     result = {}
     for k, v in data_dict.items():
-        full_key = str(k)
-        # Wenn Wert ein dict ist, rekursiv prüfen
+        full_key = f"{parent_key}.{k}" if parent_key else str(k)
+
         if isinstance(v, dict):
-            nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
-            result[k] = decrypt_sensitive_fields(v, nested_keys)
-        # Wenn Schlüssel sensibel, entschlüsseln
+            nested_keys = [key for key in sensitive_keys if key.startswith(f"{full_key}.") or key == full_key]
+            result[k] = decrypt_sensitive_fields(v, nested_keys, parent_key=full_key)
         elif full_key in sensitive_keys:
-            result[k] = decrypt_value(v) 
+            result[k] = decrypt_value(v, full_key)
         else:
             result[k] = v
     return result

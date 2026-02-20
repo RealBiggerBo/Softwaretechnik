@@ -135,21 +135,34 @@ def _records_match_filters(values: Dict[str, Any], record_type: str, filters: Li
 @csrf_exempt
 @require_POST
 def search_execute(request: HttpRequest):
+
     try:
         payload: Dict[str, Any] = json.loads(request.body.decode("utf-8"))
     except Exception:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
+
+
     record_type: Optional[str] = payload.get("Type") or payload.get("recordType") or "Fall"
     if record_type not in ALLOWED_RECORD_TYPES:
         return JsonResponse({"error": f"Ungültiger Type '{record_type}'."}, status=400)
 
+
     filter_options: List[Dict[str, Any]] = payload.get("filteroption", payload.get("filterOptions", []))
 
+
+    format_version = payload.get("formatVersion", None)
+    if format_version is not None:
+        try:
+            format_version = int(format_version)
+        except Exception:
+            return JsonResponse({"error": "formatVersion must be an integer."}, status=400)
     # ID->Feldname-Mapping ausschließlich aus der DB-Struktur (Data API) laden
     maps = build_id_to_field_maps()
 
     qs = get_dataset_qs(record_type)
+    if format_version is not None:
+        qs = qs.filter(version=format_version)
 
     results: List[Dict[str, Any]] = []
     for ds in qs:
