@@ -158,37 +158,25 @@ class DataRecordAPI(APIView):
         id = request.GET.get("id", None)
         type_lower = type.lower()
 
-        if type_lower not in ["anfrage", "fall"]:
+        if type_lower == "anfrage":
+            record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
+        elif type_lower == "fall":
+            record = Fall.objects.get(pk=id) if id else Fall.objects.last()
+        else:
             return Response({"error": "Ungültiger Typ"}, status=400)
 
-        # Model auswählen
-        Model = Anfrage if type_lower == "anfrage" else Fall
+        # Sensible Felder ermitteln
+        model_name = type_lower.capitalize()
+        sensitive_keys = get_sensitive_fields(model_name, record.pk)
 
-        # 1️⃣ Record holen
-        try:
-            record = Model.objects.get(pk=id) if id else Model.objects.last()
-        except Model.DoesNotExist:
-            return Response({"error": f"{type_lower.capitalize()} nicht gefunden"}, status=404)
-
-        # 2️⃣ Verschlüsselte Werte aus DataSet holen
-        dataset = DataSet.objects.filter(
-            data_record=record.__class__.__name__,
-            version=record.pk
-        ).last()
-
-        encrypted_values = dataset.values if dataset else {}
-
-        # 3️⃣ Sensible Felder ermitteln
-        sensitive_keys = get_sensitive_fields(record.__class__.__name__, record.pk)
-
-        # 4️⃣ Entschlüsseln
+        # Werte aus dem Model direkt holen (NICHT aus serializer.data!)
+        encrypted_values = getattr(record, "values", {}) or {}
         decrypted_values = decrypt_sensitive_fields(encrypted_values, sensitive_keys)
 
-        # 5️⃣ Response erstellen
         response_data = {
             "pk": record.pk,
-            "data_record": record.__class__.__name__,
-            "structure": record.structure,
+            "data_record": model_name,
+            "structure": getattr(record, "structure", {}),
             "values": decrypted_values
         }
 
