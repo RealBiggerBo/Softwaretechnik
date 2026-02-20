@@ -81,30 +81,28 @@ export class DataRecordConverter {
   }
 
   public static ConvertDataRecordToFormat3(
+    dataRecordType: "Anfrage" | "Fall",
+    version: number,
     dataRecord: DataRecord,
-    dataRecordType?: "Anfrage" | "Fall",
-    version?: number,
   ): Record<string, any> {
     const format: Record<string, any> = {};
 
     format["data_record"] = dataRecordType;
     format["version"] = version;
+    format["values"] = this.ExtractDataFromDataRecord(dataRecord);
 
+    console.log(format);
+
+    return format;
+  }
+
+  private static ExtractDataFromDataRecord(record: DataRecord) {
     const values: Record<string, any> = {};
-    dataRecord.dataFields.forEach((field) => {
-      if (field.type === "group") {
-        this.ConvertDataRecordToFormat3(field.element);
-      }
-      if (field.type === "list") {
-        field.records.forEach((dataRecord) => {
-          this.ConvertDataRecordToFormat3(dataRecord);
-        });
-      }
-      values[field.name] = this.GetValue(field);
+    record.dataFields.forEach((field) => {
+      values[field.id] = this.GetValue(field);
     });
 
-    format["values"] = values;
-    return format;
+    return values;
   }
 
   public static ConvertDataRecordToFormat2(
@@ -238,7 +236,7 @@ export class DataRecordConverter {
   }
   private static GetValue(
     field: DataField,
-  ): string | number | boolean | DataRecord[] | DataRecord | null {
+  ): string | number | boolean | DataRecord[] | Record<string, any> | null {
     switch (field.type) {
       case "text":
         return field.text;
@@ -253,7 +251,7 @@ export class DataRecordConverter {
       case "list":
         return field.records;
       case "group":
-        return field.element;
+        return this.ExtractDataFromDataRecord(field.element);
       default:
         const _exhaustive: never = field;
         return _exhaustive;
