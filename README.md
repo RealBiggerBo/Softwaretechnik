@@ -99,7 +99,7 @@ Besteht aus Objekten mit folgenden Attributen.
 |PresetTitel suchen|Standard|/api/stats/presets/get|Post|
 |Preset aktualisieren|Standard|/api/stats/presets/update|Post|
 |Preset löschen|Standard|/api/stats/presets/delete|Post|
-|Preset Export|Standart|/api/stats/presets/export|Post/Get|
+|Preset Export|Standard|/api/stats/presets/export|Post/Get|
 |Suche|Standard|/api/search/execute|Post|
 
 # Projekt lokal mit Docker starten
