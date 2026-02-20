@@ -26,6 +26,13 @@ function GetAvailableActions(dataField?: DataField): UiItem<DisplayAction>[] {
       case "enum":
       case "boolean":
       case "text":
+        return [
+          ToUiItem({
+            type: "CountCategorized",
+            fieldId: dataField.id,
+            title: "",
+          }),
+        ];
       default:
         return [];
     }
@@ -44,6 +51,8 @@ function GetOptionFromDisplayAction(displayAction: UiItem<DisplayAction>): {
       return { label: "Minimum", action: displayAction };
     case "Average":
       return { label: "Durchschnitt", action: displayAction };
+    case "CountCategorized":
+      return { label: "Kategorisierte Zählung", action: displayAction };
     default:
       return {
         label: "",
