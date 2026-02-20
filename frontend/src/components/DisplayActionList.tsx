@@ -5,6 +5,7 @@ import type { DataRecord } from "../classes/DataRecord";
 import type { UiItem } from "../classes/UiItems";
 import type { DisplayAction } from "../classes/DisplayAction";
 import DisplayActionDisplay from "./DisplayActionDisplay";
+import StyledButton from "./Styledbutton";
 
 interface Props {
   displayActions: UiItem<DisplayAction>[];
@@ -44,9 +45,12 @@ function DisplayActionList({
           removeDisplayActionById={removeDisplayActionById}
         />
       ))}
-      <Button onClick={handleAdd} sx={{ mt: 1 }}>
-        {addText}
-      </Button>
+      <StyledButton
+        text={addText}
+        variant="contained"
+        onClick={handleAdd}
+        sx={{ mt: 1 }}
+      />
     </>
   );
 }

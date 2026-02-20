@@ -14,6 +14,7 @@ import { memo, useCallback } from "react";
 import type { DataRecord } from "../classes/DataRecord";
 import type { UiItem, UiQuery } from "../classes/UiItems";
 import QueryDisplay from "./QueryDisplay";
+import StyledButton from "./Styledbutton";
 
 interface Props {
   queries: UiItem<UiQuery>[];
@@ -53,9 +54,7 @@ function QueryList({
           removeQueryById={removeQueryById}
         />
       ))}
-      <Button onClick={handleAdd} sx={{ mt: 2 }}>
-        {addText}
-      </Button>
+      <StyledButton onClick={handleAdd} sx={{ mt: 2 }} text={addText} />
     </>
   );
 }

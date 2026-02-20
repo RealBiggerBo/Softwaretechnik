@@ -47,6 +47,7 @@ function FilterOptionList({
       ))}
       <StyledButton
         text={addText}
+        variant="contained"
         onClick={handleAdd}
         sx={{ marginTop: "10px" }}
       />
