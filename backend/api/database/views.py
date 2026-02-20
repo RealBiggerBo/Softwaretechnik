@@ -205,10 +205,6 @@ class DataRecordAdminAPI(APIView):
 
         data = serializer.validated_data
 
-        version = data.get("version")
-        if version is None:
-            return Response({"error": "Version fehlt"}, status=400)
-
         Model = Anfrage if type == "anfrage" else Fall
         try:
             record = Model.objects.get(pk=data["version"])
