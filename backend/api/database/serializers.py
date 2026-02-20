@@ -12,7 +12,9 @@ class AnfrageSerializer(serializers.ModelSerializer):
         model = Anfrage
         fields = ["pk",
                     "structure",
-                    "values"]
+                    "values",
+                    "version",
+                    "data_record"]
     
     def get_values(self, obj):
         return getattr(obj, "values", None)
@@ -31,7 +33,9 @@ class FallSerializer(serializers.ModelSerializer):
         model = Fall
         fields = ["pk",
                     "structure",
-                    "values"]
+                    "values",                   
+                    "version",
+                    "data_record"]
     
     def get_values(self, obj):
         return getattr(obj, "values", None)
