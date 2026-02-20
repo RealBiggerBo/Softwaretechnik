@@ -9,16 +9,16 @@ def get_sensitive_fields(data_record_type, version):
     """
     from api.database.models import Anfrage, Fall
 
-    cache_key = f"sensitive:{data_record_type}:{version}"
+    cache_key = f"sensitive:{data_record_type}:{version or 'latest'}"
     cached = cache.get(cache_key)
 
     if cached is not None:
         return cached
 
     if data_record_type == "Anfrage":
-        record = Anfrage.objects.get(version=version)
+        record = Anfrage.objects.last()
     elif data_record_type == "Fall":
-        record = Fall.objects.get(version=version)
+        record = Fall.objects.last()
     else:
         return []
 
