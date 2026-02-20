@@ -35,24 +35,41 @@ class DataSet(models.Model):
     def save(self, *args, **kwargs):
         sensitive_fields = get_sensitive_fields(self.data_record, self.version)
 
-        encrypted = {}
-        for key, value in self.values.items():
-            if key in sensitive_fields and value is not None:
-                encrypted[key] = encrypt(value, key)
-            else:
-                encrypted[key] = value
+        def recursive_encrypt(values, sensitive_fields, parent_key=""):
+            encrypted = {}
+            for key, value in values.items():
+                full_key = f"{parent_key}.{key}" if parent_key else key
 
-        self.values = encrypted
+                if isinstance(value, dict):
+                    encrypted[key] = recursive_encrypt(value, sensitive_fields, full_key)
+                elif full_key in sensitive_fields and value not in (None, ""):
+                    encrypted[key] = encrypt(value, full_key)
+                else:
+                    encrypted[key] = value
+            return encrypted
+
+        self.values = recursive_encrypt(self.values, sensitive_fields)
         super().save(*args, **kwargs)
 
     def get_decrypted_values(self):
+        from api.utils.encryption import decrypt
+
         sensitive_fields = get_sensitive_fields(self.data_record, self.version)
 
-        decrypted = {}
-        for key, value in self.values.items():
-            if key in sensitive_fields and value is not None:
-                decrypted[key] = decrypt(value, key)
-            else:
-                decrypted[key] = value
+        def recursive_decrypt(values, sensitive_fields, parent_key=""):
+            decrypted = {}
+            for key, value in values.items():
+                full_key = f"{parent_key}.{key}" if parent_key else key
 
-        return decrypted
+                if isinstance(value, dict):
+                    decrypted[key] = recursive_decrypt(value, sensitive_fields, full_key)
+                elif full_key in sensitive_fields and isinstance(value, str):
+                    try:
+                        decrypted[key] = decrypt(value, full_key)
+                    except Exception:
+                        decrypted[key] = value
+                else:
+                    decrypted[key] = value
+            return decrypted
+
+        return recursive_decrypt(self.values, sensitive_fields)
