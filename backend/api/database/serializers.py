@@ -39,7 +39,8 @@ class DataSetSerializer(serializers.ModelSerializer):
         fields = ["pk",
                     "data_record",
                     "version",
-                    "values"]
+                    "values",
+                    "decrypted_values"]
         
     def get_decrypted_values(self, obj):
       return obj.get_decrypted_values()
