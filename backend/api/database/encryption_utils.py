@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import base64
 from django.conf import settings
 
-def decrypt_value(encrypted_value: str) -> str:
+def decrypt_value(encrypted_value: str, field_name: str) -> str:
     """
     Entschlüsselt einen AES-GCM verschlüsselten Wert.
     Erwartet das Format: ENC1:BASE64(nonce + ciphertext + tag)
@@ -23,7 +23,7 @@ def decrypt_value(encrypted_value: str) -> str:
 
     # ✅ Kein .encode() mehr
     aesgcm = AESGCM(settings.AES_KEY)
-    decrypted_bytes = aesgcm.decrypt(nonce, ciphertext_and_tag, associated_data=None)
+    decrypted_bytes = aesgcm.decrypt(nonce, ciphertext_and_tag, associated_data=field_name.encode())
     return decrypted_bytes.decode("utf-8")
 
 
@@ -86,7 +86,7 @@ def decrypt_sensitive_fields(data_dict, sensitive_keys):
             result[k] = decrypt_sensitive_fields(v, nested_keys)
         # Wenn Schlüssel sensibel, entschlüsseln
         elif full_key in sensitive_keys:
-            result[k] = decrypt_value(v) 
+            result[k] = decrypt_value(v, full_key) 
         else:
             result[k] = v
     return result
