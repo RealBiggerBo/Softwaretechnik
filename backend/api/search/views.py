@@ -6,8 +6,7 @@ from django.http import JsonResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from api.stats.utils import id_to_field, get_dataset_qs
-from api.stats.id_mapping_from_db import build_id_to_field_maps_from_db
+from api.stats.utils import id_to_field, get_dataset_qs, normalize_values, build_id_to_field_maps
 
 ALLOWED_RECORD_TYPES = {"Anfrage", "Fall"}
 
@@ -24,15 +23,21 @@ def _parse_iso_date(s: str) -> Optional[datetime]:
     except Exception:
         return None
 
-def _matches_single_filter(values: Dict[str, Any], record_type: str, f: Dict[str, Any], maps: Dict[str, Dict[int, str]]) -> bool:
+def _matches_single_filter(values: Dict[Any, Any], record_type: str, f: Dict[str, Any], maps: Dict[str, Dict[int, str]]) -> bool:
+    """
+    Erwartet normalisierte values (numerische IDs als Keys).
+    Filter arbeitet über fieldId (int). Numeric-strings werden für Integer-Checks toleriert.
+    """
     ftype = f.get("type")
     fid = f.get("fieldId", f.get("id"))
-    # Ausschließlich IDs nutzen (kein fieldName-Fallback)
-    field_name = id_to_field(record_type, fid, maps) if isinstance(fid, int) else None
-    val = values.get(field_name) if field_name else None
 
     if ftype == "Empty" or ftype is None:
         return True
+
+    if not isinstance(fid, int):
+        return False
+
+    val = values.get(fid)
 
     if ftype == "EnumValueFilter":
         target = f.get("value")
@@ -48,6 +53,12 @@ def _matches_single_filter(values: Dict[str, Any], record_type: str, f: Dict[str
             tgt = int(f.get("value"))
         except Exception:
             return False
+        # akzeptiere numeric strings als Integer
+        if isinstance(val, str) and val.isdigit():
+            try:
+                return int(val) == tgt
+            except Exception:
+                return False
         return isinstance(val, int) and val == tgt
 
     if ftype == "IntegerRangeFilter":
@@ -56,6 +67,12 @@ def _matches_single_filter(values: Dict[str, Any], record_type: str, f: Dict[str
             mx = int(f.get("maxValue"))
         except Exception:
             return False
+        if isinstance(val, str) and val.isdigit():
+            try:
+                v_int = int(val)
+            except Exception:
+                return False
+            return mn <= v_int <= mx
         return isinstance(val, int) and mn <= val <= mx
 
     if ftype == "DateValueFilter":
@@ -102,13 +119,13 @@ def search_execute(request: HttpRequest):
     filter_options: List[Dict[str, Any]] = payload.get("filteroption", payload.get("filterOptions", []))
 
     # ID->Feldname-Mapping ausschließlich aus der DB-Struktur (Data API) laden
-    maps = build_id_to_field_maps_from_db()
+    maps = build_id_to_field_maps()
 
     qs = get_dataset_qs(record_type)
 
     results: List[Dict[str, Any]] = []
     for ds in qs:
-        vals = ds.values or {}
+        vals = normalize_values(ds.values or {})
         if _records_match_filters(vals, record_type, filter_options, maps):
             results.append({"id": ds.id, **vals})
 

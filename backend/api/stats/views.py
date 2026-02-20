@@ -105,7 +105,7 @@ def stats_execute(request: HttpRequest):
 
         record_global_filters = [
             gf for gf in global_filters
-            if isinstance(gf.get("id"), int) and id_to_field(record_type, gf["id"], maps)
+            if isinstance(gf.get("fieldId"), int) and id_to_field(record_type, gf["fieldId"], maps)
         ]
 
         recs = filter_records_for(record_type, record_global_filters, qfilters, maps)
