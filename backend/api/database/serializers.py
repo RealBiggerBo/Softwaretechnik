@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from api.database.models import DataSet
 from .models import *
-import logging
-
-logger = logging.getLogger(__name__)
 
 class AnfrageSerializer(serializers.ModelSerializer):
     values = serializers.SerializerMethodField()
