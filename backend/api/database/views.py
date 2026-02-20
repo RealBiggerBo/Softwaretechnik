@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
-from api.database.encryption_utils import decrypt_sensitive_fields, get_sensitive_fields
 
 class DataAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -69,7 +68,7 @@ class DataAPI(APIView):
         
         data = serializer.validated_data
         structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
-        values = data.get("values", {})
+        values = data["values"]
         
         dataset_validation(structure, values)
 
@@ -93,95 +92,25 @@ class DataAPI(APIView):
         
         data = serializer.validated_data
         structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
-        values = data.get("values", {})
+        values = data["values"]
         
         dataset_validation(structure, values)
 
         serializer.save()
         return Response(serializer.data)
 
-# class DataRecordAPI(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, type):
-#         """
-#         Gibt die Struktur eines DataRecords zurück.
-#         """
-
-#         id = request.GET.get("id", None)
-#         type_lower = type.lower()
-
-#         # Daten aus dem passenden Model holen
-#         if type_lower == "anfrage":
-#             try:
-#                 record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
-#             except Anfrage.DoesNotExist:
-#                 return Response({"error": "Anfrage nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
-#         elif type_lower == "fall":
-#             try:
-#                 record = Fall.objects.get(pk=id) if id else Fall.objects.last()
-#             except Fall.DoesNotExist:
-#                 return Response({"error": "Fall nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
-#         else:
-#             return Response({"error": "Ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # Serializer auf das Model anwenden
-#         serializer = AnfrageSerializer(record) if type_lower == "anfrage" else FallSerializer(record)
-#         serializer_data = serializer.data  # hier sind die Werte noch verschlüsselt
-
-#         # Sensible Felder ermitteln (Modelname groß)
-#         model_name = "Anfrage" if type_lower == "anfrage" else "Fall"
-#         sensitive_keys = get_sensitive_fields(model_name, id)
-
-#         # Entschlüsseln
-#         encrypted_values = getattr(record, "values", None) or {}
-#         decrypted_values = decrypt_sensitive_fields(encrypted_values, sensitive_keys)
-
-#         # Neues Dict für Response
-#         response_data = {
-#             "pk": serializer_data.get("pk"),
-#             "data_record": type_lower.capitalize(),
-#             "structure": serializer_data.get("structure"),
-#             "values": decrypted_values
-#         }
-
-#         return Response(response_data, status=status.HTTP_200_OK)
-
 class DataRecordAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, type):
         """
-        Gibt die Struktur eines DataRecords zurück (inklusive entschlüsselter Werte).
+        Gibt die Struktur eines DataRecords zurück.
         """
 
         id = request.GET.get("id", None)
-        type_lower = type.lower()
 
-        if type_lower == "anfrage":
-            record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
-        elif type_lower == "fall":
-            record = Fall.objects.get(pk=id) if id else Fall.objects.last()
-        else:
-            return Response({"error": "Ungültiger Typ"}, status=400)
-
-        # Sensible Felder ermitteln
-        model_name = type_lower.capitalize()
-        sensitive_keys = get_sensitive_fields(model_name, record.pk)
-
-        # Werte aus dem Model direkt holen (NICHT aus serializer.data!)
-        encrypted_values = getattr(record, "values", {}) or {}
-        decrypted_values = decrypt_sensitive_fields(encrypted_values, sensitive_keys)
-
-        response_data = {
-            "pk": record.pk,
-            "data_record": model_name,
-            "structure": getattr(record, "structure", {}),
-            "values": decrypted_values
-        }
-
-        return Response(response_data, status=200)
-
+        return get_data_record(id, type)
+    
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
 

@@ -15,6 +15,20 @@ interface Props {
   onChange: (record: DataRecord) => void;
 }
 
+function GetMaxId(datafield: DataField) {
+  switch (datafield.type) {
+    case "boolean":
+    case "date":
+    case "enum":
+    case "integer":
+    case "text":
+      return datafield.id;
+    case "list":
+    case "group":
+      return Math.max(...datafield.element.dataFields.map((f) => f.id));
+  }
+}
+
 function AddNewField(record: DataRecord, newField: DataField): DataRecord {
   if (record === null) {
     return { dataFields: [] };
@@ -23,7 +37,7 @@ function AddNewField(record: DataRecord, newField: DataField): DataRecord {
   if (record.dataFields.length === 0) {
     id = 1;
   } else {
-    id = Math.max(...record.dataFields.map((f) => f.id)) + 1;
+    id = Math.max(...record.dataFields.map((f) => GetMaxId(f))) + 1;
   }
 
   const fieldWithId = {

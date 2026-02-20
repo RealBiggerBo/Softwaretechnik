@@ -25,10 +25,6 @@ function ListDataField({
   setOpenDialog,
   onAdd,
 }: Props) {
-  const [value, setValue] = useState("");
-  const [touched, setTouched] = useState(false);
-  const isError = touched && value.trim() === "" && listField.required;
-
   function duplucate(listField: ListField) {
     listField.records.push(listField.element);
     return listField;
@@ -56,7 +52,7 @@ function ListDataField({
         <DataRecordDisplay
           record={record}
           displayEditButtons={false} //always false here. We will display the editing somwhere else
-          isEditMode={false} //same here
+          isEditMode={isEditMode} //same here
           caller={caller}
           onChange={(toChange) =>
             onChange({
@@ -68,6 +64,9 @@ function ListDataField({
           }
         />
       ))}
+      {isEditMode && (
+        <AddNewDataField isEditMode={isEditMode} addNewField={onAdd} />
+      )}
       {!isEditMode && (
         <StyledButton
           text={text}
@@ -76,40 +75,6 @@ function ListDataField({
           onClick={() => onChange(duplucate(listField))}
         />
       )}
-      {/* <AddFieldInList
-        listField={listField}
-        isEditMode={isEditMode}
-        onAdd={onAdd}
-        onChange={(fieldToChange) =>
-          onChange({
-            ...listField,
-            element: listField.element.map((field) =>
-              field.id === fieldToChange.id ? fieldToChange : field,
-            ),
-          })
-        }
-        onDelete={(fieldIdToDelete) => {
-          onChange({
-            ...listField,
-            element: listField.element.filter(
-              (field) => field.id !== fieldIdToDelete,
-            ),
-          });
-          setOpenDialog(true);
-        }}
-        setOpenDialog={setOpenDialog}
-      />
-      <br />
-      <AddNewDataField
-        isEditMode={true}
-        addNewField={(newField) =>
-          onChange({
-            ...listField,
-            element: [...listField.element, newField],
-          })
-        }
-      /> */}
-      {/*<StyledButton text="List duplizieren" onClick={()=> duplucate(listField)}/>*/}
     </Stack>
   );
 }
