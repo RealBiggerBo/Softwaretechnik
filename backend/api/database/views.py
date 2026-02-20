@@ -110,32 +110,33 @@ class DataRecordAPI(APIView):
 
         id = request.GET.get("id", None)
         
-        # Daten aus dem Model holen
+        # Daten aus dem passenden Model holen
         if type.lower() == "anfrage":
             try:
                 record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
             except Anfrage.DoesNotExist:
-                return Response({"error": "Anfrage nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": "Anfrage nicht gefunden"}, status=404)
         elif type.lower() == "fall":
             try:
                 record = Fall.objects.get(pk=id) if id else Fall.objects.last()
             except Fall.DoesNotExist:
-                return Response({"error": "Fall nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": "Fall nicht gefunden"}, status=404)
         else:
-            return Response({"error": "Ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Ungültiger Typ"}, status=400)
 
         # Serializer auf das Model anwenden
         serializer = AnfrageSerializer(record) if type.lower() == "anfrage" else FallSerializer(record)
-        data = serializer.data  # hier noch verschlüsselt
+        data = serializer.data  # hier sind die Werte noch verschlüsselt
 
-        # Sensible Felder bestimmen
+        # Sensible Felder ermitteln
         sensitive_keys = get_sensitive_fields(type, id)
 
-        # Sensible Felder entschlüsseln
-        decrypted_data = decrypt_sensitive_fields(data, sensitive_keys)
+        # Nur die 'values' entschlüsseln
+        values = data.get("values", {})
+        decrypted_values = decrypt_sensitive_fields(values, sensitive_keys)
+        data["values"] = decrypted_values
 
-        # Entschlüsselte Daten zurückgeben
-        return Response(decrypted_data, status=status.HTTP_200_OK)
+        return Response(data, status=200)
     
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
