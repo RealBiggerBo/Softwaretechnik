@@ -81,9 +81,9 @@ export class DataRecordConverter {
   }
 
   public static ConvertDataRecordToFormat3(
-    dataRecordType: "Anfrage" | "Fall",
-    version: number,
     dataRecord: DataRecord,
+    dataRecordType?: "Anfrage" | "Fall",
+    version?: number,
   ): Record<string, any> {
     const format: Record<string, any> = {};
 
@@ -92,6 +92,14 @@ export class DataRecordConverter {
 
     const values: Record<string, any> = {};
     dataRecord.dataFields.forEach((field) => {
+      if (field.type === "group") {
+        this.ConvertDataRecordToFormat3(field.element);
+      }
+      if (field.type === "list") {
+        field.records.forEach((dataRecord) => {
+          this.ConvertDataRecordToFormat3(dataRecord);
+        });
+      }
       values[field.name] = this.GetValue(field);
     });
 

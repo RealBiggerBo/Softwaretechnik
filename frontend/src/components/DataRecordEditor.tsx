@@ -191,9 +191,9 @@ async function UpdateDataRecord(
       return (
         await caller.TryUpdateAnfrage(
           DataRecordConverter.ConvertDataRecordToFormat3(
+            toUpdate,
             "Anfrage",
             formatVersion,
-            toUpdate,
           ),
           recordId,
         )
@@ -203,9 +203,9 @@ async function UpdateDataRecord(
       return (
         await caller.TryUpdateFall(
           DataRecordConverter.ConvertDataRecordToFormat3(
+            toUpdate,
             "Fall",
             formatVersion,
-            toUpdate,
           ),
           recordId,
         )
@@ -318,9 +318,9 @@ async function CreateNewDataSet(
   const bigType = type === "neue-anfrage" ? "Anfrage" : "Fall";
 
   const formatToSave = DataRecordConverter.ConvertDataRecordToFormat3(
+    recordToSave,
     bigType,
     formatVersion,
-    recordToSave,
   );
 
   //neue Daten estellen, snackbar öffnen und url ändern
