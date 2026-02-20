@@ -88,6 +88,20 @@ Besteht aus Objekten mit folgenden Attributen.
 |possibleValues|[String]||String||
 
 
+# Statistik
+
+
+|Bezeichnung|Berechtigung|API|Methode|
+|--------|----------------|------------|--------------|
+|Statistik Ausgabe|Standard|/api/stats/statistic|Post|
+|PresetListe|Standard|/api/stats/presets|Get|
+|Preset erstellen|Standard|/api/stats/presets/create|Post|
+|PresetTitel suchen|Standard|/api/stats/presets/get|Post|
+|Preset aktualisieren|Standard|/api/stats/presets/update|Post|
+|Preset löschen|Standard|/api/stats/presets/delete|Post|
+|Preset Export|Standart|/api/stats/presets/export|Post/Get|
+|Suche|Standard|/api/search/execute|Post|
+
 # Projekt lokal mit Docker starten
 
 ### Voraussetzungen
