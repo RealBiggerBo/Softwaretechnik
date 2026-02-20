@@ -88,16 +88,23 @@ def get_sensitive_fields(data_record_type, id=None):
 
 def decrypt_sensitive_fields(data_dict, sensitive_keys):
     """
-    Debug-Version: ersetzt sensible Felder mit "hello".
+    Debug: Ersetzt alle sensiblen Felder rekursiv mit "hello".
     """
     result = {}
     for k, v in data_dict.items():
         full_key = str(k)
         if isinstance(v, dict):
+            # Alle Keys, die unter diesem verschachtelten Dict liegen
             nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
             result[k] = decrypt_sensitive_fields(v, nested_keys)
+        elif isinstance(v, list):
+            # Liste durchlaufen, falls Listenelemente verschachtelte dicts sind
+            result[k] = [
+                decrypt_sensitive_fields(item, sensitive_keys) if isinstance(item, dict) else item
+                for item in v
+            ]
         elif full_key in sensitive_keys:
-            # Debug statt echten Wert
+            # DEBUG: Hello setzen
             result[k] = "hello"
         else:
             result[k] = v
