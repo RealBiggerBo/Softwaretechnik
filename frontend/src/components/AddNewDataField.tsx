@@ -44,6 +44,7 @@ function AddNewDataField({ isEditMode, addNewField }: Props) {
                 name: "Neues Textfeld",
                 id: -1,
                 required: false,
+                sensitive: true,
                 text: "",
               });
               setShowFieldSelector(false);
@@ -61,6 +62,7 @@ function AddNewDataField({ isEditMode, addNewField }: Props) {
                 name: "Neues Datumsfeld",
                 id: -1,
                 required: false,
+                sensitive: true,
                 date: getCurrentDate(),
               });
               setShowFieldSelector(false);
@@ -78,6 +80,7 @@ function AddNewDataField({ isEditMode, addNewField }: Props) {
                 name: "Neues Zahlenfeld",
                 id: -1,
                 required: false,
+                sensitive: true,
                 value: 0,
                 minValue: 1,
                 maxValue: -1,
@@ -97,6 +100,7 @@ function AddNewDataField({ isEditMode, addNewField }: Props) {
                 name: "Neues Togglefeld",
                 id: -1,
                 required: false,
+                sensitive: true,
                 isSelected: false,
               });
               setShowFieldSelector(false);

@@ -1,10 +1,12 @@
 import React from "react";
 import { type DataField, type ListField } from "../classes/DataField";
 import { FieldRenderer } from "./Fieldrenderer";
+import type { IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
   listField: ListField;
   isEditMode: boolean;
+  caller: IApiCaller;
   onChange: (field: DataField) => void;
   onDelete: (id: number) => void;
   onAdd: (id: DataField) => void;
@@ -14,6 +16,7 @@ interface Props {
 function AddFieldInList({
   listField,
   isEditMode,
+  caller,
   onChange,
   onDelete,
   onAdd,
@@ -21,9 +24,11 @@ function AddFieldInList({
 }: Props) {
   return (
     <>
-      {listField.element.map((e) => (
+      <label>NOT IMPLEMENTED</label>
+      {/* {listField.element.map((e) => (
         <React.Fragment key={e.id}>
           <FieldRenderer
+            caller={caller}
             field={e}
             isEditMode={isEditMode}
             onChange={onChange}
@@ -33,7 +38,7 @@ function AddFieldInList({
           />
           <br />
         </React.Fragment>
-      ))}
+      ))} */}
     </>
   );
 }

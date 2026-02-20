@@ -75,6 +75,12 @@ export interface IApiCaller {
     newPswdCtrl: string,
   ): Promise<{ success: boolean; errorMsg: string }>;
 
+  GetExistingDataFormats(type: "fall" | "anfrage"): Promise<{
+    success: boolean;
+    errorMsg: string;
+    formats: unknown;
+  }>;
+
   TryLogin(
     user: string,
     pswd: string,
@@ -238,6 +244,14 @@ export class MockApiCaller implements IApiCaller {
       ],
     });
   }
+  async GetExistingDataFormats(type: "fall" | "anfrage"): Promise<{
+    success: boolean;
+    errorMsg: string;
+    formats: unknown;
+  }> {
+    return { success: true, errorMsg: "", formats: [] };
+  }
+
   GetStatisticsPreset(
     title: string,
   ): Promise<{ success: boolean; errorMsg: string; preset: Preset }> {
