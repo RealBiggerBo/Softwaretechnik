@@ -218,6 +218,8 @@ async function LoadDataAndFormat(
     }
     //get by id
     const res = await GetDataById(type, id, caller);
+    console.log("Search results with id " + id + ":");
+    console.log(res);
 
     if (res.success) {
       //convert to version format
@@ -227,12 +229,22 @@ async function LoadDataAndFormat(
       //get format
 
       const formatRes = await GetDataFormat(caller, type, neededFormatVersion);
+      console.log("DataFormat with version " + neededFormatVersion + ":");
+      console.log(formatRes);
 
       if (formatRes.success) {
-        const [_, formatDataRecord] =
+        const [formatVersioFromFormat, formatDataRecord] =
           DataRecordConverter.ConvertFormatToDataRecord(formatRes.json);
 
         //merge
+        if (formatVersioFromFormat != neededFormatVersion)
+          console.log(
+            "Got different format versions: " +
+              formatVersioFromFormat +
+              " vs " +
+              neededFormatVersion,
+          );
+
         const mergedDataRecord = DataRecordConverter.MergeDataRecordWithData(
           formatDataRecord,
           keyValueTuples,
@@ -258,6 +270,8 @@ async function LoadDataAndFormat(
     //get format only
 
     const formatRes = await GetDataFormat(caller, type);
+    console.log("Got the following format:");
+    console.log(formatRes);
 
     if (!formatRes.success) {
       setMsgID("Konnte aktuelles Format nicht laden");
@@ -371,7 +385,6 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
         return;
       }
       setRole(role);
-      console.log(urlid.current);
       await LoadDataAndFormat(
         type,
         urlid.current,

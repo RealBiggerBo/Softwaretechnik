@@ -68,23 +68,35 @@ function RemoveOption(options: UiItem<FilterOption>[], optionId: string) {
 async function Search(
   type: "Fall" | "Anfrage",
   options: UiItem<FilterOption>[],
+  formats: [number, DataRecord][],
   formatVersion: number,
   setSearchResult: (recordds: DataRecord[]) => void,
   caller: IApiCaller,
 ) {
   let res;
   if (type == "Fall")
-    res = await caller.TrySearchFall(options.map((uiCase) => uiCase.value));
+    res = await caller.TrySearchFall(
+      options.map((uiCase) => uiCase.value),
+      formatVersion,
+    );
   else
     res = await caller.TrySearchAnfrage(
       options.map((uiOption) => uiOption.value),
+      formatVersion,
     );
 
-  console.log("Ergebnis der Suche: ");
+  console.log("Ergebnis der Suche mit formatversion " + formatVersion + ":");
   console.log(res);
 
+  //Convert res.searchResult to Record<string, unknown>[]
+
+  //merge with current format
+
   const values: DataRecord[] =
-    DataRecordConverter.ConvertSearchResultToDataRecord(res.searchResult);
+    DataRecordConverter.ConvertSearchResultToDataRecord(
+      res.searchResult,
+      GetCurrentSelectedFormat(formats, formatVersion),
+    );
 
   console.log("Konvertierte records:");
   console.log(values);
@@ -183,7 +195,14 @@ function SearchPage({ caller }: Props) {
       activateSnackbar(res.errorMsg);
       setSaveResult(false);
     }
-    await Search(type, options, formatVersion, setSearchResult, caller);
+    await Search(
+      type,
+      options,
+      formats,
+      formatVersion,
+      setSearchResult,
+      caller,
+    );
   }
 
   function activateSnackbar(msg: string) {
@@ -277,6 +296,7 @@ function SearchPage({ caller }: Props) {
             await Search(
               type,
               options,
+              formats,
               selectedFormatVersion ? selectedFormatVersion : -1,
               setSearchResult,
               caller,
