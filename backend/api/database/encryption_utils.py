@@ -73,20 +73,20 @@ def get_sensitive_fields(data_record_type, id=None):
     cache.set(cache_key, sensitive, CACHE_TIME)
     return sensitive
 
-def decrypt_sensitive_fields(data_dict, sensitive_keys):
+def decrypt_sensitive_fields(data_dict, sensitive_keys, parent_key=""):
     """
     Entschlüsselt rekursiv die sensiblen Felder in einem dict.
+    parent_key: der Pfad der übergeordneten Keys für AES associated_data
     """
     result = {}
     for k, v in data_dict.items():
-        full_key = str(k)
-        # Wenn Wert ein dict ist, rekursiv prüfen
+        full_key = f"{parent_key}.{k}" if parent_key else str(k)
+
         if isinstance(v, dict):
-            nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
-            result[k] = decrypt_sensitive_fields(v, nested_keys)
-        # Wenn Schlüssel sensibel, entschlüsseln
+            nested_keys = [key for key in sensitive_keys if key.startswith(f"{full_key}.") or key == full_key]
+            result[k] = decrypt_sensitive_fields(v, nested_keys, parent_key=full_key)
         elif full_key in sensitive_keys:
-            result[k] = decrypt_value(v, full_key) 
+            result[k] = decrypt_value(v, full_key)
         else:
             result[k] = v
     return result
