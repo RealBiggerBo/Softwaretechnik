@@ -1,8 +1,9 @@
 import { type DataField, type GroupField } from "../classes/DataField";
-import { Stack, TextField as Tf } from "@mui/material";
+import { Box, Stack, TextField as Tf } from "@mui/material";
 import { memo } from "react";
 import DataRecordDisplay from "./DataRecordDisplay";
 import type { IApiCaller } from "../classes/IApiCaller";
+import AddNewDataField from "./AddNewDataField";
 
 interface Props {
   groupField: GroupField;
