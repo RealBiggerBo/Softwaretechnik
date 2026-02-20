@@ -134,17 +134,15 @@ class DataRecordAPI(APIView):
         sensitive_keys = get_sensitive_fields(model_name, id)
 
         # Debug: sichere Ausgabe, ohne KeyError
-        values = data.get("values")
+        values = data.get("values", {})
         print("sensitive_keys:", sensitive_keys)
         print("values before decrypt:", values)
-        
+
         # Nur entschlüsseln, wenn 'values' existiert und kein None
-        if data.get("values"):
-            decrypted_values = decrypt_sensitive_fields(data["values"], sensitive_keys)
+        if values:
+            decrypted_values = decrypt_sensitive_fields(values, sensitive_keys)
             data["values"] = decrypted_values
             print("decrypted values:", decrypted_values)
-        else:
-            print("Keine 'values' zum Entschlüsseln gefunden")
 
         return Response(data, status=status.HTTP_200_OK)
 
