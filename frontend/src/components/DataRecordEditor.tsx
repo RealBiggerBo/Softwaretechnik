@@ -4,7 +4,7 @@ import {
   type NavigateOptions,
 } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
 import { Alert, Fab, Snackbar } from "@mui/material";
@@ -313,6 +313,18 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
   const navigate = useNavigate();
 
+  const handleRecordChange = useCallback(
+    (nextRecord: DataRecord) => {
+      if (isEditMode) {
+        savedFormat.current = false;
+      } else {
+        savedData.current = false;
+      }
+      setRecord(nextRecord);
+    },
+    [isEditMode, savedData, savedFormat],
+  );
+
   const dialogField: DialogObject = {
     isOpen: openFieldDialog,
     title: "",
@@ -586,14 +598,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
         displayEditButtons={role !== null && role !== "base_user"}
         isEditMode={isEditMode}
         caller={caller}
-        onChange={(record) => {
-          if (isEditMode) {
-            savedFormat.current = false;
-          } else {
-            savedData.current = false;
-          }
-          setRecord(record);
-        }}
+        onChange={handleRecordChange}
       />
       <br />
       {deletable() && (

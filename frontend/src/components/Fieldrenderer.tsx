@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { useState } from "react";
+import { memo, useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
 
 interface Props {
@@ -151,7 +151,7 @@ function GetFieldCollapse(
   );
 }
 
-export function FieldRenderer({
+const FieldRenderer = memo(function FieldRenderer({
   field,
   isEditMode,
   caller,
@@ -193,4 +193,6 @@ export function FieldRenderer({
       </Collapse>
     </>
   );
-}
+});
+
+export { FieldRenderer };
