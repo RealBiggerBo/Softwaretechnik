@@ -6,14 +6,16 @@ interface Props {
   caller: IApiCaller;
   savedData: React.RefObject<boolean>;
   savedFormat: React.RefObject<boolean>;
+  urlid: React.RefObject<number | null>;
 }
 
-function DataviewPage({ caller, savedData, savedFormat }: Props) {
+function DataviewPage({ caller, savedData, savedFormat, urlid }: Props) {
   return (
     <DataRecordEditor
       caller={caller}
       savedData={savedData}
       savedFormat={savedFormat}
+      urlid={urlid}
     />
   );
 }
