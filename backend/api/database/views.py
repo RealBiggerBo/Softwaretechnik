@@ -127,15 +127,23 @@ class DataRecordAPI(APIView):
 
         # Serializer auf das Model anwenden
         serializer = AnfrageSerializer(record) if type_lower == "anfrage" else FallSerializer(record)
-        data = serializer.data  # hier sind die Werte noch verschlüsselt
+        serializer_data = serializer.data  # hier sind die Werte noch verschlüsselt
 
         # Sensible Felder ermitteln (Modelname groß)
         model_name = "Anfrage" if type_lower == "anfrage" else "Fall"
         sensitive_keys = get_sensitive_fields(model_name, id)
 
-        data["values"] = decrypt_sensitive_fields(data.get("values") or {}, sensitive_keys)
+        # Entschlüsseln
+        decrypted_values = decrypt_sensitive_fields(serializer_data.get("values") or {}, sensitive_keys)
 
-        return Response(data, status=status.HTTP_200_OK)
+        # Neues Dict für Response
+        response_data = {
+            "pk": serializer_data.get("pk"),
+            "structure": serializer_data.get("structure"),
+            "values": decrypted_values
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
