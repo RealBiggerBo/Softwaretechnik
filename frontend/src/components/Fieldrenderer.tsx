@@ -24,6 +24,7 @@ interface Props {
   field: DataField;
   isEditMode: boolean;
   caller: IApiCaller;
+  maxId: number;
   onChange: (field: DataField) => void;
   onAdd: (fieldToAdd: DataField) => void;
   onDelete: (id: number) => void;
@@ -34,6 +35,7 @@ function GetFieldComponent(
   field: DataField,
   isEditMode: boolean,
   caller: IApiCaller,
+  maxId: number,
   onChange: (field: DataField) => void,
   onAdd: (fieldToAdd: DataField) => void,
   onDelete: (id: number) => void,
@@ -91,9 +93,12 @@ function GetFieldComponent(
           listField={field}
           isEditMode={isEditMode}
           caller={caller}
+          maxId={maxId}
           onChange={onChange}
           setOpenDialog={setOpenDialog}
-          onAdd={onAdd}
+          // onAdd={(toAdd) => {
+          //   onChange({ ...field, id: maxId });
+          // }}
         />
       );
     case "group":
@@ -156,6 +161,7 @@ const FieldRenderer = memo(function FieldRenderer({
   field,
   isEditMode,
   caller,
+  maxId,
   onChange,
   onAdd,
   onDelete,
@@ -183,6 +189,7 @@ const FieldRenderer = memo(function FieldRenderer({
           field,
           isEditMode,
           caller,
+          maxId,
           onChange,
           onAdd,
           onDelete,

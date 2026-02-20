@@ -15,7 +15,7 @@ interface Props {
   onChange: (record: DataRecord) => void;
 }
 
-function GetMaxId(datafield: DataField) {
+function GetMaxId(datafield: DataField): number {
   switch (datafield.type) {
     case "boolean":
     case "date":
@@ -25,11 +25,15 @@ function GetMaxId(datafield: DataField) {
       return datafield.id;
     case "list":
     case "group":
-      return Math.max(...datafield.element.dataFields.map((f) => f.id));
+      return Math.max(...datafield.element.dataFields.map((f) => GetMaxId(f)));
   }
 }
 
-function AddNewField(record: DataRecord, newField: DataField): DataRecord {
+function AddNewField(
+  record: DataRecord,
+  newField: DataField,
+  maxId: number,
+): DataRecord {
   if (record === null) {
     return { dataFields: [] };
   }
@@ -37,7 +41,7 @@ function AddNewField(record: DataRecord, newField: DataField): DataRecord {
   if (record.dataFields.length === 0) {
     id = 1;
   } else {
-    id = Math.max(...record.dataFields.map((f) => GetMaxId(f))) + 1;
+    id = maxId + 1;
   }
 
   const fieldWithId = {
@@ -91,7 +95,13 @@ function DataRecordDisplay({
 
   const handleAddField = useCallback(
     (newField: DataField) => {
-      onChange(AddNewField(recordRef.current, newField));
+      onChange(
+        AddNewField(
+          recordRef.current,
+          newField,
+          Math.max(...record.dataFields.map((f) => GetMaxId(f))),
+        ),
+      );
     },
     [onChange],
   );
@@ -151,6 +161,7 @@ function DataRecordDisplay({
             onAdd={handleAddField}
             onDelete={handleDeleteRequest}
             setOpenDialog={setOpenDeleteDialog}
+            maxId={Math.max(...record.dataFields.map((f) => GetMaxId(f)))}
           />
           <br />
         </div>

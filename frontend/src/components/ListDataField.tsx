@@ -12,20 +12,22 @@ interface Props {
   listField: ListField;
   isEditMode: boolean;
   caller: IApiCaller;
+  maxId: number;
   onChange: (field: DataField) => void;
   setOpenDialog: (showDialog: boolean) => void;
-  onAdd: (fieldToAdd: DataField) => void;
+  //onAdd: (fieldToAdd: DataField) => void;
 }
 
 function ListDataField({
   listField,
   isEditMode,
   caller,
+  maxId,
   onChange,
   setOpenDialog,
-  onAdd,
+  //onAdd,
 }: Props) {
-  function duplucate(listField: ListField) {
+  function duplicate(listField: ListField) {
     listField.records.push(listField.element);
     return listField;
   }
@@ -48,31 +50,75 @@ function ListDataField({
           value={listField.name}
         ></Tf>
       )}
-      {listField.records.map((record) => (
-        <DataRecordDisplay
-          record={record}
-          displayEditButtons={false} //always false here. We will display the editing somwhere else
-          isEditMode={isEditMode} //same here
-          caller={caller}
-          onChange={(toChange) =>
+      {!isEditMode &&
+        listField.records.map((record, indexOuter) => (
+          <>
+            <DataRecordDisplay
+              record={record}
+              displayEditButtons={false} //always false here. We will display the editing somwhere else
+              isEditMode={isEditMode} //same here
+              caller={caller}
+              onChange={(toChange) =>
+                onChange({
+                  ...listField,
+                  records: listField.records.map((record, indexInner) =>
+                    indexOuter == indexInner ? toChange : record,
+                  ),
+                })
+              }
+            />
+            <StyledButton
+              text="Eintrag löschen"
+              color="error"
+              onClick={() =>
+                onChange({
+                  ...listField,
+                  records: listField.records.filter((r, i) => i !== indexOuter),
+                })
+              }
+            />
+          </>
+        ))}
+      {isEditMode && (
+        <>
+          <DataRecordDisplay
+            record={listField.element}
+            displayEditButtons={true}
+            isEditMode={true}
+            caller={caller}
+            onChange={(toChange) =>
+              onChange({
+                ...listField,
+                element: toChange,
+                records: listField.records.map(() => toChange),
+              })
+            }
+          />
+        </>
+      )}
+      {isEditMode && (
+        <AddNewDataField
+          isEditMode={isEditMode}
+          addNewField={(toAdd) => {
+            const fieldToAdd: DataField = { ...toAdd, id: maxId + 1 };
+            console.log("Added new dataField in List with id: " + maxId + 1);
+
             onChange({
               ...listField,
-              records: listField.records.map((record) =>
-                record.dataFields == toChange.dataFields ? toChange : record,
-              ),
-            })
-          }
+              element: { dataFields: [...listField.element.dataFields, toAdd] },
+              records: listField.records.map((r) => {
+                return { dataFields: [...r.dataFields, toAdd] };
+              }),
+            });
+          }}
         />
-      ))}
-      {isEditMode && (
-        <AddNewDataField isEditMode={isEditMode} addNewField={onAdd} />
       )}
       {!isEditMode && (
         <StyledButton
           text={text}
           size="small"
           variant="outlined"
-          onClick={() => onChange(duplucate(listField))}
+          onClick={() => onChange(duplicate(listField))}
         />
       )}
     </Stack>

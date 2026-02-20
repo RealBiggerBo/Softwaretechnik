@@ -44,6 +44,7 @@ export type ListField = BaseField & {
 export type GroupField = BaseField & {
   type: "group";
   element: DataRecord;
+  //record: DataRecord?????????????
 };
 
 export type DataField =
