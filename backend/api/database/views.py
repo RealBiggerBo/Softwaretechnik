@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
-from api.database.encryption_utils import decrypt_sensitive_fields
+from api.database.encryption_utils import decrypt_sensitive_fields, get_sensitive_fields
 
 class DataAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -110,21 +110,32 @@ class DataRecordAPI(APIView):
 
         id = request.GET.get("id", None)
         
-        # Daten abrufen (verschlüsselt)
-        response = get_data_record(id, type)
+        # Daten aus dem Model holen
+        if type.lower() == "anfrage":
+            try:
+                record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
+            except Anfrage.DoesNotExist:
+                return Response({"error": "Anfrage nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+        elif type.lower() == "fall":
+            try:
+                record = Fall.objects.get(pk=id) if id else Fall.objects.last()
+            except Fall.DoesNotExist:
+                return Response({"error": "Fall nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not hasattr(response, 'data'):
-            return response 
+        # Serializer auf das Model anwenden
+        serializer = AnfrageSerializer(record) if type.lower() == "anfrage" else FallSerializer(record)
+        data = serializer.data  # hier noch verschlüsselt
 
-        # Sensible Felder ermitteln
+        # Sensible Felder bestimmen
         sensitive_keys = get_sensitive_fields(type, id)
 
-        # Entschlüsseln
-        decrypted_data = decrypt_sensitive_fields(response.data, sensitive_keys)
+        # Sensible Felder entschlüsseln
+        decrypted_data = decrypt_sensitive_fields(data, sensitive_keys)
 
         # Entschlüsselte Daten zurückgeben
-        return Response(decrypted_data)
-        #return get_data_record(id, type)
+        return Response(decrypted_data, status=status.HTTP_200_OK)
     
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
