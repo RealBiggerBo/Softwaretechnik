@@ -7,9 +7,16 @@
 
 ## adminuser
 
+Username:
+
 ```
-Username: superuser
-Passwort: 0UsQzBB1
+superuser
+```
+
+Passwort:
+
+```
+0UsQzBB1
 ```
 
 ## Backend (Django)
@@ -41,155 +48,48 @@ Bei sonstigen Fehlermeldungen kann ChatGPT/Gemini helfen.
 
 %N: Index des DataRecords
 
-## DataAPI
+|Beschreibung|Berechtigung|URL|Methode|Parameter|Rückgabe|
+|------------|------------|---|-------|---------|--------|
+|Datensatz anfragen|Standard|[/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/anfrage?id=1)|Get||DataSet|
+|Datensatz speichern|Standard|[/api/data/data/%T](http://127.0.0.1:8000/api/data/data/anfrage)|Post|DataSet|DataSet|
+|Datensatz überschreiben|Standard|[/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/anfrage?id=1)|Put|DataSet|DataSet|
+|Datensatz löschen|Standard|[/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/anfrage?id=1)|Delete|||
+|DataRecord anfragen|Standard|[/api/data/data_record/%T?id=%N](http://127.0.0.1:8000/api/data/data_record/anfrage?id=1)|Get||DataRecord|
+|Letztes DataRecord anfragen|Standard|[/api/data/data_record/%T](http://127.0.0.1:8000/api/data/data_record/anfrage)|Get||DataRecord|
+|Alle DataRecords anfragen|Standard|[/api/data/data_record_list/%T](http://127.0.0.1:8000/api/data/data_record_list/anfrage)|Get||DataRecord|
+|DataRecord speichern|Erweitert|[/api/data/data_record_admin/%T](http://127.0.0.1:8000/api/data/data_record_admin/anfrage)|Post|DataRecord|DataRecord|
 
-### DELETE
+# DataSet
 
-Löscht einen Datensatz.
+|Attribut|Typ|Schreibzugriff|Erlaubte Werte|
+|--------|---|--------------|--------------|
+|pk|Integer|Nein||
+|data_record|String|Ja|"Anfrage", "Fall"|
+|version|Integer|Ja|ID einer DataRecord-Version|
+|values|Object|Ja|Schlüssel-Werte Paare für alle im DataRecord definierten Felder|
 
-URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
+# DataRecord
 
-Zugriffsrecht: Standard
+|Attribut|Typ|Schreibzugriff|Erlaubte Werte|
+|--------|---|--------------|--------------|
+|pk|Integer|Nein||
+|structure|Object|Ja|-> structure|
 
-### GET
+### structure
 
-Gibt einen Datensatz zurück.
+Besteht aus Objekten mit folgenden Attributen.
 
-URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
+|Attribut|Typ|Erforderlich für|Optional für|Erlaubte Werte|
+|--------|---|----------------|------------|--------------|
+|name|String|alle Felder|||
+|type|String|alle Felder||"Boolean", "Date, "Group", "Integer", "List", "String"|
+|required|Boolean|alle Felder|||
+|sensitive|Boolean|alle Felder|||
+|element|Object|Group, List||-> structure|
+|possibleValues|[String]||String||
 
-Zugriffsrecht: Standard
 
-Rückgabe:
-
-```json
-{
-    "pk": Integer,
-    "data_record": "Anfrage"/"Fall",
-    "version": Integer,
-    "values": {
-        "Name": Wert,
-        ...
-    }
-}
-```
-
-### POST
-
-Speichert einen Datensatz.
-
-URL: [/api/data/data/%T](http://127.0.0.1:8000/api/data/data/fall)
-
-Zugriffsrecht: Standard
-
-Parameter:
-
-```json
-{
-    "data_record": "Anfrage"/"Fall",
-    "version": Integer,
-    "values": {
-        "Name": Wert,
-        ...
-    }
-}
-```
-
-Rückgabe:
-
-```json
-{
-    "pk": Integer,
-    "data_record": "Anfrage"/"Fall",
-    "version": Integer,
-    "values": {
-        "Name": Wert,
-        ...
-    }
-}
-```
-
-### PUT
-
-Überschreibt einen Datensatz.
-
-URL: [/api/data/data/%T?id=%N](http://127.0.0.1:8000/api/data/data/fall?id=1)
-
-Zugriffsrecht: Standard
-
-Parameter:
-
-```json
-{
-    "data_record": "Anfrage"/"Fall",
-    "version": Integer,
-    "values": {
-        "Name": Wert,
-        ...
-    }
-}
-```
-
-## DataRecordAPI
-
-### GET
-
-Gibt die Struktur eines DataRecords zurück.
-
-URL: [/api/data/data_record/%T?id=%N](http://127.0.0.1:8000/api/data/data_record)
-
-Zugriffsrecht: Standard
-
-Rückgabe:
-
-```json
-{   "structure": {
-        "1": {
-            "name": String,
-            "type": String,
-            "required": Boolean,
-            "element": {} (wie "structure", für "type"="List"),
-            "maxLength": Integer (für "type"="String"),
-            "possibleValues": [String] (für "type"="String"),
-        },
-
-        ...
-    }
-}
-```
-
-## DataRecordAdminAPI
-
-### POST
-
-Erstellt eine neue Version eines DataRecords.
-
-URL: [/api/data/data_record_admin/%T](http://127.0.0.1:8000/api/data/data_record)
-
-Zugriffsrecht: Erweitert
-
-Rückgabe:
-
-```json
-{   "structure": {
-        "1": {
-            "name": String,
-            "type": String,
-            "required": Boolean,
-            "element": {} (wie "structure", für "type"="List"),
-            "maxLength": Integer (für "type"="String"),
-            "possibleValues": [String] (für "type"="String"),
-        },
-
-        ...
-    }
-}
-```
-
-## SearchAPI
-
-noch nicht vorhanden (URL: /api/data/search/%T)
-
-## Projekt lokal mit Docker starten
+# Projekt lokal mit Docker starten
 
 ### Voraussetzungen
 
