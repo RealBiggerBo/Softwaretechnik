@@ -4,7 +4,7 @@ import {
   type NavigateOptions,
 } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
 import { Alert, Fab, Snackbar } from "@mui/material";
@@ -195,7 +195,7 @@ async function UpdateDataRecord(
 
 async function LoadDataAndFormat(
   type: dataRecordType,
-  id: number,
+  id: number | null,
   caller: IApiCaller,
   setDataRecord: (record: DataRecord) => void,
   setFormatVersion: (version: number) => void,
@@ -208,6 +208,10 @@ async function LoadDataAndFormat(
     type == "letzte-anfrage" ||
     type == "letzter-fall"
   ) {
+    if (id === null) {
+      console.log("Tried to load id: null");
+      return;
+    }
     //get by id
     const res = await GetDataById(type, id, caller);
 
@@ -309,6 +313,18 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
   const navigate = useNavigate();
 
+  const handleRecordChange = useCallback(
+    (nextRecord: DataRecord) => {
+      if (isEditMode) {
+        savedFormat.current = false;
+      } else {
+        savedData.current = false;
+      }
+      setRecord(nextRecord);
+    },
+    [isEditMode, savedData, savedFormat],
+  );
+
   const dialogField: DialogObject = {
     isOpen: openFieldDialog,
     title: "",
@@ -345,17 +361,16 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
       const role = await GetRole(caller);
       if (!role) return;
       setRole(role);
-      if (urlid.current !== null) {
-        await LoadDataAndFormat(
-          type,
-          urlid.current,
-          caller,
-          setRecord,
-          setFormatVersion,
-          setMsgID,
-          setOpenIdDialog,
-        );
-      }
+      console.log(urlid.current);
+      await LoadDataAndFormat(
+        type,
+        urlid.current,
+        caller,
+        setRecord,
+        setFormatVersion,
+        setMsgID,
+        setOpenIdDialog,
+      );
     }
     loadData();
   }, [caller, type, urlid.current]);
@@ -583,14 +598,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
         displayEditButtons={role !== null && role !== "base_user"}
         isEditMode={isEditMode}
         caller={caller}
-        onChange={(record) => {
-          if (isEditMode) {
-            savedFormat.current = false;
-          } else {
-            savedData.current = false;
-          }
-          setRecord(record);
-        }}
+        onChange={handleRecordChange}
       />
       <br />
       {deletable() && (

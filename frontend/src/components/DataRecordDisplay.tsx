@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { DataField } from "../classes/DataField";
 import type { DataRecord } from "../classes/DataRecord";
 import type { IApiCaller } from "../classes/IApiCaller";
@@ -60,9 +60,41 @@ function DataRecordDisplay({
   caller,
   onChange,
 }: Props) {
+  const recordRef = useRef(record);
+  recordRef.current = record;
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [fieldToDelete, setFieldToDelete] = useState<DataField | null>(null);
   const [msg, setmg] = useState("");
+
+  const handleFieldChange = useCallback(
+    (updatedField: DataField) => {
+      onChange(UpdateField(recordRef.current, updatedField, updatedField));
+    },
+    [onChange],
+  );
+
+  const handleAddField = useCallback(
+    (newField: DataField) => {
+      onChange(AddNewField(recordRef.current, newField));
+    },
+    [onChange],
+  );
+
+  const handleRemoveField = useCallback(
+    (idToRemove: number) => {
+      onChange(RemoveField(recordRef.current, idToRemove));
+    },
+    [onChange],
+  );
+
+  const handleDeleteRequest = useCallback((fieldId: number) => {
+    const currentRecord = recordRef.current;
+    const field = currentRecord.dataFields.find((f) => f.id === fieldId);
+    if (!field) return;
+    setmg(`Möchten Sie das Feld "${field.name}" wirklich löschen?`);
+    setFieldToDelete(field);
+    setOpenDeleteDialog(true);
+  }, []);
 
   const dialogDelete: DialogObject = {
     isOpen: openDeleteDialog,
@@ -78,15 +110,9 @@ function DataRecordDisplay({
     },
   };
 
-  const handleDeleteClick = (field: DataField) => {
-    setmg(`Möchten Sie das Feld "${field.name}" wirklich löschen?`);
-    setFieldToDelete(field);
-    setOpenDeleteDialog(true);
-  };
-
   const confirmDelete = () => {
     if (fieldToDelete) {
-      onChange(RemoveField(record, fieldToDelete.id));
+      handleRemoveField(fieldToDelete.id);
     }
     setOpenDeleteDialog(false);
     setFieldToDelete(null);
@@ -105,11 +131,9 @@ function DataRecordDisplay({
             field={field}
             isEditMode={isEditMode}
             caller={caller}
-            onChange={(toUpdate) =>
-              onChange(UpdateField(record, field, toUpdate))
-            }
-            onAdd={(fieldToAdd) => onChange(AddNewField(record, fieldToAdd))}
-            onDelete={() => handleDeleteClick(field)}
+            onChange={handleFieldChange}
+            onAdd={handleAddField}
+            onDelete={handleDeleteRequest}
             setOpenDialog={setOpenDeleteDialog}
           />
           <br />
@@ -118,7 +142,7 @@ function DataRecordDisplay({
       {displayEditButtons && (
         <AddNewDataField
           isEditMode={isEditMode}
-          addNewField={(newField) => onChange(AddNewField(record, newField))}
+          addNewField={handleAddField}
         />
       )}
 
