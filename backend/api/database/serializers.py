@@ -1,5 +1,9 @@
 from rest_framework import serializers
+from api.database.models import DataSet
 from .models import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AnfrageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,12 +32,20 @@ class FallSerializer(serializers.ModelSerializer):
         return datarecord_validation(data)
 
 class DataSetSerializer(serializers.ModelSerializer):
+    values = serializers.SerializerMethodField()
     class Meta:
         model = DataSet
         fields = ["pk",
                     "data_record",
                     "version",
                     "values"]
+        
+    def get_values(self, obj):
+        try: 
+            return obj.get_decrypted_values()
+        except Exception as e:
+            logger.warning(f"Entschlüsselung fehlgeschlagen für Datensatz {obj.pk}. Grund: {e}")
+            return {}
 
 def datarecord_validation(data):
     field_names = data["structure"]
