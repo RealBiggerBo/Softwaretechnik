@@ -5,6 +5,7 @@ import type { DataField, EnumField } from "../classes/DataField";
 import { ToUiItem, type UiItem } from "../classes/UiItems";
 import type { FilterOption } from "../classes/FilterOption";
 import FilterOptionEditor from "./FilterOptionEditor";
+import { memo, useMemo } from "react";
 
 interface Props {
   option: UiItem<FilterOption>;
@@ -131,12 +132,22 @@ function GetSelectedFilterOption(
 }
 
 function FilterOptionDisplay({ option, format, onChange }: Props) {
-  const selectedDataField = format.dataFields.find(
-    (f) => f.id === option.value.fieldId,
+  const selectedDataField = useMemo(
+    () => format.dataFields.find((f) => f.id === option.value.fieldId),
+    [format.dataFields, option.value.fieldId],
   );
-  const filterOptions = GenerateAutoCompleteOptions(selectedDataField);
-  const selectedFilterOption = GetSelectedFilterOption(option, filterOptions);
-  const selectedFieldOption = GetSelectedFieldOption(option, format.dataFields);
+  const filterOptions = useMemo(
+    () => GenerateAutoCompleteOptions(selectedDataField),
+    [selectedDataField],
+  );
+  const selectedFilterOption = useMemo(
+    () => GetSelectedFilterOption(option, filterOptions),
+    [option, filterOptions],
+  );
+  const selectedFieldOption = useMemo(
+    () => GetSelectedFieldOption(option, format.dataFields),
+    [option, format.dataFields],
+  );
 
   return (
     <Stack spacing={1}>
@@ -145,13 +156,13 @@ function FilterOptionDisplay({ option, format, onChange }: Props) {
           options={format.dataFields}
           value={selectedFieldOption}
           getOptionLabel={(f) => f.name}
-          onChange={(_, field) => {
-            onChange(
-              field
-                ? ToUiItem({ type: "Empty", fieldId: field.id })
-                : ToUiItem({ type: "Empty", fieldId: -1 }),
-            );
-          }}
+        onChange={(_, field) => {
+          onChange(
+            field
+              ? ToUiItem({ type: "Empty", fieldId: field.id }, option)
+              : ToUiItem({ type: "Empty", fieldId: -1 }, option),
+          );
+        }}
           renderInput={(params) => (
             <TextField {...params} label="Feld auswählen" />
           )}
@@ -167,11 +178,15 @@ function FilterOptionDisplay({ option, format, onChange }: Props) {
             getOptionKey={(option) => option.filter?.id}
             onChange={(_, selectedOption) => {
               onChange(
-                selectedOption?.filter ??
-                  ToUiItem({
-                    type: "Empty",
-                    fieldId: -1,
-                  }),
+                selectedOption?.filter
+                  ? ToUiItem(selectedOption.filter.value, option)
+                  : ToUiItem(
+                      {
+                        type: "Empty",
+                        fieldId: -1,
+                      },
+                      option,
+                    ),
               );
             }}
             sx={{ flex: 1 }}
@@ -188,4 +203,4 @@ function FilterOptionDisplay({ option, format, onChange }: Props) {
   );
 }
 
-export default FilterOptionDisplay;
+export default memo(FilterOptionDisplay);

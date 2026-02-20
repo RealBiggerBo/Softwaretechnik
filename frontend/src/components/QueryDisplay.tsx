@@ -5,43 +5,13 @@ import { ToUiItem, type UiItem, type UiQuery } from "../classes/UiItems";
 import type { FilterOption } from "../classes/FilterOption";
 import FilterOptionList from "./FilterOptionList";
 import DisplayActionList from "./DisplayActionList";
+import { memo, useCallback } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
   query: UiItem<UiQuery>;
   format: DataRecord;
-  onChange: (query: UiItem<UiQuery>) => void;
-}
-
-function UpdateDisplayAction(
-  oldQuery: UiItem<UiQuery>,
-  actionToReplace: UiItem<DisplayAction>,
-  newAction: UiItem<DisplayAction>,
-): UiItem<UiQuery> {
-  return {
-    ...oldQuery,
-    value: {
-      ...oldQuery.value,
-      displayActions: oldQuery.value.displayActions.map((currentAction, i) =>
-        currentAction === actionToReplace ? newAction : currentAction,
-      ),
-    },
-  };
-}
-
-function UpdateFilterOption(
-  oldQuery: UiItem<UiQuery>,
-  optionToReplace: UiItem<FilterOption>,
-  newOption: UiItem<FilterOption>,
-): UiItem<UiQuery> {
-  return {
-    ...oldQuery,
-    value: {
-      ...oldQuery.value,
-      filterOptions: oldQuery.value.filterOptions.map((currentOption, i) =>
-        currentOption.id === optionToReplace.id ? newOption : currentOption,
-      ),
-    },
-  };
+  setQuery: Dispatch<SetStateAction<UiItem<UiQuery>>>;
 }
 
 function AddDisplayAction(oldQuery: UiItem<UiQuery>): UiItem<UiQuery> {
@@ -70,48 +40,96 @@ function AddFilterOption(oldQuery: UiItem<UiQuery>): UiItem<UiQuery> {
   };
 }
 
-function RemoveDisplayAction(
-  oldQuery: UiItem<UiQuery>,
-  actionToRemove: UiItem<DisplayAction>,
-): UiItem<UiQuery> {
-  return {
-    ...oldQuery,
-    value: {
-      ...oldQuery.value,
-      displayActions: oldQuery.value.displayActions.filter(
-        (action) => !(action === actionToRemove),
-      ),
+function QueryDisplay({ query, format, setQuery }: Props) {
+  const handleTitleChange = useCallback(
+    (value: string) => {
+      setQuery((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          queryTitle: value,
+        },
+      }));
     },
-  };
-}
+    [setQuery],
+  );
 
-function RemoveFilterOption(
-  oldQuery: UiItem<UiQuery>,
-  actionToRemove: UiItem<FilterOption>,
-): UiItem<UiQuery> {
-  return {
-    ...oldQuery,
-    value: {
-      ...oldQuery.value,
-      filterOptions: oldQuery.value.filterOptions.filter(
-        (action) => !(action === actionToRemove),
-      ),
+  const handleUpdateDisplayActionById = useCallback(
+    (actionId: string, newAction: UiItem<DisplayAction>) => {
+      setQuery((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          displayActions: prev.value.displayActions.map((action) =>
+            action.id === actionId
+              ? { ...newAction, id: actionId }
+              : action,
+          ),
+        },
+      }));
     },
-  };
-}
+    [setQuery],
+  );
 
-function QueryDisplay({ query, format, onChange }: Props) {
+  const handleAddDisplayAction = useCallback(() => {
+    setQuery(AddDisplayAction);
+  }, [setQuery]);
+
+  const handleRemoveDisplayActionById = useCallback(
+    (actionId: string) => {
+      setQuery((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          displayActions: prev.value.displayActions.filter(
+            (action) => action.id !== actionId,
+          ),
+        },
+      }));
+    },
+    [setQuery],
+  );
+
+  const handleUpdateFilterOptionById = useCallback(
+    (optionId: string, nextOption: UiItem<FilterOption>) => {
+      setQuery((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          filterOptions: prev.value.filterOptions.map((option) =>
+            option.id === optionId ? { ...nextOption, id: optionId } : option,
+          ),
+        },
+      }));
+    },
+    [setQuery],
+  );
+
+  const handleAddFilterOption = useCallback(() => {
+    setQuery(AddFilterOption);
+  }, [setQuery]);
+
+  const handleRemoveFilterOptionById = useCallback(
+    (optionId: string) => {
+      setQuery((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          filterOptions: prev.value.filterOptions.filter(
+            (option) => option.id !== optionId,
+          ),
+        },
+      }));
+    },
+    [setQuery],
+  );
+
   return (
     <>
       <TextField
         label={"Titel"}
         value={query.value.queryTitle ? query.value.queryTitle : ""}
-        onChange={(e) =>
-          onChange({
-            ...query,
-            value: { ...query.value, queryTitle: e.target.value },
-          })
-        }
+        onChange={(e) => handleTitleChange(e.target.value)}
       />
 
       <DisplayActionList
@@ -119,13 +137,9 @@ function QueryDisplay({ query, format, onChange }: Props) {
         format={format}
         addText="Neue Anzeigeoption"
         removeText="Entfernen"
-        updateDisplayAction={(actionToUpdate, newAction) =>
-          onChange(UpdateDisplayAction(query, actionToUpdate, newAction))
-        }
-        addNewDisplayAction={() => onChange(AddDisplayAction(query))}
-        removeDisplayAction={(actionToRemove) =>
-          onChange(RemoveDisplayAction(query, actionToRemove))
-        }
+        addNewDisplayAction={handleAddDisplayAction}
+        updateDisplayActionById={handleUpdateDisplayActionById}
+        removeDisplayActionById={handleRemoveDisplayActionById}
       />
 
       <FilterOptionList
@@ -133,16 +147,12 @@ function QueryDisplay({ query, format, onChange }: Props) {
         format={format}
         addText="Neue Filteroption"
         removeText="Entfernen"
-        updateFilterOption={(optionToUpdate, newOption) =>
-          onChange(UpdateFilterOption(query, optionToUpdate, newOption))
-        }
-        addNewFilterOption={() => onChange(AddFilterOption(query))}
-        removeFilterOption={(optionToRemove) =>
-          onChange(RemoveFilterOption(query, optionToRemove))
-        }
+        addNewFilterOption={handleAddFilterOption}
+        updateFilterOptionById={handleUpdateFilterOptionById}
+        removeFilterOptionById={handleRemoveFilterOptionById}
       />
     </>
   );
 }
 
-export default QueryDisplay;
+export default memo(QueryDisplay);

@@ -4,6 +4,7 @@ import { TextField } from "@mui/material";
 import { type DisplayAction } from "../classes/DisplayAction";
 import type { DataField } from "../classes/DataField";
 import { ToUiItem, type UiItem } from "../classes/UiItems";
+import { memo, useMemo } from "react";
 
 interface Props {
   action: UiItem<DisplayAction>;
@@ -74,12 +75,22 @@ function GetSelectedActionOption(
 }
 
 function DisplayActionDisplay({ action, format, onChange }: Props) {
-  const selectedDataField = format.dataFields.find(
-    (f) => f.id === action.value.fieldId,
+  const selectedDataField = useMemo(
+    () => format.dataFields.find((f) => f.id === action.value.fieldId),
+    [format.dataFields, action.value.fieldId],
   );
-  const actionOptions = GenerateAutoCompleteOptions(selectedDataField);
-  const selectedActionOption = GetSelectedActionOption(action, actionOptions);
-  const selectedFieldOption = GetSelectedFieldOption(action, format.dataFields);
+  const actionOptions = useMemo(
+    () => GenerateAutoCompleteOptions(selectedDataField),
+    [selectedDataField],
+  );
+  const selectedActionOption = useMemo(
+    () => GetSelectedActionOption(action, actionOptions),
+    [action, actionOptions],
+  );
+  const selectedFieldOption = useMemo(
+    () => GetSelectedFieldOption(action, format.dataFields),
+    [action, format.dataFields],
+  );
 
   return (
     <>
@@ -102,16 +113,22 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
         onChange={(_, field) => {
           onChange(
             field
-              ? ToUiItem({
-                  type: "Empty",
-                  fieldId: field.id,
-                  title: action.value.title,
-                })
-              : ToUiItem({
-                  type: "Empty",
-                  fieldId: -1,
-                  title: action.value.title,
-                }),
+              ? ToUiItem(
+                  {
+                    type: "Empty",
+                    fieldId: field.id,
+                    title: action.value.title,
+                  },
+                  action,
+                )
+              : ToUiItem(
+                  {
+                    type: "Empty",
+                    fieldId: -1,
+                    title: action.value.title,
+                  },
+                  action,
+                ),
           );
         }}
         renderInput={(params) => (
@@ -127,9 +144,6 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
           )}
           getOptionKey={(option) => option.action?.id}
           onChange={(_, selectedOption) => {
-            const i = selectedOption && selectedOption.action ? 0 : 1;
-
-            alert("change " + action.value.title);
             onChange(
               selectedOption && selectedOption.action
                 ? {
@@ -139,11 +153,14 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
                       type: selectedOption?.action.value.type,
                     },
                   }
-                : ToUiItem({
-                    type: "Empty",
-                    fieldId: -1,
-                    title: action.value.title,
-                  }),
+                : ToUiItem(
+                    {
+                      type: "Empty",
+                      fieldId: -1,
+                      title: action.value.title,
+                    },
+                    action,
+                  ),
             );
           }}
         />
@@ -152,4 +169,4 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
   );
 }
 
-export default DisplayActionDisplay;
+export default memo(DisplayActionDisplay);

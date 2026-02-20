@@ -4,6 +4,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
+import type { SelectChangeEvent } from "@mui/material/Select";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -15,7 +16,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PresetItemListElement } from "../classes/StatisticsTypes";
 import { type IApiCaller } from "../classes/IApiCaller";
 import { type DataRecord } from "../classes/DataRecord";
@@ -26,7 +27,7 @@ import {
   type UiItem,
   type UiPreset,
 } from "../classes/UiItems";
-import PresetDisplay from "../components/PresetDisplay";
+import PresetEditor from "../components/PresetEditor";
 import StyledButton from "../components/Styledbutton";
 import StatisticOutputDisplay from "../classes/StatisticOutputDisplay";
 import type { QueryOutput } from "../classes/StatisticOutput";
@@ -37,7 +38,8 @@ interface Props {
 
 function StatisticsPage({ caller }: Props) {
   const [presets, setPresets] = useState<PresetItemListElement[]>([]);
-  const [preset, setPreset] = useState<UiItem<UiPreset> | null>(null);
+  const [presetSeed, setPresetSeed] = useState<UiItem<UiPreset> | null>(null);
+  const presetRef = useRef<UiItem<UiPreset> | null>(null);
   const [presetTitle, setPresetTitle] = useState<string>("");
   const [fileFormat, setFileFormat] = useState<string>("csv");
   const [format, setFormat] = useState<DataRecord>({ dataFields: [] });
@@ -51,6 +53,21 @@ function StatisticsPage({ caller }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
 
+  const handlePresetChange = useCallback(
+    (nextPreset: UiItem<UiPreset> | null) => {
+      presetRef.current = nextPreset;
+    },
+    [],
+  );
+
+  const presetTitles = useMemo(
+    () =>
+      presets
+        .filter((presetItem) => presetItem.type === statisticsType)
+        .map((presetItem) => presetItem.title),
+    [presets, statisticsType],
+  );
+
   useEffect(() => {
     const fetchPresets = async () => {
       console.log("getStatisticsList");
@@ -62,7 +79,8 @@ function StatisticsPage({ caller }: Props) {
         return;
       }
       setPresets(presetsList);
-      setPreset(null);
+      setPresetSeed(null);
+      presetRef.current = null;
       setPresetTitle("");
     };
 
@@ -106,12 +124,12 @@ function StatisticsPage({ caller }: Props) {
     link.remove();
   }
 
-  function handlePresetTitleChange(
-    _event: React.SyntheticEvent,
-    value: string | null,
-  ) {
-    setPresetTitle(value ?? "");
-  }
+  const handlePresetTitleChange = useCallback(
+    (_event: React.SyntheticEvent, value: string | null) => {
+      setPresetTitle(value ?? "");
+    },
+    [],
+  );
 
   async function handlePresetShowOrCreate() {
     if (!presetTitle) return;
@@ -128,7 +146,9 @@ function StatisticsPage({ caller }: Props) {
       } = await caller.GetStatisticsPreset(existingPreset.title);
 
       if (success) {
-        setPreset(ToUiPreset(loadedPreset));
+        const uiPreset = ToUiPreset(loadedPreset);
+        setPresetSeed(uiPreset);
+        presetRef.current = uiPreset;
       } else {
         setSnackbarMessage(errorMsg);
         setSnackbarOpen(true);
@@ -143,7 +163,8 @@ function StatisticsPage({ caller }: Props) {
       queries: [],
     });
 
-    setPreset(newPreset);
+    setPresetSeed(newPreset);
+    presetRef.current = newPreset;
     setPresets((prev) => [
       ...prev,
       {
@@ -154,20 +175,29 @@ function StatisticsPage({ caller }: Props) {
     ]);
   }
 
-  function handleStatisticsTypeChange(
-    event: React.MouseEvent<HTMLElement>,
-    value: "Anfrage" | "Fall",
-  ): void {
-    setStatisticsType(value);
-  }
+  const handleStatisticsTypeChange = useCallback(
+    (event: React.MouseEvent<HTMLElement>, value: "Anfrage" | "Fall" | null) => {
+      if (!value) return;
+      setStatisticsType(value);
+    },
+    [],
+  );
+
+  const handleFileFormatChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      setFileFormat(event.target.value);
+    },
+    [],
+  );
 
   async function handleSave() {
-    if (!preset) return;
+    const currentPreset = presetRef.current;
+    if (!currentPreset) return;
 
     const res = await caller.TryCreateStatisticPreset(
       statisticsType,
       presetTitle,
-      ToNormalPreset(preset),
+      ToNormalPreset(currentPreset),
     );
     console.log(res.errorMsg);
     if (!res.success) {
@@ -185,11 +215,12 @@ function StatisticsPage({ caller }: Props) {
   }
 
   async function handleOverwriteConfirm() {
-    if (!preset) return;
+    const currentPreset = presetRef.current;
+    if (!currentPreset) return;
     const res = await caller.TryUpdateStatisticPreset(
       statisticsType,
       presetTitle,
-      ToNormalPreset(preset),
+      ToNormalPreset(currentPreset),
     );
     setOverwritePresetDialogOpen(false);
     if (!res.success) {
@@ -199,10 +230,11 @@ function StatisticsPage({ caller }: Props) {
   }
 
   async function handleExecuteStatistic() {
-    if (!preset) return;
+    const currentPreset = presetRef.current;
+    if (!currentPreset) return;
 
     setIsLoading(true);
-    const res = await caller.GetStatisticsData(ToNormalPreset(preset));
+    const res = await caller.GetStatisticsData(ToNormalPreset(currentPreset));
 
     if (res.success) {
       setStatisticResults(res.results);
@@ -232,9 +264,7 @@ function StatisticsPage({ caller }: Props) {
                 <Autocomplete
                   fullWidth
                   freeSolo
-                  options={presets
-                    .filter((presetItem) => presetItem.type === statisticsType)
-                    .map((presetItem) => presetItem.title)}
+                  options={presetTitles}
                   value={presetTitle || null}
                   onChange={handlePresetTitleChange}
                   onInputChange={handlePresetTitleChange}
@@ -254,18 +284,18 @@ function StatisticsPage({ caller }: Props) {
                   sx={{ px: 3 }}
                 />
               </Stack>
-              {preset && (
-                <PresetDisplay
-                  preset={preset}
-                  onChange={setPreset}
+              {presetSeed && (
+                <PresetEditor
+                  preset={presetSeed}
                   format={format}
+                  onPresetChange={handlePresetChange}
                 />
               )}
               <Stack spacing={2} direction="row">
                 <StyledButton
                   text="Statistik anzeigen"
                   onClick={handleExecuteStatistic}
-                  disabled={!preset || isLoading}
+                  disabled={!presetSeed || isLoading}
                   variant="outlined"
                 />
               </Stack>
@@ -276,7 +306,7 @@ function StatisticsPage({ caller }: Props) {
                   label="Format"
                   sx={{ "& .MuiSelect-select": { textAlign: "left" } }}
                   value={fileFormat}
-                  onChange={(event) => setFileFormat(event.target.value)}
+                  onChange={handleFileFormatChange}
                 >
                   <MenuItem value="csv">csv</MenuItem>
                   <MenuItem value="pdf">pdf</MenuItem>
@@ -288,7 +318,7 @@ function StatisticsPage({ caller }: Props) {
                   variant="outlined"
                   size="large"
                   sx={{ px: 3 }}
-                  disabled={!preset}
+                  disabled={!presetSeed}
                   onClick={handleExport}
                 />
               </Stack>

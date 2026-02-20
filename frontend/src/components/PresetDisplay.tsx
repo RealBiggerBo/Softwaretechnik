@@ -1,4 +1,5 @@
 import { type DataRecord } from "../classes/DataRecord";
+import { memo, useCallback } from "react";
 import {
   ToUiItem,
   type UiItem,
@@ -8,44 +9,12 @@ import {
 import type { FilterOption } from "../classes/FilterOption";
 import FilterOptionList from "./FilterOptionList";
 import QueryList from "./QueryList";
+import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
   preset: UiItem<UiPreset>;
   format: DataRecord;
-  onChange: (query: UiItem<UiPreset>) => void;
-}
-
-function UpdateQuery(
-  oldPreset: UiItem<UiPreset>,
-  queryToReplace: UiItem<UiQuery>,
-  newQuery: UiItem<UiQuery>,
-): UiItem<UiPreset> {
-  return {
-    ...oldPreset,
-    value: {
-      ...oldPreset.value,
-      queries: oldPreset.value.queries.map((currentQuery, _) =>
-        currentQuery === queryToReplace ? newQuery : currentQuery,
-      ),
-    },
-  };
-}
-
-function UpdateGlobalFilterOption(
-  oldPreset: UiItem<UiPreset>,
-  optionToReplace: UiItem<FilterOption>,
-  newOption: UiItem<FilterOption>,
-): UiItem<UiPreset> {
-  return {
-    ...oldPreset,
-    value: {
-      ...oldPreset.value,
-      globalFilterOptions: oldPreset.value.globalFilterOptions.map(
-        (currentOption, i) =>
-          currentOption.id === optionToReplace.id ? newOption : currentOption,
-      ),
-    },
-  };
+  onChange: Dispatch<SetStateAction<UiItem<UiPreset> | null>>;
 }
 
 function AddQuery(oldPreset: UiItem<UiPreset>): UiItem<UiPreset> {
@@ -74,37 +43,83 @@ function AddGlobalFilterOption(oldPreset: UiItem<UiPreset>): UiItem<UiPreset> {
   };
 }
 
-function RemoveQuery(
-  oldPreset: UiItem<UiPreset>,
-  queryToRemove: UiItem<UiQuery>,
-): UiItem<UiPreset> {
-  return {
-    ...oldPreset,
-    value: {
-      ...oldPreset.value,
-      queries: oldPreset.value.queries.filter(
-        (query) => !(query === queryToRemove),
-      ),
-    },
-  };
-}
-
-function RemoveGlobalFilterOption(
-  oldPreset: UiItem<UiPreset>,
-  optionToRemove: UiItem<FilterOption>,
-): UiItem<UiPreset> {
-  return {
-    ...oldPreset,
-    value: {
-      ...oldPreset.value,
-      globalFilterOptions: oldPreset.value.globalFilterOptions.filter(
-        (option) => !(option === optionToRemove),
-      ),
-    },
-  };
-}
-
 function PresetDisplay({ preset, format, onChange }: Props) {
+  const applyPresetUpdate = useCallback(
+    (updater: (prev: UiItem<UiPreset>) => UiItem<UiPreset>) => {
+      onChange((prev) => (prev ? updater(prev) : prev));
+    },
+    [onChange],
+  );
+
+  const handleUpdateGlobalFilterOption = useCallback(
+    (optionId: string, nextOption: UiItem<FilterOption>) => {
+      applyPresetUpdate((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          globalFilterOptions: prev.value.globalFilterOptions.map((option) =>
+            option.id === optionId ? { ...nextOption, id: optionId } : option,
+          ),
+        },
+      }));
+    },
+    [applyPresetUpdate],
+  );
+
+  const handleAddGlobalFilterOption = useCallback(() => {
+    applyPresetUpdate(AddGlobalFilterOption);
+  }, [applyPresetUpdate]);
+
+  const handleRemoveGlobalFilterOption = useCallback(
+    (optionId: string) => {
+      applyPresetUpdate((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          globalFilterOptions: prev.value.globalFilterOptions.filter(
+            (option) => option.id !== optionId,
+          ),
+        },
+      }));
+    },
+    [applyPresetUpdate],
+  );
+
+  const handleAddQuery = useCallback(() => {
+    applyPresetUpdate(AddQuery);
+  }, [applyPresetUpdate]);
+
+  const handleUpdateQueryById = useCallback(
+    (
+      queryId: string,
+      updater: (prev: UiItem<UiQuery>) => UiItem<UiQuery>,
+    ) => {
+      applyPresetUpdate((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          queries: prev.value.queries.map((query) =>
+            query.id === queryId ? updater(query) : query,
+          ),
+        },
+      }));
+    },
+    [applyPresetUpdate],
+  );
+
+  const handleRemoveQueryById = useCallback(
+    (queryId: string) => {
+      applyPresetUpdate((prev) => ({
+        ...prev,
+        value: {
+          ...prev.value,
+          queries: prev.value.queries.filter((query) => query.id !== queryId),
+        },
+      }));
+    },
+    [applyPresetUpdate],
+  );
+
   return (
     <>
       <FilterOptionList
@@ -112,13 +127,9 @@ function PresetDisplay({ preset, format, onChange }: Props) {
         format={format}
         addText="Neue globale Filteroption"
         removeText="Entfernen"
-        updateFilterOption={(optionToUpdate, newOption) =>
-          onChange(UpdateGlobalFilterOption(preset, optionToUpdate, newOption))
-        }
-        addNewFilterOption={() => onChange(AddGlobalFilterOption(preset))}
-        removeFilterOption={(optionToRemove) =>
-          onChange(RemoveGlobalFilterOption(preset, optionToRemove))
-        }
+        updateFilterOptionById={handleUpdateGlobalFilterOption}
+        addNewFilterOption={handleAddGlobalFilterOption}
+        removeFilterOptionById={handleRemoveGlobalFilterOption}
       />
 
       <QueryList
@@ -126,16 +137,12 @@ function PresetDisplay({ preset, format, onChange }: Props) {
         format={format}
         addText="Neue Query"
         removeText="Entfernen"
-        updateQuery={(queryToUpdate, newQuery) =>
-          onChange(UpdateQuery(preset, queryToUpdate, newQuery))
-        }
-        addNewQuery={() => onChange(AddQuery(preset))}
-        removeQuery={(queryToRemove) =>
-          onChange(RemoveQuery(preset, queryToRemove))
-        }
+        addNewQuery={handleAddQuery}
+        updateQueryById={handleUpdateQueryById}
+        removeQueryById={handleRemoveQueryById}
       />
     </>
   );
 }
 
-export default PresetDisplay;
+export default memo(PresetDisplay);

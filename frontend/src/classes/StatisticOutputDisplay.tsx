@@ -1,5 +1,6 @@
 import { Box, Paper, Stack, Divider } from "@mui/material";
 import type { QueryOutput } from "./StatisticOutput";
+import { memo } from "react";
 
 interface Props {
   queryOutputs: QueryOutput[];
@@ -34,4 +35,4 @@ function StatisticOutputDisplay({ queryOutputs }: Props) {
   );
 }
 
-export default StatisticOutputDisplay;
+export default memo(StatisticOutputDisplay);

@@ -14,6 +14,7 @@ import type {
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import NumberField from "./NumberField";
+import { memo } from "react";
 
 interface Props {
   filterOption: UiItem<FilterOption>;
@@ -178,4 +179,4 @@ function FilterOptionEditor({ filterOption, onChange }: Props) {
   );
 }
 
-export default FilterOptionEditor;
+export default memo(FilterOptionEditor);
