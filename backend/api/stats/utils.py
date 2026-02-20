@@ -24,38 +24,168 @@ def load_all_formats() -> Dict[RecordName, Dict[str, Any]]:
         fmts["Fall"] = _load_json(fall)
     return fmts
 
+
+
+
 def build_id_to_field_maps() -> Dict[RecordName, Dict[int, str]]:
     """
     Baut das Mapping ID -> Feldname aus den in der DB hinterlegten DataRecord-Strukturen (Fall/Anfrage).
     Nimmt jeweils die neueste Struktur-Version (latest('id')).
-    """
-    result: Dict[RecordName, Dict[int, str]] = {}
 
-    # Fall-Struktur
+    Erwartete Struktur-Form:
+      structure = {
+        "<id-as-string>": { "name": "<fieldName>", ... },
+        ...
+      }
+
+    Ergebnis:
+      { "Fall": { 1: "Alias", 2: "Rolle", ... }, "Anfrage": { ... } }
+    """
+    # def _map_from_structure(structure: Any) -> Dict[int, str]:
+
+    #     """
+    #     Unterstützt verschiedene Struktur-Formate und traversiert verschachtelte
+    #     Gruppen/Lists ('element'), so dass alle Feld-IDs -> Feldname gemappt werden.
+    #     Unterstützte Eingabe-Beispiele:
+    #     A) { "3": {"name": "Alter", ...} , ... }
+    #     B) { "Alter": {"id": 3, ...}, ... }
+    #     Liefert ein flaches Mapping { id: fieldName } für alle in der Struktur vorkommenden Felder.
+
+    #     """
+
+    #     if not isinstance(structure, dict):
+    #         return {}
+
+    #     out: Dict[int, str] = {}
+
+    #     def _add_from_meta(raw_key: Any, meta: Any, parent_name: Optional[str] = None) -> None:
+    #         # raw_key kann "3" (string id) oder Feldname sein (case B)
+    #         if isinstance(raw_key, str) and raw_key.isdigit():
+    #             # Case A: raw_key ist ID-String
+    #             try:
+    #                 fid = int(raw_key)
+    #             except Exception:
+    #                 return
+    #             if isinstance(meta, dict):
+    #                 name = meta.get("name") or parent_name
+    #                 if isinstance(name, str) and name.strip():
+    #                     out[fid] = name.strip()
+    #         elif isinstance(raw_key, str) and isinstance(meta, dict):
+    #             # Case B: raw_key ist Feldname, meta enthält id
+    #             fid = meta.get("id")
+    #             if isinstance(fid, int):
+    #                 out[fid] = raw_key.strip()
+
+    #         # Falls meta verschachtelte Elemente enthält, traversiere diese
+    #         if isinstance(meta, dict):
+    #             # Common key for nested fields: 'element'
+    #             elem = meta.get("element")
+    #             if isinstance(elem, dict):
+    #                 for rk, rm in elem.items():
+    #                     _add_from_meta(rk, rm, parent_name=None)
+    #             # In manchen Strukturen gibt es 'fields' o.ä. (sicherheitshalber prüfen)
+    #             fields = meta.get("fields")
+    #             if isinstance(fields, dict):
+    #                 for rk, rm in fields.items():
+    #                     _add_from_meta(rk, rm, parent_name=None)
+
+    #     # Heuristik: Falls top-level keys sind id-strings, handle direkt; else try case B
+    #     for k, v in structure.items():
+    #         _add_from_meta(k, v, parent_name=None)
+
+    #     return out
+
+
+
+    def _map_from_structure(structure: Any) -> Dict[int, str]:
+        if not isinstance(structure, dict):
+            return {}
+
+        out: Dict[int, str] = {}
+
+        def _add_from_meta(raw_key: Any, meta: Any) -> None:
+            # raw_key: "3" (ID-string) oder Feldname
+            if isinstance(raw_key, str) and raw_key.isdigit():
+                try:
+                    fid = int(raw_key)
+                except Exception:
+                    fid = None
+                if fid is not None and isinstance(meta, dict):
+                    name = meta.get("name")
+                    if isinstance(name, str) and name.strip():
+                        out[fid] = name.strip()
+            elif isinstance(raw_key, str) and isinstance(meta, dict):
+                fid = meta.get("id")
+                if isinstance(fid, int):
+                    out[fid] = raw_key.strip()
+
+            # traverse nested structures
+            if isinstance(meta, dict):
+                elem = meta.get("element")
+                if isinstance(elem, dict):
+                    for rk, rm in elem.items():
+                        _add_from_meta(rk, rm)
+                fields = meta.get("fields")
+                if isinstance(fields, dict):
+                    for rk, rm in fields.items():
+                        _add_from_meta(rk, rm)
+
+        for k, v in structure.items():
+            _add_from_meta(k, v)
+
+        return out
+
+    result: Dict[RecordName, Dict[int, str]] = {"Fall": {}, "Anfrage": {}}
+
     try:
-        fall_struct = Fall.objects.latest('id').structure or {}
-        fall_map: Dict[int, str] = {}
-        for field_name, meta in fall_struct.items():
-            fid = meta.get("id")
-            if isinstance(fid, int):
-                fall_map[fid] = field_name
-        result["Fall"] = fall_map
+        fall_struct = Fall.objects.latest("id").structure
+        result["Fall"] = _map_from_structure(fall_struct)
     except Exception:
         result["Fall"] = {}
 
-    # Anfrage-Struktur
     try:
-        anfrage_struct = Anfrage.objects.latest('id').structure or {}
-        anfrage_map: Dict[int, str] = {}
-        for field_name, meta in anfrage_struct.items():
-            fid = meta.get("id")
-            if isinstance(fid, int):
-                anfrage_map[fid] = field_name
-        result["Anfrage"] = anfrage_map
+        anfrage_struct = Anfrage.objects.latest("id").structure
+        result["Anfrage"] = _map_from_structure(anfrage_struct)
     except Exception:
         result["Anfrage"] = {}
 
     return result
+
+
+# Alte Struktur
+
+# def build_id_to_field_maps() -> Dict[RecordName, Dict[int, str]]:
+#     """
+#     Baut das Mapping ID -> Feldname aus den in der DB hinterlegten DataRecord-Strukturen (Fall/Anfrage).
+#     Nimmt jeweils die neueste Struktur-Version (latest('id')).
+#     """
+#     result: Dict[RecordName, Dict[int, str]] = {}
+
+#     # Fall-Struktur
+#     try:
+#         fall_struct = Fall.objects.latest('id').structure or {}
+#         fall_map: Dict[int, str] = {}
+#         for field_name, meta in fall_struct.items():
+#             fid = meta.get("id")
+#             if isinstance(fid, int):
+#                 fall_map[fid] = field_name
+#         result["Fall"] = fall_map
+#     except Exception:
+#         result["Fall"] = {}
+
+#     # Anfrage-Struktur
+#     try:
+#         anfrage_struct = Anfrage.objects.latest('id').structure or {}
+#         anfrage_map: Dict[int, str] = {}
+#         for field_name, meta in anfrage_struct.items():
+#             fid = meta.get("id")
+#             if isinstance(fid, int):
+#                 anfrage_map[fid] = field_name
+#         result["Anfrage"] = anfrage_map
+#     except Exception:
+#         result["Anfrage"] = {}
+
+#     return result
 
 def get_dataset_qs(record: RecordName) -> QuerySet[DataSet]:
     return DataSet.objects.filter(data_record=record)
@@ -70,19 +200,52 @@ def _as_date_str(s: Any) -> Optional[str]:
         return s
     return None
 
+
+# def get_value(values: Any, field_id: Any, default: Any = None) -> Any:
+#     """
+#     Liest ein Feld aus DataSet.values robust (JSON keys sind i.d.R. strings).
+#     Unterstützt field_id als int oder str.
+#     """
+#     if not isinstance(values, dict):
+#         return default
+#     if field_id in values:
+#         return values.get(field_id, default)
+#     if isinstance(field_id, int):
+#         return values.get(str(field_id), default)
+#     if isinstance(field_id, str) and field_id.isdigit():
+#         return values.get(int(field_id), default)
+#     return default
+
+
+
+def normalize_values(values: Any) -> Dict[Any, Any]:
+    if not isinstance(values, dict):
+        return {}
+    out = {}
+    for k, v in values.items():
+        if isinstance(k, str) and k.isdigit():
+            out[int(k)] = v
+        else:
+            out[k] = v
+    return out
+
+
 def _matches_single_filter(
-    values: Dict[str, Any],
+    values: Dict[Any, Any],
     record: RecordName,
     f: Dict[str, Any],
     maps: Dict[RecordName, Dict[int, str]],
 ) -> bool:
     ftype = f.get("type")
     fid = f.get("fieldId", f.get("id"))
-    field_name = id_to_field(record, fid, maps) if isinstance(fid, int) else None
-    val = values.get(field_name) if field_name else None
 
     if ftype == "Empty" or ftype is None:
         return True
+
+    if not isinstance(fid, int):
+        return False
+
+    val = values.get(fid)
 
     if ftype == "EnumValueFilter":
         target = f.get("value")
@@ -103,9 +266,6 @@ def _matches_single_filter(
     if ftype == "IntegerRangeFilter":
         try:
             mn = int(f.get("minValue"))
-        except Exception:
-            return False
-        try:
             mx = int(f.get("maxValue"))
         except Exception:
             return False
@@ -140,7 +300,7 @@ def filter_records_for(
     qs = get_dataset_qs(record)
     out: List[Dict[str, Any]] = []
     for ds in qs:
-        vals = ds.values or {}
+        vals = normalize_values(ds.values or {})
         if records_match_filters(vals, record, global_filters, maps) and records_match_filters(
             vals, record, query_filters, maps
         ):
@@ -156,7 +316,7 @@ def compute_count_output(
     fname = id_to_field(record, field_id, maps)
     cnt = 0
     for r in records:
-        v = r.get(fname)
+        v = r.get(field_id)
         if isinstance(v, bool):
             if v:
                 cnt += 1
@@ -171,10 +331,9 @@ def compute_count_categorized_output(
     field_id: int,
     maps: Dict[RecordName, Dict[int, str]],
 ) -> Dict[str, int]:
-    fname = id_to_field(record, field_id, maps)
     buckets: Dict[str, int] = {}
     for r in records:
-        key = r.get(fname)
+        key = r.get(field_id)
         label = "null" if key is None else str(key)
         buckets[label] = buckets.get(label, 0) + 1
     return buckets
@@ -189,7 +348,7 @@ def compute_average_output(
     total = 0
     count = 0
     for r in records:
-        v = r.get(fname)
+        v = r.get(field_id)
         if isinstance(v, int):
             total += v
             count += 1
@@ -205,7 +364,7 @@ def compute_max_output(
     fname = id_to_field(record, field_id, maps)
     current_max: Optional[int] = None
     for r in records:
-        v = r.get(fname)
+        v = r.get(field_id)
         if isinstance(v, int):
             current_max = v if current_max is None else max(current_max, v)
     return {str(fname): current_max}
