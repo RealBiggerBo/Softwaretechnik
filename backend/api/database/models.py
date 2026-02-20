@@ -52,7 +52,6 @@ class DataSet(models.Model):
         super().save(*args, **kwargs)
 
     def get_decrypted_values(self):
-        from api.utils.encryption import decrypt
 
         sensitive_fields = get_sensitive_fields(self.data_record, self.version)
 

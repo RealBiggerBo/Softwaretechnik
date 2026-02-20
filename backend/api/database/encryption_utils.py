@@ -1,24 +1,24 @@
 from django.core.cache import cache
 
-CACHE_TIME = 60 * 10 # 10 Minuten
+CACHE_TIME = 60 * 10  # 10 Minuten
 
 def get_sensitive_fields(data_record_type, version):
     """
-    Gibt Liste sensibler Felder zurück.
+    Gibt Liste sensibler Felder zurück (rekursiv verschachtelte Keys).
     Nutzt Cache für Performance.
     """
     from api.database.models import Anfrage, Fall
 
     cache_key = f"sensitive:{data_record_type}:{version or 'latest'}"
     cached = cache.get(cache_key)
-
     if cached is not None:
         return cached
 
+    # richtige Version abfragen
     if data_record_type == "Anfrage":
-        record = Anfrage.objects.last()
+        record = Anfrage.objects.get(version=version) if version else Anfrage.objects.last()
     elif data_record_type == "Fall":
-        record = Fall.objects.last()
+        record = Fall.objects.get(version=version) if version else Fall.objects.last()
     else:
         return []
 
@@ -26,10 +26,19 @@ def get_sensitive_fields(data_record_type, version):
 
     sensitive = []
 
-    for field in structure.values():
-        if field.get("sensitive"):
-            sensitive.append(field.get("name"))
+    # Rekursive Funktion für verschachtelte Keys
+    def collect_keys(struct, parent_key=""):
+        keys = []
+        for k, v in struct.items():
+            full_key = f"{parent_key}.{k}" if parent_key else k
+            if v.get("sensitive"):
+                keys.append(full_key)
+            if v.get("type") in ["Group", "List"]:
+                element = v.get("element", {})
+                keys.extend(collect_keys(element, full_key))
+        return keys
+
+    sensitive = collect_keys(structure)
 
     cache.set(cache_key, sensitive, CACHE_TIME)
-
     return sensitive
