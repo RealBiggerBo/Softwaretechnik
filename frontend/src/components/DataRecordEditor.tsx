@@ -309,7 +309,9 @@ async function TryCreateDataSet(
 function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   const [searchParams] = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams.get("type"));
-  urlid.current = GetDataRecordId(searchParams.get("id"));
+  if (type !== "neue-anfrage" && type !== "neuer-fall") {
+    urlid.current = GetDataRecordId(searchParams.get("id"));
+  }
 
   const [role, setRole] = useState<userRole>(null);
   const [lastSavedRecord, setLastSavedRecord] = useState<DataRecord>({
