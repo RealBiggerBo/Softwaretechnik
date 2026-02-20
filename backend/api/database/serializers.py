@@ -32,7 +32,8 @@ class FallSerializer(serializers.ModelSerializer):
         return datarecord_validation(data)
 
 class DataSetSerializer(serializers.ModelSerializer):
-    values = serializers.SerializerMethodField()
+    values = serializers.JSONField() 
+    decrypted_values = serializers.SerializerMethodField()
     class Meta:
         model = DataSet
         fields = ["pk",
