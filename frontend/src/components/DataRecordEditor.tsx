@@ -119,23 +119,27 @@ async function CreateNewDataRecord(
   toSave: DataRecord,
   caller: IApiCaller,
 ) {
+  console.log("CREATE NEW FORMAT");
+
   switch (type) {
+    case "neue-anfrage":
     case "anfrage":
-    case "letzte-anfrage":
-      let suc = (
-        await caller.TryCreateNewDataRecordAnfrage(
-          DataRecordConverter.ConvertDataRecordToFormat2(toSave),
-        )
-      ).success;
-      return suc;
+    case "letzte-anfrage": {
+      const suc = await caller.TryCreateNewDataRecordAnfrage(
+        DataRecordConverter.ConvertDataRecordToFormat2(toSave),
+      );
+      console.log(suc);
+      return suc.success;
+    }
+    case "neuer-fall":
     case "fall":
-    case "letzter-fall":
-      suc = (
-        await caller.TryCreateNewDataRecordFall(
-          DataRecordConverter.ConvertDataRecordToFormat2(toSave),
-        )
-      ).success;
-      return suc;
+    case "letzter-fall": {
+      const suc = await caller.TryCreateNewDataRecordFall(
+        DataRecordConverter.ConvertDataRecordToFormat2(toSave),
+      );
+      console.log(suc);
+      return suc.success;
+    }
   }
 }
 
@@ -252,6 +256,7 @@ async function LoadDataAndFormat(
     }
   } else {
     //get format only
+
     const formatRes = await GetDataFormat(caller, type);
 
     if (!formatRes.success) {
@@ -378,10 +383,12 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   //saves the datarecord
   async function Save(
     type: dataRecordType,
-    recordId: number,
+    recordId: number | null,
     recordToSave: DataRecord,
     caller: IApiCaller,
   ): Promise<{ success: boolean }> {
+    console.log("Valid record. Trying to save");
+
     //wenn es keinen record zum speichern gibt, snackbar öffnen und abbrechen
     if (!recordToSave) {
       openSnackbar("Nichts zum Speichern!", false);
@@ -419,6 +426,13 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
     if (!savedData.current) {
+      if (recordId === null) {
+        console.log("Tried to update record with id: " + recordId);
+        return { success: false };
+      }
+
+      console.log("Trying to update exisitng dataSet");
+
       if (
         (await UpdateDataRecord(
           type,
@@ -502,14 +516,20 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   //handles save
   async function handleSave(
     type: dataRecordType,
-    recordId: number,
+    recordId: number | null,
     recordToSave: DataRecord,
     lastSavedRecord: DataRecord,
     caller: IApiCaller,
     setLastSaved: (lastSaved: DataRecord) => void,
   ) {
     try {
-      if (!GetDataRecordValidity(recordToSave)) return;
+      console.log("handle Save");
+
+      if (!GetDataRecordValidity(recordToSave)) {
+        console.log("Data record was invalid. Dont Save!");
+
+        return;
+      }
       const result = await Save(type, recordId, recordToSave, caller);
 
       if (result.success) {
@@ -614,9 +634,9 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
       <StyledButton
         text="Speichern"
         onClick={async () => {
-          if (urlid.current === null) {
-            return;
-          }
+          // if (urlid.current === null) {
+          //   return;
+          // }
           await handleSave(
             type,
             urlid.current,
