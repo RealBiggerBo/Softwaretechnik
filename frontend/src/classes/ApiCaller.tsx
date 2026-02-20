@@ -160,6 +160,8 @@ export class ApiCaller implements IApiCaller {
     user: string,
     pswd: string,
   ): Promise<{ success: boolean; errorMsg: string }> {
+    headers.delete("Authorization");
+    sessionStorage.removeItem("authToken");
     const loginObject = { username: user, password: pswd };
     return this.SendApiCall(
       "/api/auth/login/",
