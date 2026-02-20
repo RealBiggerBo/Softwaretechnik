@@ -80,7 +80,8 @@ function GetDataRecordType(str: string | null) {
 
 //convert string to number, if it's not a number return -1
 function GetDataRecordId(str: string | null) {
-  const number = Number(str);
+  const number = str ? Number(str) : -1;
+
   return isNaN(number) ? -1 : number;
 }
 
@@ -191,9 +192,9 @@ async function UpdateDataRecord(
       return (
         await caller.TryUpdateAnfrage(
           DataRecordConverter.ConvertDataRecordToFormat3(
-            toUpdate,
             "Anfrage",
             formatVersion,
+            toUpdate,
           ),
           recordId,
         )
@@ -203,9 +204,9 @@ async function UpdateDataRecord(
       return (
         await caller.TryUpdateFall(
           DataRecordConverter.ConvertDataRecordToFormat3(
-            toUpdate,
             "Fall",
             formatVersion,
+            toUpdate,
           ),
           recordId,
         )
@@ -318,15 +319,18 @@ async function CreateNewDataSet(
   const bigType = type === "neue-anfrage" ? "Anfrage" : "Fall";
 
   const formatToSave = DataRecordConverter.ConvertDataRecordToFormat3(
-    recordToSave,
     bigType,
     formatVersion,
+    recordToSave,
   );
 
   //neue Daten estellen, snackbar öffnen und url ändern
   const res = await TryCreateDataSet(type, formatToSave, caller);
+  console.log(res);
+
   if (res.success) {
     const saveId = isNaN(Number(res.json["pk"])) ? -1 : Number(res.json["pk"]);
+    console.log("Got: " + saveId);
 
     openSnackbar(bigType + " erfolgreich gespeichert!", true);
     await sleep(1500);
@@ -427,12 +431,11 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
     }
 
     let succhanged: boolean | undefined = false;
-    let sucsaved: boolean | undefined = false;
-    let res: { success: boolean; errorMsg: string; json: any };
-    let saveid: number = -1;
 
     // wenn sich die Stuktur geändert hat, neue Struktur an backend schicken und return wenn nicht erfolgreich
     if (!savedFormat.current) {
+      console.log("Attempting to update format!");
+
       succhanged = await CreateNewDataRecord(type, recordToSave, caller);
       if (succhanged === undefined || succhanged === false) {
         openSnackbar("Neue Struktur konnte nicht gespeichert werden!", false);

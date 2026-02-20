@@ -91,7 +91,7 @@ export class DataRecordConverter {
     format["version"] = version;
     format["values"] = this.ExtractDataFromDataRecord(dataRecord);
 
-    console.log(format);
+    //console.log(format);
 
     return format;
   }
@@ -143,23 +143,48 @@ export class DataRecordConverter {
   ): DataRecord {
     return {
       dataFields: Object.entries(keyValueRecord).map(
-        ([fieldName, fieldValue]) => {
+        ([fieldId, fieldValue]) => {
+          const id = isNaN(Number(fieldId)) ? -1 : Number(fieldId);
           const fittingFields = dataRecord.dataFields.filter(
-            (field) => field.name === fieldName,
+            (field) => field.id === id,
           );
 
           if (fittingFields.length < 1)
             console.log(
-              "No matching field found in format. Could not find: " + fieldName,
+              "No matching field found in format. Could not find: " + fieldId,
             );
           if (fittingFields.length > 1)
             console.log(
-              "Too many fields found in format. Searched for: " + fieldName,
+              "Too many fields found in format. Searched for: " + fieldId,
             );
-          return this.SetValue(fittingFields[0], fieldValue);
+          return this.MergeFieldWithValue(fittingFields[0], fieldValue);
         },
       ),
     };
+  }
+
+  private static MergeFieldWithValue(
+    field: DataField,
+    value: unknown,
+  ): DataField {
+    switch (field.type) {
+      case "text":
+      case "boolean":
+      case "date":
+      case "enum":
+      case "integer":
+        return this.SetValue(field, value);
+      case "group":
+        return {
+          ...field,
+          element: this.MergeDataRecordWithData(
+            field.element,
+            value as Record<string, unknown>,
+          ),
+        };
+      case "list":
+        return field;
+    }
   }
 
   public static ConvertSearchResultToDataRecord(
@@ -203,6 +228,7 @@ export class DataRecordConverter {
 
   private static SetValue(field: DataField, value: unknown): DataField {
     if (value == null) return field;
+    if (field == undefined) console.log("tried ");
 
     switch (field.type) {
       case "text":
@@ -225,7 +251,7 @@ export class DataRecordConverter {
         if (Array.isArray(value)) return { ...field, records: value };
         break;
       case "group":
-        alert("Im DataRecordConverter: " + JSON.stringify(value));
+        console.log("Im DataRecordConverter: " + JSON.stringify(value));
         return { ...field, element: this.ConvertJsonToFormatDataRecord(value) };
         break;
       default:
@@ -236,7 +262,13 @@ export class DataRecordConverter {
   }
   private static GetValue(
     field: DataField,
-  ): string | number | boolean | DataRecord[] | Record<string, any> | null {
+  ):
+    | string
+    | number
+    | boolean
+    | Record<string, any>[]
+    | Record<string, any>
+    | null {
     switch (field.type) {
       case "text":
         return field.text;
@@ -249,7 +281,9 @@ export class DataRecordConverter {
       case "integer":
         return field.value;
       case "list":
-        return field.records;
+        return field.records.map((record) =>
+          this.ExtractDataFromDataRecord(record),
+        );
       case "group":
         return this.ExtractDataFromDataRecord(field.element);
       default:
