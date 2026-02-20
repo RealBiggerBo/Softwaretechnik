@@ -55,6 +55,20 @@ export class DataRecordConverter {
     });
   }
 
+  public static ConvertToFormatCollection(
+    raw: unknown,
+  ): [number, DataRecord][] {
+    if (Array.isArray(raw)) {
+      return (raw as unknown[]).map((rawEntry) =>
+        this.ConvertFormatToDataRecord(rawEntry),
+      );
+    }
+    console.log("in converter:");
+    console.log(raw);
+
+    return [];
+  }
+
   public static ConvertFormatToDataRecord(raw: unknown): [number, DataRecord] {
     const fields: Record<string, Record<string, unknown>> = this.GetFields(raw);
 

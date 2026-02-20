@@ -551,6 +551,25 @@ export class ApiCaller implements IApiCaller {
     return { success: false, errorMsg: "Not implemented!", json: null };
   }
 
+  async GetExistingDataFormats(type: "fall" | "anfrage"): Promise<{
+    success: boolean;
+    errorMsg: string;
+    formats: unknown;
+  }> {
+    let result: number[] = [];
+    const res = await this.SendApiCall(
+      "/api/data/data_record_list/" + type,
+      "GET",
+      true,
+      undefined,
+      "Formate konnten nicht geladen werden.",
+      async (response) => {
+        result = await response.json();
+      },
+    );
+
+    return { ...res, formats: result };
+  }
   async GetLastFall(): Promise<{
     success: boolean;
     errorMsg: string;
