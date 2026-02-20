@@ -10,6 +10,7 @@ import type { FilterOption } from "../classes/FilterOption";
 import FilterOptionList from "./FilterOptionList";
 import QueryList from "./QueryList";
 import type { Dispatch, SetStateAction } from "react";
+import { Box, Typography, Divider } from "@mui/material";
 
 interface Props {
   preset: UiItem<UiPreset>;
@@ -90,10 +91,7 @@ function PresetDisplay({ preset, format, onChange }: Props) {
   }, [applyPresetUpdate]);
 
   const handleUpdateQueryById = useCallback(
-    (
-      queryId: string,
-      updater: (prev: UiItem<UiQuery>) => UiItem<UiQuery>,
-    ) => {
+    (queryId: string, updater: (prev: UiItem<UiQuery>) => UiItem<UiQuery>) => {
       applyPresetUpdate((prev) => ({
         ...prev,
         value: {
@@ -122,25 +120,37 @@ function PresetDisplay({ preset, format, onChange }: Props) {
 
   return (
     <>
-      <FilterOptionList
-        filterOptions={preset.value.globalFilterOptions}
-        format={format}
-        addText="Neue globale Filteroption"
-        removeText="Entfernen"
-        updateFilterOptionById={handleUpdateGlobalFilterOption}
-        addNewFilterOption={handleAddGlobalFilterOption}
-        removeFilterOptionById={handleRemoveGlobalFilterOption}
-      />
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Globale Filteroptionen
+        </Typography>
+        <FilterOptionList
+          filterOptions={preset.value.globalFilterOptions}
+          format={format}
+          addText="Neue globale Filteroption"
+          removeText="Entfernen"
+          updateFilterOptionById={handleUpdateGlobalFilterOption}
+          addNewFilterOption={handleAddGlobalFilterOption}
+          removeFilterOptionById={handleRemoveGlobalFilterOption}
+        />
+      </Box>
 
-      <QueryList
-        queries={preset.value.queries}
-        format={format}
-        addText="Neue Query"
-        removeText="Entfernen"
-        addNewQuery={handleAddQuery}
-        updateQueryById={handleUpdateQueryById}
-        removeQueryById={handleRemoveQueryById}
-      />
+      <Divider sx={{ my: 3 }} />
+
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          Queries
+        </Typography>
+        <QueryList
+          queries={preset.value.queries}
+          format={format}
+          addText="Neue Query"
+          removeText="Entfernen"
+          addNewQuery={handleAddQuery}
+          updateQueryById={handleUpdateQueryById}
+          removeQueryById={handleRemoveQueryById}
+        />
+      </Box>
     </>
   );
 }

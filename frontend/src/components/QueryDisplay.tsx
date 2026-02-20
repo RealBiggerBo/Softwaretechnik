@@ -1,6 +1,6 @@
 import { type DataRecord } from "../classes/DataRecord";
 import { type DisplayAction } from "../classes/DisplayAction";
-import { TextField } from "@mui/material";
+import { TextField, Box, Typography } from "@mui/material";
 import { ToUiItem, type UiItem, type UiQuery } from "../classes/UiItems";
 import type { FilterOption } from "../classes/FilterOption";
 import FilterOptionList from "./FilterOptionList";
@@ -61,9 +61,7 @@ function QueryDisplay({ query, format, setQuery }: Props) {
         value: {
           ...prev.value,
           displayActions: prev.value.displayActions.map((action) =>
-            action.id === actionId
-              ? { ...newAction, id: actionId }
-              : action,
+            action.id === actionId ? { ...newAction, id: actionId } : action,
           ),
         },
       }));
@@ -125,33 +123,58 @@ function QueryDisplay({ query, format, setQuery }: Props) {
   );
 
   return (
-    <>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
-        label={"Titel"}
+        label="Query-Titel"
         value={query.value.queryTitle ? query.value.queryTitle : ""}
         onChange={(e) => handleTitleChange(e.target.value)}
+        fullWidth
       />
 
-      <DisplayActionList
-        displayActions={query.value.displayActions}
-        format={format}
-        addText="Neue Anzeigeoption"
-        removeText="Entfernen"
-        addNewDisplayAction={handleAddDisplayAction}
-        updateDisplayActionById={handleUpdateDisplayActionById}
-        removeDisplayActionById={handleRemoveDisplayActionById}
-      />
+      <Box
+        sx={{
+          border: 1,
+          borderColor: "divider",
+          borderRadius: 1,
+          p: 2,
+        }}
+      >
+        <Typography variant="subtitle1" gutterBottom fontWeight="medium">
+          Anzeigeoptionen
+        </Typography>
+        <DisplayActionList
+          displayActions={query.value.displayActions}
+          format={format}
+          addText="Neue Anzeigeoption"
+          removeText="Entfernen"
+          addNewDisplayAction={handleAddDisplayAction}
+          updateDisplayActionById={handleUpdateDisplayActionById}
+          removeDisplayActionById={handleRemoveDisplayActionById}
+        />
+      </Box>
 
-      <FilterOptionList
-        filterOptions={query.value.filterOptions}
-        format={format}
-        addText="Neue Filteroption"
-        removeText="Entfernen"
-        addNewFilterOption={handleAddFilterOption}
-        updateFilterOptionById={handleUpdateFilterOptionById}
-        removeFilterOptionById={handleRemoveFilterOptionById}
-      />
-    </>
+      <Box
+        sx={{
+          border: 1,
+          borderColor: "divider",
+          borderRadius: 1,
+          p: 2,
+        }}
+      >
+        <Typography variant="subtitle1" gutterBottom fontWeight="medium">
+          Filteroptionen
+        </Typography>
+        <FilterOptionList
+          filterOptions={query.value.filterOptions}
+          format={format}
+          addText="Neue Filteroption"
+          removeText="Entfernen"
+          addNewFilterOption={handleAddFilterOption}
+          updateFilterOptionById={handleUpdateFilterOptionById}
+          removeFilterOptionById={handleRemoveFilterOptionById}
+        />
+      </Box>
+    </Box>
   );
 }
 

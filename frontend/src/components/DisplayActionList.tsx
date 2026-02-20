@@ -1,4 +1,5 @@
-import { Button } from "@mui/material";
+import { Button, Paper, Stack, Box, Fab } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { memo, useCallback } from "react";
 import type { DataRecord } from "../classes/DataRecord";
 import type { UiItem } from "../classes/UiItems";
@@ -43,8 +44,9 @@ function DisplayActionList({
           removeDisplayActionById={removeDisplayActionById}
         />
       ))}
-      <br></br>
-      <Button onClick={handleAdd}>{addText}</Button>
+      <Button onClick={handleAdd} sx={{ mt: 1 }}>
+        {addText}
+      </Button>
     </>
   );
 }
@@ -95,14 +97,38 @@ const DisplayActionRow = memo(function DisplayActionRow({
   }, [action.id, removeDisplayActionById]);
 
   return (
-    <div>
-      <DisplayActionDisplay
-        action={action}
-        format={format}
-        onChange={handleChange}
-      />
-      <Button onClick={handleRemove}>{removeText}</Button>
-    </div>
+    <Paper elevation={2} sx={{ padding: 1, marginTop: 1 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="flex-start"
+        sx={{ width: "100%" }}
+      >
+        <Box sx={{ flexGrow: 1 }}>
+          <DisplayActionDisplay
+            action={action}
+            format={format}
+            onChange={handleChange}
+          />
+        </Box>
+        <Box
+          sx={{
+            height: 56,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Fab
+            color="error"
+            aria-label={removeText}
+            onClick={handleRemove}
+            size="small"
+          >
+            <DeleteIcon />
+          </Fab>
+        </Box>
+      </Stack>
+    </Paper>
   );
 }, areDisplayActionRowsEqual);
 

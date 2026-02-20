@@ -95,7 +95,9 @@ function DisplayActionDisplay({ action, format, onChange }: Props) {
   return (
     <>
       <TextField
+        label="Anzeige Options Titel"
         value={action.value.title}
+        fullWidth
         onChange={(e) =>
           onChange({
             ...action,
