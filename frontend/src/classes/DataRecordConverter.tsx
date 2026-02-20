@@ -127,12 +127,29 @@ export class DataRecordConverter {
     dataRecord.dataFields.forEach((field) => {
       const fieldObj: any = {
         id: field.id,
-        type: field.type,
+        name: field.name,
         required: field.required,
+        sensitive: field.sensitive,
       };
 
       switch (field.type) {
+        case "text":
+          fieldObj.type = "String";
+          break;
+        case "boolean":
+          fieldObj.type = "Boolean";
+          break;
+        case "date":
+          fieldObj.type = "Date";
+          break;
+        case "group":
+          fieldObj.type = "Group";
+          break;
+        case "list":
+          fieldObj.type = "List";
+          break;
         case "integer":
+          fieldObj.type = "Integer";
           fieldObj.minValue = field.minValue;
           fieldObj.maxValue = field.maxValue;
           break;
@@ -142,7 +159,8 @@ export class DataRecordConverter {
           break;
 
         default:
-          break;
+          const _exhaustive: never = field;
+          return _exhaustive;
       }
 
       obj.structure[field.name] = fieldObj;

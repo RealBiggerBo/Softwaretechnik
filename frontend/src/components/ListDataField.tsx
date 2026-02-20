@@ -29,10 +29,12 @@ function ListDataField({
   const [touched, setTouched] = useState(false);
   const isError = touched && value.trim() === "" && listField.required;
 
-  /*function duplucate(listField: ListField){
+  function duplucate(listField: ListField) {
+    listField.records.push(listField.element);
+    return listField;
+  }
 
-  }*/
-
+  const text: string = `${listField.name} hinzufügen`;
   return (
     <Stack direction="column" spacing={2} alignItems="left">
       {!isEditMode && (
@@ -66,6 +68,14 @@ function ListDataField({
           }
         />
       ))}
+      {!isEditMode && (
+        <StyledButton
+          text={text}
+          size="small"
+          variant="outlined"
+          onClick={() => onChange(duplucate(listField))}
+        />
+      )}
       {/* <AddFieldInList
         listField={listField}
         isEditMode={isEditMode}
