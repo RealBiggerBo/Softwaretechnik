@@ -109,34 +109,36 @@ class DataRecordAPI(APIView):
         """
 
         id = request.GET.get("id", None)
-        
+        type_lower = type.lower()
+
         # Daten aus dem passenden Model holen
-        if type.lower() == "anfrage":
+        if type_lower == "anfrage":
             try:
                 record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
             except Anfrage.DoesNotExist:
-                return Response({"error": "Anfrage nicht gefunden"}, status=404)
-        elif type.lower() == "fall":
+                return Response({"error": "Anfrage nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+        elif type_lower == "fall":
             try:
                 record = Fall.objects.get(pk=id) if id else Fall.objects.last()
             except Fall.DoesNotExist:
-                return Response({"error": "Fall nicht gefunden"}, status=404)
+                return Response({"error": "Fall nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({"error": "Ungültiger Typ"}, status=400)
+            return Response({"error": "Ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Serializer auf das Model anwenden
-        serializer = AnfrageSerializer(record) if type.lower() == "anfrage" else FallSerializer(record)
+        serializer = AnfrageSerializer(record) if type_lower == "anfrage" else FallSerializer(record)
         data = serializer.data  # hier sind die Werte noch verschlüsselt
 
-        # Sensible Felder ermitteln
-        sensitive_keys = get_sensitive_fields(type, id)
+        # Sensible Felder ermitteln (Modelname groß)
+        model_name = "Anfrage" if type_lower == "anfrage" else "Fall"
+        sensitive_keys = get_sensitive_fields(model_name, id)
 
         # Nur die 'values' entschlüsseln
         values = data.get("values", {})
         decrypted_values = decrypt_sensitive_fields(values, sensitive_keys)
         data["values"] = decrypted_values
 
-        return Response(data, status=200)
+        return Response(data, status=status.HTTP_200_OK)
     
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
