@@ -22,8 +22,15 @@ export type AverageDisplayAction = {
   title: string;
 };
 
+export type CountCategorizedDisplayAction = {
+  type: "CountCategorized";
+  fieldId: number;
+  title: string;
+};
+
 export type DisplayAction =
   | EmptyDisplayAction
   | MaxDisplayAction
   | MinDisplayAction
-  | AverageDisplayAction;
+  | AverageDisplayAction
+  | CountCategorizedDisplayAction;
