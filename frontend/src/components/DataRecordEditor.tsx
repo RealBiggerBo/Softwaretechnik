@@ -457,7 +457,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
       openSnackbar(bigType + " erfolgreich gespeichert!", true);
       await sleep(1500);
-      navigate(`?type=${bigType.toLowerCase()}?id=${urlid.current}`, {
+      navigate(`?type=${bigType.toLowerCase()}&id=${urlid.current}`, {
         replace: true,
       });
       await setLast(urlid.current, type);
