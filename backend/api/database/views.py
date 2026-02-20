@@ -68,7 +68,7 @@ class DataAPI(APIView):
         
         data = serializer.validated_data
         structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
-        values = data.get["values", {}]
+        values = data.get("values", {})
         
         dataset_validation(structure, values)
 
@@ -92,7 +92,7 @@ class DataAPI(APIView):
         
         data = serializer.validated_data
         structure = get_data_record(data["version"], data["data_record"].lower()).data["structure"]
-        values = data.get["values", {}]
+        values = data.get("values", {})
         
         dataset_validation(structure, values)
 

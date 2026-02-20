@@ -32,7 +32,10 @@ class FallSerializer(serializers.ModelSerializer):
         return datarecord_validation(data)
 
 class DataSetSerializer(serializers.ModelSerializer):
+    # writeable für POST/PUT
     values = serializers.JSONField() 
+
+    # read-only für GET
     decrypted_values = serializers.SerializerMethodField()
     class Meta:
         model = DataSet
