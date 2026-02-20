@@ -40,12 +40,8 @@ class DataSetSerializer(serializers.ModelSerializer):
                     "version",
                     "values"]
         
-    def get_values(self, obj):
-        try: 
-            return obj.get_decrypted_values()
-        except Exception as e:
-            logger.warning(f"Entschlüsselung fehlgeschlagen für Datensatz {obj.pk}. Grund: {e}")
-            return {}
+    def get_decrypted_values(self, obj):
+      return obj.get_decrypted_values()
 
 def datarecord_validation(data):
     field_names = data["structure"]
