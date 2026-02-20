@@ -11,8 +11,9 @@ def decrypt_value(encrypted_value: str) -> str:
     if not encrypted_value:
         return encrypted_value
 
-    if encrypted_value.startswith("ENC1:"):
-        encrypted_value = encrypted_value[5:]
+    PREFIX = "ENC1:"
+    if encrypted_value.startswith(PREFIX):
+        encrypted_value = encrypted_value[len(PREFIX):]
 
     encrypted_bytes = base64.b64decode(encrypted_value)
 
@@ -20,7 +21,8 @@ def decrypt_value(encrypted_value: str) -> str:
     nonce = encrypted_bytes[:12]
     ciphertext_and_tag = encrypted_bytes[12:]
 
-    aesgcm = AESGCM(settings.AES_KEY.encode())  # Key aus settings.py
+    # ✅ Kein .encode() mehr
+    aesgcm = AESGCM(settings.AES_KEY)
     decrypted_bytes = aesgcm.decrypt(nonce, ciphertext_and_tag, associated_data=None)
     return decrypted_bytes.decode("utf-8")
 
