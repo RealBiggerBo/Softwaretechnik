@@ -133,20 +133,14 @@ class DataRecordAPI(APIView):
         model_name = "Anfrage" if type_lower == "anfrage" else "Fall"
         sensitive_keys = get_sensitive_fields(model_name, id)
 
-        # Nur die 'values' entschlüsseln
-        values = data.get("values", {})
+        print("sensitive_keys:", sensitive_keys)
+        print("values before decrypt:", data["values"])
 
-        # Debug: alle sensiblen Felder auf "hello" setzen
-        for key in get_sensitive_fields(model_name, id):
-            # verschachtelte Keys werden nur flach abgefragt, ggf. tiefer verschachtelte testen separat
-            if key in values:
-                values[key] = "hello"
-
-        decrypted_values = decrypt_sensitive_fields(values, sensitive_keys)
-        data["values"] = decrypted_values
+        if "values" in data:
+            data["values"] = decrypt_sensitive_fields(data["values"], sensitive_keys)
 
         return Response(data, status=status.HTTP_200_OK)
-    
+
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
 

@@ -68,44 +68,20 @@ def get_sensitive_fields(data_record_type, id=None):
     cache.set(cache_key, sensitive, CACHE_TIME)
     return sensitive
 
-# def decrypt_sensitive_fields(data_dict, sensitive_keys):
-#     """
-#     Entschlüsselt rekursiv die sensiblen Felder in einem dict.
-#     """
-#     result = {}
-#     for k, v in data_dict.items():
-#         full_key = str(k)
-#         # Wenn Wert ein dict ist, rekursiv prüfen
-#         if isinstance(v, dict):
-#             nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
-#             result[k] = decrypt_sensitive_fields(v, nested_keys)
-#         # Wenn Schlüssel sensibel, entschlüsseln
-#         elif full_key in sensitive_keys:
-#             result[k] = decrypt_value(v) 
-#         else:
-#             result[k] = v
-#     return result
-
 def decrypt_sensitive_fields(data_dict, sensitive_keys):
     """
-    Debug: Ersetzt alle sensiblen Felder rekursiv mit "hello".
+    Entschlüsselt rekursiv die sensiblen Felder in einem dict.
     """
     result = {}
     for k, v in data_dict.items():
         full_key = str(k)
+        # Wenn Wert ein dict ist, rekursiv prüfen
         if isinstance(v, dict):
-            # Alle Keys, die unter diesem verschachtelten Dict liegen
             nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
             result[k] = decrypt_sensitive_fields(v, nested_keys)
-        elif isinstance(v, list):
-            # Liste durchlaufen, falls Listenelemente verschachtelte dicts sind
-            result[k] = [
-                decrypt_sensitive_fields(item, sensitive_keys) if isinstance(item, dict) else item
-                for item in v
-            ]
+        # Wenn Schlüssel sensibel, entschlüsseln
         elif full_key in sensitive_keys:
-            # DEBUG: Hello setzen
-            result[k] = "hello"
+            result[k] = decrypt_value(v) 
         else:
             result[k] = v
     return result

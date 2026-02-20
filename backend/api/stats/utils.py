@@ -25,7 +25,18 @@ def load_all_formats() -> Dict[RecordName, Dict[str, Any]]:
     return fmts
 
 
-
+def _month_day_str(s: Any) -> Optional[str]:
+    """
+    Liefert 'MM-DD' wenn s ein Datum 'YYYY-MM-DD' oder 'MM-DD' ist, sonst None.
+    """
+    if not isinstance(s, str):
+        return None
+    s = s.strip()
+    if len(s) == 10 and s[4] == "-" and s[7] == "-":
+        return s[5:]
+    if len(s) == 5 and s[2] == "-":
+        return s
+    return None
 
 def build_id_to_field_maps() -> Dict[RecordName, Dict[int, str]]:
     """
@@ -230,6 +241,30 @@ def normalize_values(values: Any) -> Dict[Any, Any]:
     return out
 
 
+
+def _extract_date_strings(x: Any) -> List[str]:
+    """
+    Rekursiv alle Datum-Strings (YYYY-MM-DD oder MM-DD) aus x extrahieren.
+    Unterstützt str, dict, list. Liefert eine Liste (evtl. leer).
+    """
+    out: List[str] = []
+    if isinstance(x, str):
+        if _as_date_str(x) or _month_day_str(x):
+            out.append(x)
+        return out
+    if isinstance(x, dict):
+        for v in x.values():
+            out.extend(_extract_date_strings(v))
+        return out
+    if isinstance(x, list):
+        for it in x:
+            out.extend(_extract_date_strings(it))
+        return out
+    return out
+
+
+
+
 def _matches_single_filter(
     values: Dict[Any, Any],
     record: RecordName,
@@ -272,14 +307,45 @@ def _matches_single_filter(
         return isinstance(val, int) and mn <= val <= mx
 
     if ftype == "DateValueFilter":
-        v = _as_date_str(val)
-        return v is not None and v == f.get("value")
+        include_year = f.get("includeYear", True)
+        dates = _extract_date_strings(val)
+        if include_year:
+            target = f.get("value")
+            if not isinstance(target, str):
+                return False
+            return any(_as_date_str(d) is not None and d == target for d in dates)
+        else:
+            tgt_md = _month_day_str(f.get("value"))
+            if tgt_md is None:
+                return False
+            return any(_month_day_str(d) == tgt_md for d in dates)
 
     if ftype in ("DateRangeFilter", "GlobalFilterOption"):
-        v = _as_date_str(val)
-        min_v = f.get("minValue")
-        max_v = f.get("maxValue")
-        return v is not None and isinstance(min_v, str) and isinstance(max_v, str) and (min_v <= v <= max_v)
+        include_year = f.get("includeYear", True)
+        dates = _extract_date_strings(val)
+        if include_year:
+            min_v = f.get("minValue")
+            max_v = f.get("maxValue")
+            if not (isinstance(min_v, str) and isinstance(max_v, str)):
+                return False
+            return any((_as_date_str(d) is not None and min_v <= d <= max_v) for d in dates)
+        else:
+            min_md = _month_day_str(f.get("minValue"))
+            max_md = _month_day_str(f.get("maxValue"))
+            if min_md is None or max_md is None:
+                return False
+            for d in dates:
+                d_md = _month_day_str(d)
+                if d_md is None:
+                    continue
+                if min_md <= max_md:
+                    if min_md <= d_md <= max_md:
+                        return True
+                else:
+                    # wrap-around über Jahreswechsel (z. B. 11-01 .. 02-28)
+                    if d_md >= min_md or d_md <= max_md:
+                        return True
+            return False
 
     return True
 
