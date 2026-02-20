@@ -1,5 +1,5 @@
 import { type DataField, type GroupField } from "../classes/DataField";
-import { Box, Stack, TextField as Tf } from "@mui/material";
+import { Box, Paper, Stack, TextField as Tf } from "@mui/material";
 import { memo } from "react";
 import DataRecordDisplay from "./DataRecordDisplay";
 import type { IApiCaller } from "../classes/IApiCaller";
@@ -20,12 +20,12 @@ function GroupDataField({
   caller,
   onChange,
   setOpenDialog,
-  onAdd,
+  //nAdd,
 }: Props) {
   function handleAddField() {}
 
   return (
-    <Box>
+    <Paper elevation={3}>
       <Stack direction="column" spacing={2} alignItems="left">
         {!isEditMode && (
           <>
@@ -55,10 +55,20 @@ function GroupDataField({
           }
         />
         {isEditMode && (
-          <AddNewDataField isEditMode={isEditMode} addNewField={onAdd} />
+          <AddNewDataField
+            isEditMode={isEditMode}
+            addNewField={(toAdd) =>
+              onChange({
+                ...groupField,
+                element: {
+                  dataFields: [...groupField.element.dataFields, toAdd],
+                },
+              })
+            }
+          />
         )}
       </Stack>
-    </Box>
+    </Paper>
   );
 }
 
