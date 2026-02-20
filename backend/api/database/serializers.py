@@ -6,10 +6,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AnfrageSerializer(serializers.ModelSerializer):
+    values = serializers.SerializerMethodField()
+    
     class Meta:
         model = Anfrage
         fields = ["pk",
-                    "structure"]
+                    "structure",
+                    "values"]
+    
+    def get_values(self, obj):
+        return getattr(obj, "values", None)
     
     def validate(self, data):
         """
@@ -19,10 +25,17 @@ class AnfrageSerializer(serializers.ModelSerializer):
         return datarecord_validation(data)
 
 class FallSerializer(serializers.ModelSerializer):
+    values = serializers.SerializerMethodField()
+
     class Meta:
         model = Fall
         fields = ["pk",
-                    "structure"]
+                    "structure",
+                    "values"]
+    
+    def get_values(self, obj):
+        return getattr(obj, "values", None)
+    
     
     def validate(self, data):
         """

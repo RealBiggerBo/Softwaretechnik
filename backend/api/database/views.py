@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
+from api.database.encryption_utils import decrypt_sensitive_fields, get_sensitive_fields
 
 class DataAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -108,9 +109,42 @@ class DataRecordAPI(APIView):
         """
 
         id = request.GET.get("id", None)
+        type_lower = type.lower()
 
-        return get_data_record(id, type)
-    
+        # Daten aus dem passenden Model holen
+        if type_lower == "anfrage":
+            try:
+                record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
+            except Anfrage.DoesNotExist:
+                return Response({"error": "Anfrage nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+        elif type_lower == "fall":
+            try:
+                record = Fall.objects.get(pk=id) if id else Fall.objects.last()
+            except Fall.DoesNotExist:
+                return Response({"error": "Fall nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Ungültiger Typ"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Serializer auf das Model anwenden
+        serializer = AnfrageSerializer(record) if type_lower == "anfrage" else FallSerializer(record)
+        serializer_data = serializer.data  # hier sind die Werte noch verschlüsselt
+
+        # Sensible Felder ermitteln (Modelname groß)
+        model_name = "Anfrage" if type_lower == "anfrage" else "Fall"
+        sensitive_keys = get_sensitive_fields(model_name, id)
+
+        # Entschlüsseln
+        decrypted_values = decrypt_sensitive_fields(serializer_data.get("values") or {}, sensitive_keys)
+
+        # Neues Dict für Response
+        response_data = {
+            "pk": serializer_data.get("pk"),
+            "structure": serializer_data.get("structure"),
+            "values": decrypted_values
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
 
@@ -129,6 +163,20 @@ class DataRecordAdminAPI(APIView):
 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class DataRecordListAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, type):
+        """
+        Gibt alle Versionen eines DataRecords zurück.
+        """
+
+        data_record = Anfrage if type == "anfrage" else Fall
+        objekt = data_record.objects.all()
+        serializer = AnfrageSerializer(objekt, many=True) if type == "anfrage" else FallSerializer(objekt, many=True)
+
+        return Response(serializer.data)
 
 def type_is_valid(type):
     return type in ["anfrage", "fall"]

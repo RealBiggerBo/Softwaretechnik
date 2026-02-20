@@ -86,6 +86,7 @@ function App({ caller }: Props) {
   );
   const savedData = useRef<boolean>(true);
   const savedFormat = useRef<boolean>(true);
+  const urlid = useRef<number | null>(null);
 
   useEffect(() => {
     async function checkLogin() {
@@ -164,6 +165,7 @@ function App({ caller }: Props) {
                       caller={caller}
                       savedData={savedData}
                       savedFormat={savedFormat}
+                      urlid={urlid}
                     />
                   }
                 />

@@ -19,6 +19,7 @@ interface Props {
   caller: IApiCaller;
   savedData: React.RefObject<boolean>;
   savedFormat: React.RefObject<boolean>;
+  urlid: React.RefObject<number | null>;
 }
 
 type dataRecordType =
@@ -100,29 +101,6 @@ async function GetDataFormat(
     case "letzter-fall":
     case "neuer-fall":
       return await caller.GetFallJson(formatVersion);
-  }
-}
-
-// get datarecord based on type and id, if type is "neue-anfrage" or "neuer-fall", return empty datarecord
-async function GetData(
-  caller: IApiCaller,
-  type: dataRecordType,
-  id: number,
-): Promise<{
-  success: boolean;
-  errorMsg: string;
-  json: any;
-}> {
-  switch (type) {
-    case "anfrage":
-    case "letzte-anfrage":
-      return await caller.TrySearchAnfrageByID(id);
-    case "fall":
-    case "letzter-fall":
-      return await caller.TrySearchAnfrageByID(id);
-    case "neue-anfrage":
-    case "neuer-fall":
-      return { success: true, errorMsg: "", json: "" };
   }
 }
 
@@ -305,48 +283,12 @@ async function TryCreateDataSet(
   };
 }
 
-async function CreateNewDataSet(
-  type: dataRecordType,
-  formatVersion: number,
-  recordToSave: DataRecord,
-  caller: IApiCaller,
-  openSnackbar: (text: string, success: boolean) => void,
-  sleep: (delay: number) => Promise<unknown>,
-  setLast: (id: number, type: dataRecordType) => Promise<void>,
-  navigate: (to: string, options?: NavigateOptions) => void,
-) {
-  if (type !== "neue-anfrage" && type !== "neuer-fall") return false;
-  const bigType = type === "neue-anfrage" ? "Anfrage" : "Fall";
-
-  const formatToSave = DataRecordConverter.ConvertDataRecordToFormat3(
-    bigType,
-    formatVersion,
-    recordToSave,
-  );
-
-  //neue Daten estellen, snackbar öffnen und url ändern
-  const res = await TryCreateDataSet(type, formatToSave, caller);
-  console.log(res);
-
-  if (res.success) {
-    const saveId = isNaN(Number(res.json["pk"])) ? -1 : Number(res.json["pk"]);
-    console.log("Got: " + saveId);
-
-    openSnackbar(bigType + " erfolgreich gespeichert!", true);
-    await sleep(1500);
-    navigate(`?type=${bigType.toLowerCase()}?id=${saveId}`, { replace: true });
-    await setLast(saveId, type);
-    return true;
-  } else {
-    openSnackbar(bigType + " konnte nicht gespeichert werden!", false);
-    return false;
-  }
-}
-
-function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
+function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   const [searchParams] = useSearchParams();
   const type: dataRecordType = GetDataRecordType(searchParams.get("type"));
-  const dataRecordId: number = GetDataRecordId(searchParams.get("id"));
+  if (type !== "neue-anfrage" && type !== "neuer-fall") {
+    urlid.current = GetDataRecordId(searchParams.get("id"));
+  }
 
   const [role, setRole] = useState<userRole>(null);
   const [lastSavedRecord, setLastSavedRecord] = useState<DataRecord>({
@@ -403,19 +345,20 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
       const role = await GetRole(caller);
       if (!role) return;
       setRole(role);
-
-      await LoadDataAndFormat(
-        type,
-        dataRecordId,
-        caller,
-        setRecord,
-        setFormatVersion,
-        setMsgID,
-        setOpenIdDialog,
-      );
+      if (urlid.current !== null) {
+        await LoadDataAndFormat(
+          type,
+          urlid.current,
+          caller,
+          setRecord,
+          setFormatVersion,
+          setMsgID,
+          setOpenIdDialog,
+        );
+      }
     }
     loadData();
-  }, [caller, type, dataRecordId]);
+  }, [caller, type, urlid.current]);
 
   //saves the datarecord
   async function Save(
@@ -460,7 +403,7 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
     );
 
     //wenn es eine bestehende Anfrage oder Fall ist, update versuchen und snackbar öffnen
-    if (!savedData) {
+    if (!savedData.current) {
       if (
         (await UpdateDataRecord(
           type,
@@ -479,6 +422,49 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
       }
     } else {
       return { success: true };
+    }
+  }
+
+  async function CreateNewDataSet(
+    type: dataRecordType,
+    formatVersion: number,
+    recordToSave: DataRecord,
+    caller: IApiCaller,
+    openSnackbar: (text: string, success: boolean) => void,
+    sleep: (delay: number) => Promise<unknown>,
+    setLast: (id: number, type: dataRecordType) => Promise<void>,
+    navigate: (to: string, options?: NavigateOptions) => void,
+  ) {
+    if (type !== "neue-anfrage" && type !== "neuer-fall") return false;
+    const bigType = type === "neue-anfrage" ? "Anfrage" : "Fall";
+
+    const formatToSave = DataRecordConverter.ConvertDataRecordToFormat3(
+      bigType,
+      formatVersion,
+      recordToSave,
+    );
+
+    //neue Daten estellen, snackbar öffnen und url ändern
+    const res = await TryCreateDataSet(type, formatToSave, caller);
+    console.log(res);
+
+    if (res.success) {
+      const saveId = isNaN(Number(res.json["pk"]))
+        ? -1
+        : Number(res.json["pk"]);
+      urlid.current = saveId;
+      console.log("Got: " + urlid.current);
+
+      openSnackbar(bigType + " erfolgreich gespeichert!", true);
+      await sleep(1500);
+      navigate(`?type=${bigType.toLowerCase()}&id=${urlid.current}`, {
+        replace: true,
+      });
+      await setLast(urlid.current, type);
+      return true;
+    } else {
+      openSnackbar(bigType + " konnte nicht gespeichert werden!", false);
+      return false;
     }
   }
 
@@ -549,12 +535,15 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
   }
 
   function deletable() {
-    if (dataRecordId) return true;
+    if (urlid.current) return true;
     else return false;
   }
 
   async function handleDeleteRecord() {
-    const suc = (await caller.TryDeleteAnfrage(dataRecordId)).success;
+    if (urlid.current === null) {
+      return;
+    }
+    const suc = (await caller.TryDeleteAnfrage(urlid.current)).success;
     if (suc) {
       openSnackbar(`${type} wurde erfolgreich gelöscht.`, suc);
       navigate("/main");
@@ -616,16 +605,19 @@ function DataRecordEditor({ caller, savedData, savedFormat }: Props) {
       )}
       <StyledButton
         text="Speichern"
-        onClick={async () =>
+        onClick={async () => {
+          if (urlid.current === null) {
+            return;
+          }
           await handleSave(
             type,
-            dataRecordId,
+            urlid.current,
             record,
             lastSavedRecord,
             caller,
             setLastSavedRecord,
-          )
-        }
+          );
+        }}
       />
       <Snackbar
         open={snackbarOpen}
