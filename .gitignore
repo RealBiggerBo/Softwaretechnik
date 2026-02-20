@@ -388,5 +388,4 @@ backend/Request_search3.json
 backend/TestTemplate4.csv
 backend/TestTemplate4.pdf
 backend/TestTemplate4.xlsx
-backend/.env.example
 backend/.env
