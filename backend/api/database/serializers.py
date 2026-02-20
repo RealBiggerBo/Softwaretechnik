@@ -9,7 +9,8 @@ class AnfrageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Anfrage
         fields = ["pk",
-                    "structure"]
+                    "structure",
+                    "values"]
     
     def validate(self, data):
         """
@@ -22,7 +23,8 @@ class FallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fall
         fields = ["pk",
-                    "structure"]
+                    "structure",
+                    "values"]
     
     def validate(self, data):
         """
