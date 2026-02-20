@@ -77,21 +77,23 @@ def stats_execute(request: HttpRequest):
     except Exception:
         return JsonResponse({"error": "Invalid JSON body."}, status=400)
 
-    global_filters: List[Dict[str, Any]] = payload.get("GlobalFilterOptions", [])
-    queries: List[Dict[str, Any]] = payload.get("Queries", [])
-    global_record_type: Optional[str] = payload.get("globalRecordType")
+    global_filters: List[Dict[str, Any]] = get_ci(payload, "GlobalFilterOptions", [])
+    queries: List[Dict[str, Any]] = get_ci(payload, "Queries", []) or []
+    global_record_type: Optional[str] = get_ci(payload, "globalRecordType", None)
 
     if global_record_type is not None and global_record_type not in ALLOWED_RECORD_TYPES:
         return JsonResponse({"error": f"Ungültiger globalRecordType '{global_record_type}'."}, status=400)
+
+
 
     maps = build_id_to_field_maps()
     results: List[Dict[str, Any]] = []
 
     for q in queries:
-        qtitle = q.get("QueryTitle", "")
-        actions = q.get("displayActions", [])
-        qfilters = q.get("filterOptions", [])
-        record_type: Optional[str] = q.get("recordType") or global_record_type
+        qtitle = get_ci(q, "QueryTitle", "")
+        actions = get_ci(q, "displayActions", []) or []
+        qfilters = get_ci(q, "filterOptions", []) or []
+        record_type = get_ci(q, "recordType", None) or global_record_type
 
         if not record_type:
             return JsonResponse({"error": f"Query '{qtitle}': recordType oder globalRecordType ist erforderlich."}, status=400)
@@ -111,10 +113,12 @@ def stats_execute(request: HttpRequest):
         recs = filter_records_for(record_type, record_global_filters, qfilters, maps)
 
         outputs: List[Dict[str, Any]] = []
-        for act in actions:
-            atype = act.get("type")
-            fid = act.get("fieldId")
-            title = act.get("DisplayActionTitle", "")
+        for act in actions or []:
+            atype = get_ci(act, "type", act.get("type"))
+            fid = get_ci(act, "fieldId", act.get("fieldId"))
+            title = get_ci(act, "DisplayActionTitle", None)
+            if title is None:
+                title = get_ci(act, "title", "") or ""
 
             if atype == "CountCategorized":
                 out_obj = compute_count_categorized_output(recs, record_type, fid, maps)
