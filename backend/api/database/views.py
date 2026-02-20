@@ -135,6 +135,13 @@ class DataRecordAPI(APIView):
 
         # Nur die 'values' entschlüsseln
         values = data.get("values", {})
+
+        # Debug: alle sensiblen Felder auf "hello" setzen
+        for key in get_sensitive_fields(model_name, id):
+            # verschachtelte Keys werden nur flach abgefragt, ggf. tiefer verschachtelte testen separat
+            if key in values:
+                values[key] = "hello"
+
         decrypted_values = decrypt_sensitive_fields(values, sensitive_keys)
         data["values"] = decrypted_values
 

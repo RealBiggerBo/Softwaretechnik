@@ -68,20 +68,37 @@ def get_sensitive_fields(data_record_type, id=None):
     cache.set(cache_key, sensitive, CACHE_TIME)
     return sensitive
 
+# def decrypt_sensitive_fields(data_dict, sensitive_keys):
+#     """
+#     Entschlüsselt rekursiv die sensiblen Felder in einem dict.
+#     """
+#     result = {}
+#     for k, v in data_dict.items():
+#         full_key = str(k)
+#         # Wenn Wert ein dict ist, rekursiv prüfen
+#         if isinstance(v, dict):
+#             nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
+#             result[k] = decrypt_sensitive_fields(v, nested_keys)
+#         # Wenn Schlüssel sensibel, entschlüsseln
+#         elif full_key in sensitive_keys:
+#             result[k] = decrypt_value(v) 
+#         else:
+#             result[k] = v
+#     return result
+
 def decrypt_sensitive_fields(data_dict, sensitive_keys):
     """
-    Entschlüsselt rekursiv die sensiblen Felder in einem dict.
+    Debug-Version: ersetzt sensible Felder mit "hello".
     """
     result = {}
     for k, v in data_dict.items():
         full_key = str(k)
-        # Wenn Wert ein dict ist, rekursiv prüfen
         if isinstance(v, dict):
             nested_keys = [key[len(full_key)+1:] for key in sensitive_keys if key.startswith(f"{full_key}.")]
             result[k] = decrypt_sensitive_fields(v, nested_keys)
-        # Wenn Schlüssel sensibel, entschlüsseln
         elif full_key in sensitive_keys:
-            result[k] = decrypt_value(v) 
+            # Debug statt echten Wert
+            result[k] = "hello"
         else:
             result[k] = v
     return result
