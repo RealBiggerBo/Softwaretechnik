@@ -79,10 +79,15 @@ async function Search(
     res = await caller.TrySearchAnfrage(
       options.map((uiOption) => uiOption.value),
     );
+
+  console.log("Ergebnis der Suche: ");
   console.log(res);
 
   const values: DataRecord[] =
     DataRecordConverter.ConvertSearchResultToDataRecord(res.searchResult);
+
+  console.log("Konvertierte records:");
+  console.log(values);
 
   setSearchResult(values);
 }
