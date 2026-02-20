@@ -104,6 +104,7 @@ function GetFieldComponent(
           caller={caller}
           onChange={onChange}
           setOpenDialog={setOpenDialog}
+          onAdd={onAdd}
         />
       );
     default:

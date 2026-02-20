@@ -30,8 +30,6 @@ function ListDataField({
     return listField;
   }
 
-  function handleAddField() {}
-
   const text: string = `${listField.name} hinzufügen`;
   return (
     <Stack direction="column" spacing={2} alignItems="left">
@@ -67,7 +65,7 @@ function ListDataField({
         />
       ))}
       {isEditMode && (
-        <AddNewDataField isEditMode={isEditMode} addNewField={handleAddField} />
+        <AddNewDataField isEditMode={isEditMode} addNewField={onAdd} />
       )}
       {!isEditMode && (
         <StyledButton

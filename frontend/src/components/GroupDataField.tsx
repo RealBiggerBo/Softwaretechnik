@@ -11,6 +11,7 @@ interface Props {
   caller: IApiCaller;
   onChange: (field: DataField) => void;
   setOpenDialog: (showDialog: boolean) => void;
+  onAdd: (fieldToAdd: DataField) => void;
 }
 
 function GroupDataField({
@@ -19,6 +20,7 @@ function GroupDataField({
   caller,
   onChange,
   setOpenDialog,
+  onAdd,
 }: Props) {
   function handleAddField() {}
 
@@ -53,10 +55,7 @@ function GroupDataField({
           }
         />
         {isEditMode && (
-          <AddNewDataField
-            isEditMode={isEditMode}
-            addNewField={handleAddField}
-          />
+          <AddNewDataField isEditMode={isEditMode} addNewField={onAdd} />
         )}
       </Stack>
     </Box>
