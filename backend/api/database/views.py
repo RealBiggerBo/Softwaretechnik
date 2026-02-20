@@ -155,14 +155,13 @@ def dataset_validation(structure, values):
     
     for field_id in structure:
         field = structure[field_id]
-        field_name = field["name"]
 
-        if field_name in values:
+        if field_id in values:
             field_type = field["type"]
-            value = values[field_name]
+            value = values[field_id]
 
             if not isinstance(value, match[field_type]):
-                raise serializers.ValidationError(f"Wert mit falschen Typ für {field_name} übergeben. Der richtige Typ ist {match[field_type]}.")
+                raise serializers.ValidationError(f"Wert mit falschen Typ für {field_id} übergeben. Der richtige Typ ist {match[field_type]}.")
             if field_type == "Date" and not (len(value) == 10 and
                                                 value[4] == "-" and
                                                 value[7] == "-" and
@@ -175,4 +174,4 @@ def dataset_validation(structure, values):
                     dataset_validation(field["element"], element)
 
         elif field["required"]:
-            raise serializers.ValidationError(f"Erforderliches Feld, {field_name}, wurde nicht übergeben.")
+            raise serializers.ValidationError(f"Erforderliches Feld, {field_id}, wurde nicht übergeben.")
