@@ -13,11 +13,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import base64
 
-# Schlüssel für AES Verschlüsselung laden.
 load_dotenv()
 
-AES_KEY = os.getenv("AES_KEY")
+# Base64-encoded Key aus .env
+AES_KEY_B64 = os.getenv("AES_KEY")
+AES_KEY = base64.urlsafe_b64decode(AES_KEY_B64)
+
+# Prüfen, dass es wirklich 32 Bytes sind
+if len(AES_KEY) != 32:
+    raise ValueError("AES Key muss 32 Byte sein")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
