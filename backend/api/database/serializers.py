@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 class AnfrageSerializer(serializers.ModelSerializer):
     values = serializers.SerializerMethodField()
-    version = serializers.IntegerField(write_only=True)      # nur für Input
-    data_record = serializers.CharField(write_only=True)    # nur für Input
 
     class Meta:
         model = Anfrage
@@ -30,8 +28,6 @@ class AnfrageSerializer(serializers.ModelSerializer):
 
 class FallSerializer(serializers.ModelSerializer):
     values = serializers.SerializerMethodField()
-    version = serializers.IntegerField(write_only=True)      # nur für Input
-    data_record = serializers.CharField(write_only=True)    # nur für Input
 
     class Meta:
         model = Fall
