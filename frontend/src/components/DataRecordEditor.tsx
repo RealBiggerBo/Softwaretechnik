@@ -104,29 +104,6 @@ async function GetDataFormat(
   }
 }
 
-// get datarecord based on type and id, if type is "neue-anfrage" or "neuer-fall", return empty datarecord
-async function GetData(
-  caller: IApiCaller,
-  type: dataRecordType,
-  id: number,
-): Promise<{
-  success: boolean;
-  errorMsg: string;
-  json: any;
-}> {
-  switch (type) {
-    case "anfrage":
-    case "letzte-anfrage":
-      return await caller.TrySearchAnfrageByID(id);
-    case "fall":
-    case "letzter-fall":
-      return await caller.TrySearchAnfrageByID(id);
-    case "neue-anfrage":
-    case "neuer-fall":
-      return { success: true, errorMsg: "", json: "" };
-  }
-}
-
 // get user role, if not logged in return null
 async function GetRole(
   caller: IApiCaller,
