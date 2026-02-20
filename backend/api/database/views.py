@@ -158,29 +158,37 @@ class DataRecordAPI(APIView):
         id = request.GET.get("id", None)
         type_lower = type.lower()
 
-        if type_lower == "anfrage":
-            record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
-        elif type_lower == "fall":
-            record = Fall.objects.get(pk=id) if id else Fall.objects.last()
-        else:
+        if type_lower not in ["anfrage", "fall"]:
             return Response({"error": "Ungültiger Typ"}, status=400)
 
-        # Sensible Felder ermitteln
-        model_name = type_lower.capitalize()
+        Model = Anfrage if type_lower == "anfrage" else Fall
+
+        try:
+            record = Model.objects.get(pk=id) if id else Model.objects.last()
+        except Model.DoesNotExist:
+            return Response({"error": "Record nicht gefunden"}, status=404)
+
+        # Werte aus DataSet holen (WICHTIG!)
+        dataset = DataSet.objects.filter(
+            data_record=record.__class__.__name__,
+            version=record.pk
+        ).last()
+
+        encrypted_values = dataset.values if dataset else {}
+
+        # sensible Felder holen
+        model_name = record.__class__.__name__
         sensitive_keys = get_sensitive_fields(model_name, record.pk)
 
-        # Werte aus dem Model direkt holen (NICHT aus serializer.data!)
-        encrypted_values = getattr(record, "values", {}) or {}
+        # entschlüsseln
         decrypted_values = decrypt_sensitive_fields(encrypted_values, sensitive_keys)
 
-        response_data = {
+        return Response({
             "pk": record.pk,
             "data_record": model_name,
-            "structure": getattr(record, "structure", {}),
-            "values": decrypted_values
-        }
-
-        return Response(response_data, status=200)
+            "structure": record.structure,
+            "values": decrypted_values   
+        })
 
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
