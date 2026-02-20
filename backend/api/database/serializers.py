@@ -1,18 +1,11 @@
 from rest_framework import serializers
-from api.database.models import DataSet
 from .models import *
 
 class AnfrageSerializer(serializers.ModelSerializer):
-    values = serializers.SerializerMethodField()
-
     class Meta:
         model = Anfrage
         fields = ["pk",
-                    "structure",
-                    "values"]
-    
-    def get_values(self, obj):
-        return getattr(obj, "values", None)
+                    "structure"]
     
     def validate(self, data):
         """
@@ -22,17 +15,10 @@ class AnfrageSerializer(serializers.ModelSerializer):
         return datarecord_validation(data)
 
 class FallSerializer(serializers.ModelSerializer):
-    values = serializers.SerializerMethodField()
-
     class Meta:
         model = Fall
         fields = ["pk",
-                    "structure",
-                    "values"]
-    
-    def get_values(self, obj):
-        return getattr(obj, "values", None)
-    
+                    "structure"]
     
     def validate(self, data):
         """
@@ -42,20 +28,12 @@ class FallSerializer(serializers.ModelSerializer):
         return datarecord_validation(data)
 
 class DataSetSerializer(serializers.ModelSerializer):
-
-    values = serializers.JSONField()
-    decrypted_values = serializers.SerializerMethodField()
-    
     class Meta:
         model = DataSet
         fields = ["pk",
                     "data_record",
                     "version",
-                    "values",
-                    "decrypted_values"]
-        
-    def get_decrypted_values(self, obj):
-      return obj.get_decrypted_values()
+                    "values"]
 
 def datarecord_validation(data):
     field_names = data["structure"]
@@ -63,7 +41,7 @@ def datarecord_validation(data):
         field = field_names[field_name]
         field_type = field["type"]
 
-        for attribute in list(field.keys()):
+        for attribute in field:
             if attribute not in ["name", "type", "required", "sensitive", "possibleValues", "element"]:
                 field.pop(attribute)
 
@@ -86,11 +64,11 @@ def datarecord_validation(data):
         
         if "sensitive" not in field:
             raise serializers.ValidationError("Erforderliches Feld, sensitive, wurde nicht übergeben.")
-        elif not isinstance(field["sensitive"], bool):
+        elif not isinstance(field["required"], bool):
             raise serializers.ValidationError("Wert mit falschen Typ für sensitive übergeben. Der richtige Typ ist Boolean.")
         
         if "possibleValues" in field and field_type != "String":
-            field.pop("possibleValues")
+            field.pop("possibleValue")
         
         if field_type == "Group" or field_type == "List":
             if "element" not in field:
