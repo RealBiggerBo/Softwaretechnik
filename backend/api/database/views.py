@@ -203,19 +203,6 @@ class DataRecordAdminAPI(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        data = serializer.validated_data
-
-        Model = Anfrage if type == "anfrage" else Fall
-        try:
-            record = Model.objects.get(pk=data["version"])
-        except Model.DoesNotExist:
-            return Response({"error": "Version nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
-
-        structure = record.structure
-
-        values = data.get("values", {})
-        dataset_validation(structure, values)
-
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -241,11 +228,11 @@ def get_data_record(id, type):
         data_record = Anfrage if type == "anfrage" else Fall
         objekt = data_record.objects.get(pk=id) if id != None else data_record.objects.last()
     except data_record.DoesNotExist:
-        return None #Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = AnfrageSerializer(objekt) if type == "anfrage" else FallSerializer(objekt)
 
-    return serializer #Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 def dataset_validation(structure, values):
     match = {
