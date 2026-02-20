@@ -258,6 +258,7 @@ async function LoadDataAndFormat(
     //get format only
 
     const formatRes = await GetDataFormat(caller, type);
+    console.log(JSON.stringify(formatRes));
 
     if (!formatRes.success) {
       setMsgID("Konnte aktuelles Format nicht laden");
