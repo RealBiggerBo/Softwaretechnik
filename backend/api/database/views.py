@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
+from api.database.encryption_utils import decrypt_sensitive_fields
 
 class DataAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -108,8 +109,22 @@ class DataRecordAPI(APIView):
         """
 
         id = request.GET.get("id", None)
+        
+        # Daten abrufen (verschlüsselt)
+        response = get_data_record(id, type)
 
-        return get_data_record(id, type)
+        if not hasattr(response, 'data'):
+            return response 
+
+        # Sensible Felder ermitteln
+        sensitive_keys = get_sensitive_fields(type, id)
+
+        # Entschlüsseln
+        decrypted_data = decrypt_sensitive_fields(response.data, sensitive_keys)
+
+        # Entschlüsselte Daten zurückgeben
+        return Response(decrypted_data)
+        #return get_data_record(id, type)
     
 class DataRecordAdminAPI(APIView):
     permission_classes = [IsExtendedUser]
