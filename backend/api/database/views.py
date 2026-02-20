@@ -145,6 +145,20 @@ class DataRecordAdminAPI(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class DataRecordListAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, type):
+        """
+        Gibt alle Versionen eines DataRecords zurück.
+        """
+
+        data_record = Anfrage if type == "anfrage" else Fall
+        objekt = data_record.objects.all()
+        serializer = AnfrageSerializer(objekt, many=True) if type == "anfrage" else FallSerializer(objekt, many=True)
+
+        return Response(serializer.data)
+
 def type_is_valid(type):
     return type in ["anfrage", "fall"]
 
