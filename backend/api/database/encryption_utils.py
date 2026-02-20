@@ -2,23 +2,23 @@ from django.core.cache import cache
 
 CACHE_TIME = 60 * 10  # 10 Minuten
 
-def get_sensitive_fields(data_record_type, version):
+def get_sensitive_fields(data_record_type, id=None):
     """
     Gibt Liste sensibler Felder zurück (rekursiv verschachtelte Keys).
     Nutzt Cache für Performance.
     """
     from api.database.models import Anfrage, Fall
 
-    cache_key = f"sensitive:{data_record_type}:{version or 'latest'}"
+    cache_key = f"sensitive:{data_record_type}:{id or 'latest'}"
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
 
     # richtige Version abfragen
     if data_record_type == "Anfrage":
-        record = Anfrage.objects.get(version=version) if version else Anfrage.objects.last()
+        record = Anfrage.objects.get(pk=id) if id else Anfrage.objects.last()
     elif data_record_type == "Fall":
-        record = Fall.objects.get(version=version) if version else Fall.objects.last()
+        record = Fall.objects.get(pk=id) if id else Fall.objects.last()
     else:
         return []
 
