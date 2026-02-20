@@ -7,7 +7,11 @@ from cryptography.exceptions import InvalidTag
 PREFIX = "ENC1:"
 
 def _key():
-    key = base64.urlsafe_b64decode(settings.AES_KEY)
+    key_str = settings.AES_KEY
+    print(f"AES_KEY (repr): {repr(key_str)}")
+    #key = base64.urlsafe_b64decode(settings.AES_KEY)
+    key = base64.urlsafe_b64decode(key_str)
+    print(f"decoded length: {len(key)}")
     if len(key) != 32:
         raise ValueError("AES Key muss 32 Byte sein")
     return key
