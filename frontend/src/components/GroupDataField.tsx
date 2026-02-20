@@ -27,7 +27,7 @@ function GroupDataField({
   function handleAddField() {}
 
   return (
-    <Paper elevation={3}>
+    <Paper elevation={3} sx={{ padding: "5px" }}>
       <Stack direction="column" spacing={2} alignItems="left">
         {!isEditMode && (
           <>

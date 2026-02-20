@@ -15,6 +15,7 @@ import StyledButton from "../components/Styledbutton";
 import {
   Alert,
   Autocomplete,
+  Box,
   Collapse,
   IconButton,
   Snackbar,
@@ -314,7 +315,7 @@ function SearchPage({ caller }: Props) {
           data={searchResult}
           mapEntry={(entry) => {
             return (
-              <>
+              <Box sx={{ padding: "5px" }}>
                 <StyledButton
                   text="Bearbeiten / Anzeigen"
                   onClick={() => NavigateToDataPage(type, entry, navigate)}
@@ -343,7 +344,7 @@ function SearchPage({ caller }: Props) {
                     {snackbarMessage}
                   </Alert>
                 </Snackbar>
-              </>
+              </Box>
             );
           }}
         />
