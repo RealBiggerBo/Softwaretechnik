@@ -47,6 +47,9 @@ def get_sensitive_fields(data_record_type, id=None):
     else:
         return []
 
+    if record is None:
+        return []
+
     structure = record.structure or {}
 
     sensitive = []

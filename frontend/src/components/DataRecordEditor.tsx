@@ -195,7 +195,7 @@ async function UpdateDataRecord(
 
 async function LoadDataAndFormat(
   type: dataRecordType,
-  id: number,
+  id: number | null,
   caller: IApiCaller,
   setDataRecord: (record: DataRecord) => void,
   setFormatVersion: (version: number) => void,
@@ -208,6 +208,10 @@ async function LoadDataAndFormat(
     type == "letzte-anfrage" ||
     type == "letzter-fall"
   ) {
+    if (id === null) {
+      console.log("Tried to load id: null");
+      return;
+    }
     //get by id
     const res = await GetDataById(type, id, caller);
 
@@ -357,17 +361,16 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
       const role = await GetRole(caller);
       if (!role) return;
       setRole(role);
-      if (urlid.current !== null) {
-        await LoadDataAndFormat(
-          type,
-          urlid.current,
-          caller,
-          setRecord,
-          setFormatVersion,
-          setMsgID,
-          setOpenIdDialog,
-        );
-      }
+      console.log(urlid.current);
+      await LoadDataAndFormat(
+        type,
+        urlid.current,
+        caller,
+        setRecord,
+        setFormatVersion,
+        setMsgID,
+        setOpenIdDialog,
+      );
     }
     loadData();
   }, [caller, type, urlid.current]);
