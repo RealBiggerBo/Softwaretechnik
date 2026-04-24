@@ -49,9 +49,13 @@ class DataAPI(APIView):
         if isinstance(data, Response):
             return data
 
-        serializer = DataSetSerializer(data)
+        data_set = DataSetSerializer(data).data
+        structure = get_data_record(data_set["version"], data_set["data_record"].lower()).data["structure"]
+        values = data_set["values"]
 
-        return Response(serializer.data)
+        structure = merge_values_and_structure(values, structure)
+
+        return Response(structure)
 
     def post(self, request, type):
         """
@@ -173,7 +177,7 @@ def dataset_validation(structure, values):
 
         if field_id in values:
             field_type = field["type"]
-            value = values[field_id]
+            value = values[field_id]["value"]
 
             if not isinstance(value, match[field_type]):
                 raise serializers.ValidationError(f"Wert mit falschen Typ für {field_id} übergeben. Der richtige Typ ist {match[field_type]}.")
@@ -192,3 +196,19 @@ def dataset_validation(structure, values):
 
         elif field["required"]:
             raise serializers.ValidationError(f"Erforderliches Feld, {field_id}, wurde nicht übergeben.")
+
+def merge_values_and_structure(values, structure):
+    for field_id in structure:
+        field = structure[field_id]
+
+        if field["type"] == "Group":
+            field["value"] = {}
+            structure = merge_values_and_structure(values[field_id], field["element"])
+        elif field["type"] == "List":
+            field["value"] = []
+            for element in values[field_id]:
+                structure = merge_values_and_structure(element, field["element"])
+        else:
+            field["value"] = values[field_id] if field_id in values else {}
+
+    return structure
