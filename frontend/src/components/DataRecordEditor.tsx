@@ -251,6 +251,7 @@ async function LoadDataAndFormat(
         );
 
         setDataRecord(mergedDataRecord);
+        setFormatVersion(formatVersioFromFormat);
       } else {
         setMsgID(
           "Fehler beim Anfragen der Format id: " +
