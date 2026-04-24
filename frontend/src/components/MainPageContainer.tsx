@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import styles from "../styles/MainPage.module.css";
 
 interface Props {
   heading: string;
@@ -18,18 +19,20 @@ function MainPageContainer({
   color,
 }: Props) {
   return (
-    <div className={"mainPageContainer " + "mainPageContainer-" + color}>
-      <div className="textContainer">
-        <label className="mainPageContainer-heading">{heading}</label>
-        <p className="mainPageContainer-body">{body}</p>
+    <div
+      className={`${styles.mainPageContainer} ${styles[`mainPageContainer-${color}`]}`}
+    >
+      <div className={styles.textContainer}>
+        <label className={styles.mainPageContainer_heading}>{heading}</label>
+        <p className={styles.mainPageContainer_body}>{body}</p>
       </div>
 
-      <div className="buttonContainer">
+      <div className={styles.buttonContainer}>
         {buttons.map((val, index) => (
           <Link
             to={links[index]}
             key={index}
-            className={"mainPageContainerBtn mainPageContainerBtn-" + color}
+            className={`${styles.mainPageContainerBtn} ${styles[`mainPageContainerBtn-${color}`]}`}
             style={{
               pointerEvents:
                 enabled !== undefined &&

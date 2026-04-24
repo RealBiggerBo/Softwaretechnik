@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
 import PasswordInput from "../components/PasswordInput";
 import { Snackbar, Alert } from "@mui/material";
+import styles from "../styles/SettingsPage.module.css";
 
 interface Props {
   caller: IApiCaller;
@@ -43,7 +44,7 @@ function ChangePasswordSettings({ caller }: Props) {
 
   return (
     <form
-      className="settingsForm"
+      className={styles.settingsForm}
       onSubmit={async (event) => {
         event.preventDefault();
         await submitPasswordChangeRequest(
@@ -72,7 +73,11 @@ function ChangePasswordSettings({ caller }: Props) {
         value={newPswdCtrl}
         onValueChange={setNewPswdCtrl}
       />
-      <button id="submit" className="passwordChangeSubmitBtn" type="submit">
+      <button
+        id="submit"
+        className={styles.passwordChangeSubmitBtn}
+        type="submit"
+      >
         Passwort ändern
       </button>
       <Snackbar

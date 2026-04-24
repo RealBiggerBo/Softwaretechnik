@@ -1,6 +1,7 @@
 import MainPageContainer from "../components/MainPageContainer";
 import type { IApiCaller } from "../classes/IApiCaller";
 import { useEffect, useState } from "react";
+import styles from "../styles/MainPage.module.css";
 
 interface Props {
   caller: IApiCaller;
@@ -26,13 +27,13 @@ function MainPage({ caller }: Props) {
   }, [caller]);
 
   return (
-    <div className="pageContainer">
+    <div className={styles.pageContainer}>
       <img
         src="src/bilder/bellis-logo.svg"
-        className="bellisLogo"
+        className={styles.bellisLogo}
         alt="Bellis e.V. Logo"
       ></img>
-      <div className="container">
+      <div className={styles.container}>
         <MainPageContainer
           heading="Suche"
           body="Hier können Anfragen und Fälle gesucht werden."

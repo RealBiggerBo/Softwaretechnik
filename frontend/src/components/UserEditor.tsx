@@ -6,6 +6,7 @@ import PasswordInput from "./PasswordInput";
 import StyledButton from "./Styledbutton";
 import DialogComponent from "./DialogComponent";
 import type { DialogObject } from "./DialogComponent";
+import styles from "../styles/SettingsPage.module.css";
 
 interface Props {
   user: DataRecord;
@@ -90,7 +91,7 @@ function UserEditor({ user, caller, updateData }: Props) {
   }
 
   return (
-    <div className="settingsForm">
+    <div className={styles.settingsForm}>
       <label>Benutzerrolle ändern</label>
       <Autocomplete
         options={["Admin", "Erweitert", "Basis"]}
@@ -131,7 +132,7 @@ function UserEditor({ user, caller, updateData }: Props) {
       />
       <StyledButton
         text="Passwort zurücksetzen"
-        className="passwordChangeSubmitBtn"
+        className={styles.passwordChangeSubmitBtn}
         onClick={async () => {
           const res = await caller.ResetUserPassword(GetUserId(user), newPswd);
           updateData();
@@ -149,7 +150,7 @@ function UserEditor({ user, caller, updateData }: Props) {
       <StyledButton
         text="Nutzer löschen"
         color="error"
-        className="passwordChangeSubmitBtn"
+        className={styles.passwordChangeSubmitBtn}
         onClick={async () => {
           setOpenDeleteDialog(true);
         }}

@@ -18,6 +18,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useEffect, useState } from "react";
 import StyledButton from "./Styledbutton";
+import styles from "../styles/Navbar.module.css";
 
 interface Props {
   caller: IApiCaller;
@@ -112,7 +113,7 @@ function Navbar({ caller, savedData, savedFormat, resetChangeFlags }: Props) {
         </IconButton>
 
         {/* Anzeigen des aktuell angemeldeten Nutzers*/}
-        <label style={{ padding: "8px" }}>{userName}</label>
+        <label className={styles.username}>{userName}</label>
 
         {/* Abstand */}
         <Box sx={{ flexGrow: 1 }} />

@@ -2,17 +2,11 @@ import { useEffect, useState } from "react";
 import type { IApiCaller } from "../classes/IApiCaller";
 import DataRecordList from "./DataRecordList";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
-import {
-  Alert,
-  Autocomplete,
-  Button,
-  Snackbar,
-  TextField,
-} from "@mui/material";
+import { Alert, Snackbar, TextField } from "@mui/material";
 import PasswordInput from "./PasswordInput";
-import type { DataField } from "../classes/DataField";
 import type { DataRecord } from "../classes/DataRecord";
 import UserEditor from "./UserEditor";
+import styles from "../styles/SettingsPage.module.css";
 
 interface Props {
   caller: IApiCaller;
@@ -82,19 +76,19 @@ function UserManagementSettings({ caller }: Props) {
         }}
       ></DataRecordList>
       <form
-        className="settingsForm"
+        className={styles.settingsForm}
         onSubmit={async (event) => {
           event.preventDefault();
           await submitRegisterUser(caller, userName, pswd, pswdCtrl, loadData);
         }}
       >
-        <label htmlFor="userName" className="gridLabel">
+        <label htmlFor="userName" className={styles.gridLabel}>
           Benutzername
         </label>
         <TextField
           label="Benutzername"
           id="userName"
-          className="textField"
+          className={styles.textField}
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />
@@ -111,7 +105,11 @@ function UserManagementSettings({ caller }: Props) {
           onValueChange={setPswdCtrl}
         />
 
-        <button id="submit" className="passwordChangeSubmitBtn" type="submit">
+        <button
+          id="submit"
+          className={styles.passwordChangeSubmitBtn}
+          type="submit"
+        >
           Neuen Nutzer hinzufügen
         </button>
         <Snackbar
