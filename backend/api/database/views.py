@@ -85,7 +85,7 @@ class DataAPI(APIView):
         if isinstance(data, Response):
             return data
 
-        serializer = DataSetSerializer(data=request.data)
+        serializer = DataSetSerializer(data, data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
