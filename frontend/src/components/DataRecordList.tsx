@@ -21,21 +21,11 @@ interface Props {
 }
 
 function GetFieldValue(field: DataField): ReactNode {
-  console.log(field);
-
   switch (field.type) {
     case "text":
       return field.text;
-    case "integer":
-      return field.value;
-    case "boolean":
-      return field.isSelected ? "ja" : "nein";
-    case "date":
-      return field.date;
-    case "enum":
-      return field.possibleValues?.join(", ");
     default:
-      return "NULL";
+      return "UNDEFINED";
   }
 }
 

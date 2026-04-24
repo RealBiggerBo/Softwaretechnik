@@ -105,8 +105,6 @@ export class DataRecordConverter {
     format["version"] = version;
     format["values"] = this.ExtractDataFromDataRecord(dataRecord);
 
-    //console.log(format);
-
     return format;
   }
 
@@ -230,15 +228,9 @@ export class DataRecordConverter {
   ): DataRecord[] {
     if (!Array.isArray(searchResult)) return [];
 
-    console.log("converted: ");
-
     const results: Record<string, unknown>[] =
       this.normalizeInput(searchResult);
-    console.log(results);
 
-    // return results.map((result) =>
-    //   this.MergeDataRecordWithData(format, result),
-    // );
     return results.map((record) => {
       const convertedRecord = this.GetDataRecord(record);
       const idFields: DataField[] = convertedRecord.dataFields.map((f) => {
@@ -250,8 +242,6 @@ export class DataRecordConverter {
         if (fs.length >= 1) return { ...f, name: fs[0].name };
         return f;
       });
-      console.log("REOCRD");
-      console.log(convertedRecord);
 
       return { dataFields: idFields };
     });
@@ -276,9 +266,8 @@ export class DataRecordConverter {
     return {
       dataFields: Object.entries(record).map(([key, value], index) => {
         let text = value as string;
-        if (typeof value === "object") {
-          text = value.toString();
-        }
+        if (typeof value === "object") text = value.toString();
+        else if (typeof value === "boolean") text = value ? "Ja" : "Nein";
 
         return {
           type: "text",

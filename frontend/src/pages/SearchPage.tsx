@@ -75,8 +75,6 @@ async function Search(
   setSearchResult: (recordds: DataRecord[]) => void,
   caller: IApiCaller,
 ) {
-  console.log(formats);
-  console.log(formatVersion);
   let res;
   if (type == "Fall")
     res = await caller.TrySearchFall(
@@ -89,23 +87,12 @@ async function Search(
       formatVersion,
     );
 
-  console.log("Ergebnis der Suche mit formatversion " + formatVersion + ":");
-  console.log(res);
-
-  //Convert res.searchResult to Record<string, unknown>[]
-
   //merge with current format
-  console.log(
-    "DAS HIER WILLST DU SEHEN::::" + JSON.stringify(res.searchResult),
-  );
   const values: DataRecord[] =
     DataRecordConverter.ConvertSearchResultToDataRecord(
       res.searchResult,
       GetCurrentSelectedFormat(formats, formatVersion),
     );
-
-  console.log("Konvertierte records:");
-  console.log(values);
 
   setSearchResult(values);
 }
@@ -299,7 +286,6 @@ function SearchPage({ caller }: Props) {
         <StyledButton
           text="Suchen"
           onClick={async () => {
-            console.log("vor suche");
             await Search(
               type,
               options,
@@ -308,7 +294,6 @@ function SearchPage({ caller }: Props) {
               setSearchResult,
               caller,
             );
-            console.log("nach such");
           }}
         />
         <DataRecordList
