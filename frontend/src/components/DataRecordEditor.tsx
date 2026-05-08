@@ -4,7 +4,13 @@ import {
   type NavigateOptions,
 } from "react-router-dom";
 import type { IApiCaller } from "../classes/IApiCaller";
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { DataRecordConverter } from "../classes/DataRecordConverter";
 import type { DataRecord } from "../classes/DataRecord";
 import { Alert, CircularProgress, Fab, Snackbar } from "@mui/material";
@@ -30,6 +36,24 @@ type dataRecordType =
   | "letzter-fall"
   | "neuer-fall";
 type userRole = "base_user" | "extended_user" | "admin_user" | null;
+
+interface FormState {
+  role: userRole;
+  lastSavedRecord: DataRecord;
+  record: DataRecord;
+  isEditMode: boolean;
+  snackbarOpen: boolean;
+  snackbarMessage: string;
+  saveResult: boolean | null;
+  formatVersion: number;
+  msg: string;
+  msgField: string;
+  openDeleteDialog: boolean;
+  openFieldDialog: boolean;
+  openIdDialog: boolean;
+  msgID: string;
+  isLoading: boolean;
+}
 
 // check if datafield is required and valid
 // if it's not required, return true, otherwise check if it's valid based on its type and return the result
@@ -201,10 +225,7 @@ async function LoadDataAndFormat(
   type: dataRecordType,
   id: number | null,
   caller: IApiCaller,
-  setDataRecord: (record: DataRecord) => void,
-  setFormatVersion: (version: number) => void,
-  setMsgID: (msg: string) => void,
-  setOpenIdDialog: (open: boolean) => void,
+  setState: Dispatch<SetStateAction<FormState>>,
 ) {
   if (
     type == "anfrage" ||
@@ -249,23 +270,28 @@ async function LoadDataAndFormat(
           formatDataRecord,
           keyValueTuples,
         );
-
-        setDataRecord(mergedDataRecord);
-        setFormatVersion(formatVersioFromFormat);
+        setState((s) => ({
+          ...s,
+          record: mergedDataRecord,
+          formatVersion: formatVersioFromFormat,
+        }));
       } else {
-        setMsgID(
-          "Fehler beim Anfragen der Format id: " +
+        setState((s) => ({
+          ...s,
+          msgID:
+            "Fehler beim Anfragen der Format id: " +
             neededFormatVersion +
             ". Fehler: " +
             formatRes.errorMsg,
-        );
-        setOpenIdDialog(true);
+          openIdDialog: true,
+        }));
       }
     } else {
-      setMsgID(
-        "Fehler beim Suchen nach id " + id + ". Fehler: " + res.errorMsg,
-      );
-      setOpenIdDialog(true);
+      setState((s) => ({
+        ...s,
+        msgID: "Fehler beim Suchen nach id " + id + ". Fehler: " + res.errorMsg,
+        openIdDialog: true,
+      }));
     }
   } else {
     //get format only
@@ -275,17 +301,18 @@ async function LoadDataAndFormat(
     console.log(formatRes);
 
     if (!formatRes.success) {
-      setMsgID("Konnte aktuelles Format nicht laden");
-      setOpenIdDialog(true);
+      setState((s) => ({
+        ...s,
+        msgID: "Konnte aktuelles Format nicht laden",
+        openIdDialog: true,
+      }));
       return;
     }
 
     const [version, format] = DataRecordConverter.ConvertFormatToDataRecord(
       formatRes.json,
     );
-
-    setDataRecord(format);
-    setFormatVersion(version);
+    setState((s) => ({ ...s, record: format, formatVersion: version }));
   }
 }
 
@@ -314,50 +341,52 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
     urlid.current = GetDataRecordId(searchParams.get("id"));
   }
 
-  const [role, setRole] = useState<userRole>(null);
-  const [lastSavedRecord, setLastSavedRecord] = useState<DataRecord>({
-    dataFields: [],
+  const [state, setState] = useState<FormState>({
+    role: null as userRole,
+    lastSavedRecord: { dataFields: [] } as DataRecord,
+    record: { dataFields: [] } as DataRecord,
+    isEditMode: false,
+    snackbarOpen: false,
+    snackbarMessage: "",
+    saveResult: null as boolean | null,
+    formatVersion: -1,
+    msg: "",
+    msgField: "",
+    openDeleteDialog: false,
+    openFieldDialog: false,
+    openIdDialog: false,
+    msgID: "",
+    isLoading: true,
   });
-  const [record, setRecord] = useState<DataRecord>({ dataFields: [] });
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [saveResult, setSaveResult] = useState<boolean | null>(null);
-  const [formatVersion, setFormatVersion] = useState<number>(-1);
-  const [msg, setmg] = useState("");
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [msgField, setmgField] = useState("");
-  const [openFieldDialog, setOpenFieldDialog] = useState(false);
-  const [openIdDialog, setOpenIdDialog] = useState(false);
-  const [msgID, setMsgID] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+
+  console.log("rendert");
 
   const navigate = useNavigate();
 
   const handleRecordChange = useCallback(
     (nextRecord: DataRecord) => {
-      if (isEditMode) {
+      if (state.isEditMode) {
         savedFormat.current = false;
       } else {
         savedData.current = false;
       }
-      setRecord(nextRecord);
+      setState((s) => ({ ...s, record: nextRecord }));
     },
-    [isEditMode, savedData, savedFormat],
+    [state.isEditMode, savedData, savedFormat],
   );
 
   const dialogField: DialogObject = {
-    isOpen: openFieldDialog,
+    isOpen: state.openFieldDialog,
     title: "",
-    body: msgField,
+    body: state.msgField,
     no: "ok",
-    noAction: async () => setOpenFieldDialog(false),
+    noAction: async () => setState((s) => ({ ...s, openFieldDialog: false })),
   };
 
   const dialogDelete: DialogObject = {
-    isOpen: openDeleteDialog,
+    isOpen: state.openDeleteDialog,
     title: `${type} löschen?`,
-    body: msg,
+    body: state.msg,
     yes: "Löschen",
     no: "Abbrechen",
     yesAction: () => handleDeleteRecord(),
@@ -365,11 +394,11 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   };
 
   const dialogID: DialogObject = {
-    isOpen: openIdDialog,
+    isOpen: state.openIdDialog,
     title: "Seite konnte nicht geladen werden.",
-    body: msgID,
+    body: state.msgID,
     no: "Ok",
-    noAction: async () => setOpenIdDialog(false),
+    noAction: async () => setState((s) => ({ ...s, openIdDialog: false })),
   };
 
   function sleep(ms: number) {
@@ -378,27 +407,18 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
   useEffect(() => {
     async function loadData() {
-      setIsLoading(true);
       //check login status
       const role = await GetRole(caller);
       if (!role) {
-        setIsLoading(false);
+        setState((s) => ({ ...s, isLoading: false }));
         return;
       }
-      setRole(role);
-      await LoadDataAndFormat(
-        type,
-        urlid.current,
-        caller,
-        setRecord,
-        setFormatVersion,
-        setMsgID,
-        setOpenIdDialog,
-      );
-      setIsLoading(false);
+
+      await LoadDataAndFormat(type, urlid.current, caller, setState);
+      setState((s) => ({ ...s, role: role, isLoading: false }));
     }
     loadData();
-  }, [caller, type, urlid.current]);
+  }, [caller, type]);
 
   //saves the datarecord
   async function Save(
@@ -435,7 +455,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
     CreateNewDataSet(
       type,
-      formatVersion,
+      state.formatVersion,
       recordToSave,
       caller,
       openSnackbar,
@@ -458,7 +478,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
           type,
           recordToSave,
           recordId,
-          formatVersion,
+          state.formatVersion,
           caller,
         )) === true
       ) {
@@ -538,9 +558,8 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
     type: dataRecordType,
     recordId: number | null,
     recordToSave: DataRecord,
-    lastSavedRecord: DataRecord,
     caller: IApiCaller,
-    setLastSaved: (lastSaved: DataRecord) => void,
+    setSate: Dispatch<SetStateAction<FormState>>,
   ) {
     try {
       console.log("handle Save");
@@ -555,7 +574,7 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
       if (result.success) {
         savedData.current = true;
         savedFormat.current = true;
-        setLastSaved(recordToSave);
+        setSate((s) => ({ ...s, lastSavedRecord: recordToSave }));
       }
     } catch (err) {
       alert(err);
@@ -564,9 +583,12 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
 
   //opens snackbar with message and success sets color of snackbar
   function openSnackbar(message: string, success: boolean) {
-    setSnackbarOpen(true);
-    setSnackbarMessage(message);
-    setSaveResult(success);
+    setState((s) => ({
+      ...s,
+      snackbarOpen: true,
+      snackbarMessage: message,
+      saveResult: success,
+    }));
     return;
   }
 
@@ -580,8 +602,11 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
     for (let i = 0; i < record.dataFields.length; i++) {
       const field = record.dataFields[i];
       if (!IsValid(field)) {
-        setOpenFieldDialog(true);
-        setmgField("Fehler bei Feld: " + field.name);
+        setState((s) => ({
+          ...s,
+          openFieldDialog: true,
+          msgField: "Fehler bei Feld: " + field.name,
+        }));
         //alert("Fehler bei Feld: " + field.name);
         return false;
       }
@@ -608,19 +633,19 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   }
 
   function cancelDelete() {
-    setOpenDeleteDialog(false);
+    setState((s) => ({ ...s, openDeleteDialog: false }));
   }
 
   return (
     <div>
-      {isLoading && (
+      {state.isLoading && (
         <div
           style={{ display: "flex", justifyContent: "center", padding: "50px" }}
         >
           <CircularProgress />
         </div>
       )}
-      {!isLoading && (
+      {!state.isLoading && (
         <>
           <h1>
             {(type == "anfrage" ||
@@ -632,22 +657,26 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
               type == "neuer-fall") &&
               "Fallansicht"}
           </h1>
-          {role && role !== "base_user" && (
+          {state.role && state.role !== "base_user" && (
             <Fab
               color="primary"
               aria-label="edit"
               size="small"
               style={{ float: "right" }}
-              onClick={() => setIsEditMode(!isEditMode)}
+              onClick={() =>
+                setState((s) => ({ ...s, isEditMode: !s.isEditMode }))
+              }
             >
               <EditIcon />
             </Fab>
           )}
           <br />
           <DataRecordDisplay
-            record={record}
-            displayEditButtons={role !== null && role !== "base_user"}
-            isEditMode={isEditMode}
+            record={state.record}
+            displayEditButtons={
+              state.role !== null && state.role !== "base_user"
+            }
+            isEditMode={state.isEditMode}
             caller={caller}
             onChange={handleRecordChange}
           />
@@ -657,8 +686,11 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
               text="Datensatz löschen"
               color="error"
               onClick={() => {
-                setOpenDeleteDialog(true);
-                setmg("Wollen Sie diesen Datensatz wirklich löschen?");
+                setState((s) => ({
+                  ...s,
+                  openDeleteDialog: true,
+                  msg: "Wollen Sie diesen Datensatz wirklich löschen?",
+                }));
               }}
             />
           )}
@@ -671,23 +703,22 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
               await handleSave(
                 type,
                 urlid.current,
-                record,
-                lastSavedRecord,
+                state.record,
                 caller,
-                setLastSavedRecord,
+                setState,
               );
             }}
           />
           <Snackbar
-            open={snackbarOpen}
+            open={state.snackbarOpen}
             autoHideDuration={3000}
-            onClose={() => setSnackbarOpen(false)}
+            onClose={() => setState((s) => ({ ...s, snackbarOpen: false }))}
           >
             <Alert
-              severity={saveResult ? "success" : "error"}
-              onClose={() => setSnackbarOpen(false)}
+              severity={state.saveResult ? "success" : "error"}
+              onClose={() => setState((s) => ({ ...s, snackbarOpen: false }))}
             >
-              {snackbarMessage}
+              {state.snackbarMessage}
             </Alert>
           </Snackbar>
           {/*Dialog zum record löschen */}
