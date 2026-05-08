@@ -406,18 +406,28 @@ function DataRecordEditor({ caller, savedData, savedFormat, urlid }: Props) {
   }
 
   useEffect(() => {
+    let cancelled = false;
     async function loadData() {
       //check login status
       const role = await GetRole(caller);
+
+      if (cancelled) return;
+
       if (!role) {
         setState((s) => ({ ...s, isLoading: false }));
         return;
       }
 
       await LoadDataAndFormat(type, urlid.current, caller, setState);
+
+      if (cancelled) return;
+
       setState((s) => ({ ...s, role: role, isLoading: false }));
     }
     loadData();
+    return () => {
+      cancelled = true;
+    };
   }, [caller, type]);
 
   //saves the datarecord
