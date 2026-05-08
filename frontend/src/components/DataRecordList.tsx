@@ -24,6 +24,10 @@ function GetFieldValue(field: DataField): ReactNode {
   switch (field.type) {
     case "text":
       return field.text;
+    case "integer":
+      return field.value;
+    case "date":
+      return field.date;
     default:
       return "UNDEFINED";
   }
